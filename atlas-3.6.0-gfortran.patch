@@ -1,0 +1,20 @@
+--- debian/config.expect.orig	2005-08-15 13:22:40.000000000 -0500
++++ debian/config.expect	2005-08-15 13:30:14.000000000 -0500
+@@ -4,6 +4,8 @@
+ set timeout 180
+ set i [spawn make]
+ expect -re "ready to continue?" {send "\n" ; exp_continue} \
++	"Stop ATLAS install?" {send "n\n"; exp_continue} \
++	"enter a different F77" {send "1\n"; exp_continue} \
+ 	"Enter number at top left of screen" {send "\n" ; exp_continue} \
+ 	"ENTER TO CONTINUE" {send "\n" ; exp_continue} \
+ 	"enable Posix threads support?" {send "n\n" ; exp_continue} \
+@@ -20,7 +22,7 @@
+ 	"Fortran77 interface to BLAS" {send "\n" ; exp_continue} \
+ 	"3DNow! for computation?" {send "$env(TDNCOMP)\n" ; exp_continue} \
+ 	"Level 1 BLAS" {send "\n" ; exp_continue} \
+-	"f77 compiler" {send "\n" ; exp_continue} \
++	"f77 compiler" {send "/usr/bin/gfortran\n" ; exp_continue} \
+ 	"F77 Flags" {send "\n" ; exp_continue} \
+ 	"F77 Linker" {send "\n" ; exp_continue} \
+ 	"F77 Link Flags" {send "\n" ; exp_continue} \
