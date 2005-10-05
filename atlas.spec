@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -534,6 +534,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed Oct 05 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-7
+- Forgot to add the new patch to sources.
+
 * Tue Oct 04 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-6
 - Use new Debian patch, and enable shared libs (they previously failed
   to build on gcc 4).
