@@ -1,15 +1,15 @@
 Name:           atlas
 Version:        3.6.0
-Release:        6
+Release:        6%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
 License:        BSD
 URL:            http://math-atlas.sourceforge.net/
 Source0:        http://prdownloads.sourceforge.net/math-atlas/%{name}%{version}.tar.bz2
-Source1:	README.Fedora
-Patch0:         http://ftp.debian.org/debian/pool/main/a/atlas3/%{name}3_%{version}-19.diff.gz
-Patch1:		%{name}-%{version}-gfortran.patch
+Source1:        README.Fedora
+Patch0:         http://ftp.debian.org/debian/pool/main/a/atlas3/%{name}3_%{version}-20.diff.gz
+Patch1:         %{name}-%{version}-gfortran.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Requires:       /etc/ld.so.conf.d
@@ -27,14 +27,14 @@ order to provide portable performance. At present, it provides C and
 Fortran77 interfaces to a portably efficient BLAS implementation, as
 well as a few routines from LAPACK.
 
-The performance improvements in ATLAS are largely obtained via
+The performance improvements in ATLAS are obtained largely via
 compile-time optimizations and tend to be specific to a given hardware
 configuration. In order to package ATLAS for Fedora some compromises
-were necessary so that good performance can be obtained on a variety
+are necessary so that good performance can be obtained on a variety
 of hardware. This set of ATLAS binary packages is therefore not
-necessarily optimal for specific hardware.  However, the source
-package can be used to compile customized ATLAS packages--see the
-documentation for information.
+necessarily optimal for any specific hardware configuration.  However,
+the source package can be used to compile customized ATLAS packages;
+see the documentation for information.
 
 
 
@@ -204,9 +204,9 @@ for TYPE in %{types}; do
   make startup arch=$BUILD_DIR
 
   if [ "$TYPE" = "custom" ]; then
-    BUILD_DATA_DIR=custom_%{archt}
-    if [ -a $BUILD_DATA_DIR.tgz ]; then
-      tar zxf $BUILD_DATA_DIR.tgz
+    BUILD_DATA_DIR=atlas-$TYPE-%{archt}
+    if [ -a %{_sourcedir}/$BUILD_DATA_DIR.tgz ]; then
+      tar zxf %{_sourcedir}/$BUILD_DATA_DIR.tgz
     else
       make install arch=$BUILD_DIR >out 2>&1 &
       pid=$!
@@ -228,7 +228,7 @@ for TYPE in %{types}; do
       cp tune/blas/ger/$BUILD_DIR/res/* ${BUILD_DATA_DIR}/r1
       mkdir -p ${BUILD_DATA_DIR}/l1
       cp tune/blas/level1/$BUILD_DIR/res/* ${BUILD_DATA_DIR}/l1
-      tar zcf ${BUILD_DATA_DIR}.tgz ${BUILD_DATA_DIR}
+      tar zcf %{_sourcedir}/${BUILD_DATA_DIR}.tgz ${BUILD_DATA_DIR}
     fi
   else
     BUILD_DATA_DIR=debian/%{archt}/${TYPE}
@@ -266,17 +266,13 @@ for TYPE in %{types}; do
   ar r lib/$BUILD_DIR/liblapack.a tmp/*.o
   rm -rf tmp
 
-
- ## Shared libs are currently broken for SIMD extensions with gcc 4.
- ## Until this is fixed, the following is only performed for "base".
- if [ "$TYPE" = "base" ] ; then
   ########## Shared Libraries ##########################################
   BUILD_DIR=Linux_${TYPE}_shared
   ARCH_DIR=$BUILD_DIR CACHE_SIZE= BIT=%{bit} \
       DEFAULTS=y TDNCOMP=$TDN debian/config.expect
   cat Make.$BUILD_DIR |\
 	sed -e "s, TOPdir = \(.*\), TOPdir = `pwd`,1" \
-	    -e "s, FLAPACKlib = , FLAPACKlib = %{_libdir}/liblapack.a,1" \
+	    -e "s, FLAPACKlib = , FLAPACKlib = %{_libdir}/liblapack_pic.a,1" \
 	    -e "s, F77FLAGS = \(.*\), F77FLAGS = \1 -fPIC,1" \
 	    -e "s, CCFLAGS = \(.*\), CCFLAGS = \1 -fPIC,1" \
 	    -e "s, MMFLAGS = \(.*\), MMFLAGS = \1 -fPIC,1" \
@@ -367,43 +363,35 @@ for TYPE in %{types}; do
   ln -s liblapack.so.%{ver} lib/$BUILD_DIR/liblapack.so.%{ver_major}
   ln -s liblapack.so.%{ver} lib/$BUILD_DIR/liblapack.so
   rm -rf tmp
- fi
 done
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
-for TYPE in %{types}; do
-  EXTDIR=$TYPE
-  if [ "$TYPE" = "base" ]; then
-    EXTDIR=""
-  fi
-
-  mkdir -p $RPM_BUILD_ROOT%{_libdir}/${EXTDIR}
-  mkdir -p $RPM_BUILD_ROOT%{_libdir}/atlas/${EXTDIR}
-  for LIB in libblas liblapack; do
-    if [ "$TYPE" = "base" ]; then
-      LIBS="lib/Linux_${TYPE}_static/$LIB.a lib/Linux_${TYPE}_shared/$LIB.so*"
-    else
-      LIBS="lib/Linux_${TYPE}_static/$LIB.a"
-    fi
-    cp -a $LIBS ${RPM_BUILD_ROOT}%{_libdir}/atlas/${EXTDIR}
-  done
-  for LIB in libatlas libcblas libf77blas liblapack_atlas; do
-    if [ "$TYPE" = "base" ]; then
-      LIBS="lib/Linux_${TYPE}_static/$LIB.a lib/Linux_${TYPE}_shared/$LIB.so*"
-    else
-      LIBS="lib/Linux_${TYPE}_static/$LIB.a"
-    fi
-    cp -a $LIBS ${RPM_BUILD_ROOT}%{_libdir}/${EXTDIR}
-  done
-done
-
+mkdir -p $RPM_BUILD_ROOT/etc/ld.so.conf.d
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/atlas
 cp -a include/*.h $RPM_BUILD_ROOT%{_includedir}/atlas
 
-mkdir -p $RPM_BUILD_ROOT/etc/ld.so.conf.d
-echo "%{_libdir}/atlas" > $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-%{_arch}.conf
+LIBNAMES="libatlas libcblas libf77blas liblapack_atlas libblas liblapack"
+for TYPE in %{types}; do
+  if [ "$TYPE" = "base" ]; then
+    EXTDIR="atlas"
+    echo "%{_libdir}/atlas" \
+	> $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-%{_arch}.conf
+  elif [ "$TYPE" = "custom" ]; then
+    EXTDIR="atlas-custom"
+    echo "%{_libdir}/atlas-custom" \
+	> $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-custom-%{_arch}.conf
+  else
+    EXTDIR=$TYPE
+  fi
+
+  mkdir -p $RPM_BUILD_ROOT%{_libdir}/${EXTDIR}
+  for LIB in $LIBNAMES; do
+    LIBS="lib/Linux_${TYPE}_static/$LIB.a lib/Linux_${TYPE}_shared/$LIB.so*"
+    cp -a $LIBS ${RPM_BUILD_ROOT}%{_libdir}/${EXTDIR}
+  done
+done
 
 
 
@@ -414,29 +402,48 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun -p /sbin/ldconfig
 
+%ifarch i386
 
+%post -n atlas-sse -p /sbin/ldconfig
+
+%postun -n atlas-sse -p /sbin/ldconfig
+
+%post -n atlas-sse2 -p /sbin/ldconfig
+
+%postun -n atlas-sse2 -p /sbin/ldconfig
+
+%post -n atlas-3dnow -p /sbin/ldconfig
+
+%postun -n atlas-3dnow -p /sbin/ldconfig
+
+%endif
+%ifarch ppc
+
+%post -n atlas-altivec -p /sbin/ldconfig
+
+%postun -n atlas-altivec -p /sbin/ldconfig
+
+%endif
 %if "%{?enable_custom_atlas}" == "1"
 
-#%files custom
-#%defattr(-,root,root,-)
-#%doc debian/copyright doc/README.Fedora
-#%dir %{_libdir}/custom
-#%dir %{_libdir}/atlas/custom
-#%{_libdir}/custom/*.so.*
-#%{_libdir}/atlas/custom/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-custom-%{_arch}.conf
+%post -n atlas-custom -p /sbin/ldconfig
+
+%postun -n atlas-custom -p /sbin/ldconfig
+
+%files custom
+%defattr(-,root,root,-)
+%doc debian/copyright doc/README.Fedora
+%dir %{_libdir}/atlas-custom
+%{_libdir}/atlas-custom/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-custom-%{_arch}.conf
 
 %files custom-devel
 %defattr(-,root,root,-)
 %doc debian/copyright doc
-%dir %{_libdir}/custom
-%dir %{_libdir}/atlas/custom
-#%{_libdir}/custom/*.{a,so}
-%{_libdir}/custom/*.a
-#%{_libdir}/atlas/custom/*.{a,so}
-%{_libdir}/atlas/custom/*.a
+%dir %{_libdir}/atlas-custom
+%{_libdir}/atlas-custom/*.so
+%{_libdir}/atlas-custom/*.a
 %{_includedir}/atlas
-%exclude /etc/ld.so.conf.d/*
 
 %else
 
@@ -445,105 +452,81 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc debian/copyright doc/README.Fedora
 %dir %{_libdir}/atlas
-%{_libdir}/*.so.*
-%{_libdir}/*/*.so.*
-#%{_libdir}/atlas/*/*.so.*
+%{_libdir}/atlas/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}.conf
 
 %files devel
 %defattr(-,root,root,-)
 %doc debian/copyright doc
-%{_libdir}/*.a
-%{_libdir}/*.so
-%{_libdir}/atlas/*.a
 %{_libdir}/atlas/*.so
+%{_libdir}/atlas/*.a
 %{_includedir}/atlas
 
 %ifarch i386
 
-#%files sse
-#%defattr(-,root,root,-)
-#%doc debian/copyright doc/README.Fedora
-#%dir %{_libdir}/sse
-#%dir %{_libdir}/atlas/sse
-#%{_libdir}/sse/*.so.*
-#%{_libdir}/atlas/sse/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-sse-%{_arch}.conf
+%files sse
+%defattr(-,root,root,-)
+%doc debian/copyright doc/README.Fedora
+%dir %{_libdir}/sse
+%{_libdir}/sse/*.so.*
+#%config(noreplace) /etc/ld.so.conf.d/atlas-sse.conf
 
 %files sse-devel
 %defattr(-,root,root,-)
 %doc debian/copyright doc
 %dir %{_libdir}/sse
-%dir %{_libdir}/atlas/sse
-#%{_libdir}/sse/*.so
+%{_libdir}/sse/*.so
 %{_libdir}/sse/*.a
-#%{_libdir}/atlas/sse/*.so
-%{_libdir}/atlas/sse/*.a
 %{_includedir}/atlas
 
 
-#%files sse2
-#%defattr(-,root,root,-)
-#%doc debian/copyright doc/README.Fedora
-#%dir %{_libdir}/sse2
-#%dir %{_libdir}/atlas/sse2
-#%{_libdir}/sse2/*.so.*
-#%{_libdir}/atlas/sse2/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-sse2-%{_arch}.conf
+%files sse2
+%defattr(-,root,root,-)
+%doc debian/copyright doc/README.Fedora
+%dir %{_libdir}/sse2
+%{_libdir}/sse2/*.so.*
+#%config(noreplace) /etc/ld.so.conf.d/atlas-sse2.conf
 
 %files sse2-devel
 %defattr(-,root,root,-)
 %doc debian/copyright doc
 %dir %{_libdir}/sse2
-%dir %{_libdir}/atlas/sse2
-#%{_libdir}/sse2/*.so
+%{_libdir}/sse2/*.so
 %{_libdir}/sse2/*.a
-#%{_libdir}/atlas/sse2/*.so
-%{_libdir}/atlas/sse2/*.a
 %{_includedir}/atlas
 
 
-#%files 3dnow
-#%defattr(-,root,root,-)
-#%doc debian/copyright doc/README.Fedora
-#%dir %{_libdir}/3dnow
-#%dir %{_libdir}/atlas/3dnow
-#%{_libdir}/3dnow/*.so.*
-#%{_libdir}/atlas/3dnow/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-3dnow-%{_arch}.conf
+%files 3dnow
+%defattr(-,root,root,-)
+%doc debian/copyright doc/README.Fedora
+%dir %{_libdir}/3dnow
+%{_libdir}/3dnow/*.so.*
+#%config(noreplace) /etc/ld.so.conf.d/atlas-3dnow.conf
 
 %files 3dnow-devel
 %defattr(-,root,root,-)
 %doc debian/copyright doc
 %dir %{_libdir}/3dnow
-%dir %{_libdir}/atlas/3dnow
-#%{_libdir}/3dnow/*.so
+%{_libdir}/3dnow/*.so
 %{_libdir}/3dnow/*.a
-#%{_libdir}/atlas/3dnow/*.so
-%{_libdir}/atlas/3dnow/*.a
 %{_includedir}/atlas
 
 %endif
 %ifarch ppc
 
-#%files altivec
-#%defattr(-,root,root,-)
-#%doc debian/copyright doc/README.Fedora
-#%dir %{_libdir}/altivec
-#%dir %{_libdir}/atlas/altivec
-#%{_libdir}/altivec/*.so.*
-#%{_libdir}/atlas/altivec/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-altivec-%{_arch}.conf
+%files altivec
+%defattr(-,root,root,-)
+%doc debian/copyright doc/README.Fedora
+%dir %{_libdir}/altivec
+%{_libdir}/altivec/*.so.*
+#%config(noreplace) /etc/ld.so.conf.d/atlas-altivec.conf
 
 %files altivec-devel
 %defattr(-,root,root,-)
 %doc debian/copyright doc
 %dir %{_libdir}/altivec
-%dir %{_libdir}/atlas/altivec
-#%{_libdir}/altivec/*.so
+%{_libdir}/altivec/*.so
 %{_libdir}/altivec/*.a
-#%{_libdir}/atlas/altivec/*.so
-%{_libdir}/atlas/altivec/*.a
 %{_includedir}/atlas
 
 %endif
@@ -552,7 +535,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Tue Oct 04 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-6
-- Fix buildroot, minor updates to description.
+- Use new Debian patch, and enable shared libs (they previously failed
+  to build on gcc 4).
+- Minor updates to description and README.Fedora file.
+- Fix buildroot name to match FE preferred form.
+- Fixes for custom optimized builds.
+- Add dist tag.
 
 * Wed Sep 28 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-5
 - fix files lists.
