@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -72,7 +72,7 @@ to the ix86 architecture.
 %package sse-devel
 Summary:        Development libraries for ATLAS with SSE extensions
 Group:          Development/Libraries
-#Requires:       %{name}-sse = %{version}-%{release}
+Requires:       %{name}-sse = %{version}-%{release}
 %description sse-devel
 This package contains headers and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
@@ -89,7 +89,7 @@ extensions to the ix86 architecture.
 %package sse2-devel
 Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
-#Requires:       %{name}-sse2 = %{version}-%{release}
+Requires:       %{name}-sse2 = %{version}-%{release}
 %description sse2-devel
 This package contains headers and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
@@ -106,7 +106,7 @@ extensions to the ix86 architecture.
 %package 3dnow-devel
 Summary:        Development libraries for ATLAS with 3DNow extensions
 Group:          Development/Libraries
-#Requires:       %{name}-3dnow = %{version}-%{release}
+Requires:       %{name}-3dnow = %{version}-%{release}
 %description 3dnow-devel
 This package contains headers and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
@@ -128,7 +128,7 @@ extensions to the PowerPC architecture.
 %package altivec-devel
 Summary:        Development libraries for ATLAS with AltiVec extensions
 Group:          Development/Libraries
-#Requires:       %{name}-altivec = %{version}-%{release}
+Requires:       %{name}-altivec = %{version}-%{release}
 %description altivec-devel
 This package contains headers and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
@@ -161,7 +161,7 @@ Software) libraries compiled with all compile-time optimizations enabled.
 %package custom-devel
 Summary:        Development libraries for ATLAS with AltiVec extensions
 Group:          Development/Libraries
-#Requires:       %{name}-custom = %{version}-%{release}
+Requires:       %{name}-custom = %{version}-%{release}
 %description custom-devel
 This package contains headers and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
@@ -377,13 +377,17 @@ for TYPE in %{types}; do
   if [ "$TYPE" = "base" ]; then
     EXTDIR="atlas"
     echo "%{_libdir}/atlas" \
-	> $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-%{_arch}.conf
+      > $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-%{_arch}.conf
   elif [ "$TYPE" = "custom" ]; then
     EXTDIR="atlas-custom"
     echo "%{_libdir}/atlas-custom" \
-	> $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-custom-%{_arch}.conf
+      > $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-custom-%{_arch}.conf
   else
     EXTDIR=$TYPE
+    if [ "$TYPE" != "sse2" ]; then
+      echo "/usr/lib/$TYPE" \
+        > $RPM_BUILD_ROOT/etc/ld.so.conf.d/atlas-$TYPE.conf
+    fi
   fi
 
   mkdir -p $RPM_BUILD_ROOT%{_libdir}/${EXTDIR}
@@ -469,7 +473,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc debian/copyright doc/README.Fedora
 %dir %{_libdir}/sse
 %{_libdir}/sse/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-sse.conf
+%config(noreplace) /etc/ld.so.conf.d/atlas-sse.conf
 
 %files sse-devel
 %defattr(-,root,root,-)
@@ -485,7 +489,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc debian/copyright doc/README.Fedora
 %dir %{_libdir}/sse2
 %{_libdir}/sse2/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-sse2.conf
 
 %files sse2-devel
 %defattr(-,root,root,-)
@@ -501,7 +504,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc debian/copyright doc/README.Fedora
 %dir %{_libdir}/3dnow
 %{_libdir}/3dnow/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-3dnow.conf
+%config(noreplace) /etc/ld.so.conf.d/atlas-3dnow.conf
 
 %files 3dnow-devel
 %defattr(-,root,root,-)
@@ -519,7 +522,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc debian/copyright doc/README.Fedora
 %dir %{_libdir}/altivec
 %{_libdir}/altivec/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-altivec.conf
+%config(noreplace) /etc/ld.so.conf.d/atlas-altivec.conf
 
 %files altivec-devel
 %defattr(-,root,root,-)
@@ -534,6 +537,11 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Oct 10 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-8
+- Make all devel subpackages depend on their non-devel counterparts.
+- Add /etc/ld.so.conf.d files for -sse and -3dnow, because they don't
+  seem to get picked up automatically.
+
 * Wed Oct 05 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-7
 - Forgot to add the new patch to sources.
 
