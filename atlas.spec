@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -537,6 +537,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Dec 19 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-9
+- Rebuild for gcc 4.1.
+
 * Mon Oct 10 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-8
 - Make all devel subpackages depend on their non-devel counterparts.
 - Add /etc/ld.so.conf.d files for -sse and -3dnow, because they don't
