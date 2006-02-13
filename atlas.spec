@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -242,7 +242,7 @@ for TYPE in %{types}; do
 
   cat ${BUILD_DATA_DIR}/build.uu | uudecode | zcat - | \
 	sed -e s/g77/gfortran/ -e s/-DAdd__/-DAdd_/ | debian/ab topdir=`pwd` \
-	carch=$BUILD_DIR debug= | bash -x -e
+	carch=$BUILD_DIR fpic="-Wa,--noexecstack" debug= | bash -x -e
   mv lib/$BUILD_DIR/liblapack.a lib/$BUILD_DIR/liblapack_atlas.a
 
   # Create replacement for BLAS and LAPACK Libraries
@@ -289,7 +289,7 @@ for TYPE in %{types}; do
 
   cat ${BUILD_DATA_DIR}/build.uu | uudecode | zcat - | \
 	sed -e s/g77/gfortran/ -e s/-DAdd__/-DAdd_/ | debian/ab topdir=`pwd` \
-	carch=$BUILD_DIR fpic="-fPIC" debug= | bash -x -e
+	carch=$BUILD_DIR fpic="-Wa,--noexecstack -fPIC" debug= | bash -x -e
   mv lib/$BUILD_DIR/liblapack.a lib/$BUILD_DIR/liblapack_atlas.a
 
   mkdir tmp
@@ -537,6 +537,11 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Feb 13 2006 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-10
+- Rebuild for Fedora Extras 5.
+- Add --noexecstack to compilation of assembly kernels. These were
+  previously marked executable, which caused problems with selinux.
+
 * Mon Dec 19 2005 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-9
 - Rebuild for gcc 4.1.
 
