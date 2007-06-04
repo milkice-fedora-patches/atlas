@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -110,7 +110,7 @@ optimizations for the 3DNow extensions to the ix86 architecture.
 
 
 %endif
-%ifarch ppc
+%ifarch ppc ppc64
 %define archt powerpc
 %define types base altivec
 
@@ -417,7 +417,7 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n atlas-3dnow -p /sbin/ldconfig
 
 %endif
-%ifarch ppc
+%ifarch ppc ppc64
 
 %post -n atlas-altivec -p /sbin/ldconfig
 
@@ -511,7 +511,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/atlas
 
 %endif
-%ifarch ppc
+%ifarch ppc ppc64
 
 %files altivec
 %defattr(-,root,root,-)
@@ -533,6 +533,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Jun  4 2007 Orion Poplawski <orion@cora.nwra.com> 3.6.0-12
+- Rebuild for ppc64
+
 * Fri Sep  8 2006 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-11
 - Rebuild for FC6.
 - Remove outdated comments from spec file.
