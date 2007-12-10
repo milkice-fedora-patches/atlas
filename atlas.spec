@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        11%{?dist}
+Release:        11%{?dist}.1
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -533,6 +533,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Dec 10 2007 Orion Poplawski <orion@cora.nwra.com>  3.6.0-11.1
+- Rebuild to add ppc64 package for F7.
+
 * Fri Sep  8 2006 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-11
 - Rebuild for FC6.
 - Remove outdated comments from spec file.
