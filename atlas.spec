@@ -110,7 +110,7 @@ optimizations for the 3DNow extensions to the ix86 architecture.
 
 
 %endif
-%ifarch ppc
+%ifarch ppc ppc64
 %define archt powerpc
 %define types base altivec
 
@@ -417,7 +417,7 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n atlas-3dnow -p /sbin/ldconfig
 
 %endif
-%ifarch ppc
+%ifarch ppc ppc64
 
 %post -n atlas-altivec -p /sbin/ldconfig
 
@@ -511,7 +511,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/atlas
 
 %endif
-%ifarch ppc
+%ifarch ppc ppc64
 
 %files altivec
 %defattr(-,root,root,-)
