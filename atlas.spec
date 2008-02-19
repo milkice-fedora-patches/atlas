@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -533,6 +533,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 3.6.0-13
+- Autorebuild for GCC 4.3
+
 * Mon Jun  4 2007 Orion Poplawski <orion@cora.nwra.com> 3.6.0-12
 - Rebuild for ppc64
 
