@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -10,6 +10,7 @@ Source0:        http://prdownloads.sourceforge.net/math-atlas/%{name}%{version}.
 Source1:        README.Fedora
 Patch0:         http://ftp.debian.org/debian/pool/main/a/atlas3/%{name}3_%{version}-20.diff.gz
 Patch1:         %{name}-%{version}-gfortran.patch
+Patch2:         %{name}-%{version}-ia64-configure.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Requires:       /etc/ld.so.conf.d
@@ -139,6 +140,16 @@ optimizations for the AltiVec extensions to the PowerPC architecture.
 %define bit 1
 %endif
 
+%ifarch alpha
+%define archt alpha
+%define types base
+%endif
+
+%ifarch alphaev6
+%define archt alpha
+%define types ev6
+%endif
+
 %if "%{?enable_custom_atlas}" == "1"
 # This flag enables building customized ATLAS libraries with all
 # compile-time optimizations. Note that compilation will take a very
@@ -169,6 +180,7 @@ all compile-time optimizations enabled.
 %setup -q -n ATLAS
 %patch0 -p1
 %patch1 -p0
+%patch2 -p1
 cp %{SOURCE1} doc
 
 
@@ -533,6 +545,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Feb 28 2008 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-14
+- Enable compilation on alpha (bug 426086).
+- Patch for compilation on ia64 (bug 432744).
+
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 3.6.0-13
 - Autorebuild for GCC 4.3
 
