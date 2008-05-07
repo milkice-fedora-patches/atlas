@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -113,23 +113,7 @@ optimizations for the 3DNow extensions to the ix86 architecture.
 %endif
 %ifarch ppc ppc64
 %define archt powerpc
-%define types base altivec
-
-%package altivec
-Summary:        ATLAS libraries for AltiVec extensions
-Group:          System Environment/Libraries
-%description altivec
-This package contains the ATLAS (Automatically Tuned Linear Algebra
-Software) libraries compiled with optimizations for the AltiVec
-extensions to the PowerPC architecture.
-%package altivec-devel
-Summary:        Development libraries for ATLAS with AltiVec extensions
-Group:          Development/Libraries
-Requires:       %{name}-altivec = %{version}-%{release}
-%description altivec-devel
-This package contains headers and static versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the AltiVec extensions to the PowerPC architecture.
+%define types base
 
 %endif
 %ifarch x86_64
@@ -429,13 +413,6 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n atlas-3dnow -p /sbin/ldconfig
 
 %endif
-%ifarch ppc ppc64
-
-%post -n atlas-altivec -p /sbin/ldconfig
-
-%postun -n atlas-altivec -p /sbin/ldconfig
-
-%endif
 %if "%{?enable_custom_atlas}" == "1"
 
 %post -n atlas-custom -p /sbin/ldconfig
@@ -525,26 +502,14 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %ifarch ppc ppc64
 
-%files altivec
-%defattr(-,root,root,-)
-%doc debian/copyright doc/README.Fedora
-%dir %{_libdir}/altivec
-%{_libdir}/altivec/*.so.*
-%config(noreplace) /etc/ld.so.conf.d/atlas-altivec.conf
-
-%files altivec-devel
-%defattr(-,root,root,-)
-%doc debian/copyright doc
-%dir %{_libdir}/altivec
-%{_libdir}/altivec/*.so
-%{_libdir}/altivec/*.a
-%{_includedir}/atlas
-
 %endif
 
 %endif
 
 %changelog
+* Wed May  7 2008 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-15
+- Disable altivec package--it is causing illegal instructions during build.
+
 * Thu Feb 28 2008 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-14
 - Enable compilation on alpha (bug 426086).
 - Patch for compilation on ia64 (bug 432744).
