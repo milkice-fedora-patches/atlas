@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -277,6 +277,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Dec 16 2008 Deji Akingunola <dakingun@gmail.com> - 3.8.2-3
+- Use 'gcc -shared' to build shared libs instead of stock 'ld'
+
 * Sat Dec 13 2008 Deji Akingunola <dakingun@gmail.com> - 3.8.2-2
 - Properly obsolete/provide older subpackages that are no longer packaged.
 

@@ -38,48 +38,48 @@
  
  libatlas.so : libatlas.a
 -	ld $(LDFLAGS) -shared -soname libatlas.so -o libatlas.so \
-+	ld $(LDFLAGS) --build-id -shared -soname libatlas.so.$(so_ver_major) \
++	gcc -shared $(LDFLAGS) --build-id -soname libatlas.so.$(so_ver_major) \
 +        -o libatlas.so.$(so_ver) \
          --whole-archive libatlas.a --no-whole-archive -lc $(LIBS)
 +	ln -s ./libatlas.so.$(so_ver) libatlas.so.$(so_ver_major)
 +	ln -s ./libatlas.so.$(so_ver) libatlas.so
  liblapack.so : liblapack.a
 -	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive \
-+	ld $(LDFLAGS) --build-id -shared -soname liblapack.so.$(so_ver_major) \
++	gcc -shared $(LDFLAGS) --build-id -soname liblapack.so.$(so_ver_major) \
 +           -o liblapack.so.$(so_ver) --whole-archive \
             liblapack.a --no-whole-archive $(F77SYSLIB)
 +	ln -s ./liblapack.so.$(so_ver) liblapack.so.$(so_ver_major)
 +	ln -s ./liblapack.so.$(so_ver) liblapack.so
  libclapack.so : libclapack.a
 -	ld $(LDFLAGS) -shared -soname liblapack.so -o liblapack.so \
-+	ld $(LDFLAGS) --build-id -shared -soname libclapack.so.$(so_ver_major) \
++	gcc -shared $(LDFLAGS) --build-id -soname libclapack.so.$(so_ver_major) \
 +           -o libclapack.so.$(so_ver) \
             --whole-archive libclapack.a
 +	ln -s ./libclapack.so.$(so_ver) libclapack.so.$(so_ver_major)
 +	ln -s ./libclapack.so.$(so_ver) libclapack.so
  libptf77blas.so : libptf77blas.a
 -	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libptf77blas.a \
-+	ld $(LDFLAGS) --build-id -shared -soname libptf77blas.so.$(so_ver_major) \
++	gcc -shared $(LDFLAGS) --build-id -soname libptf77blas.so.$(so_ver_major) \
 +           -o libptf77blas.so.$(so_ver) --whole-archive libptf77blas.a \
             --no-whole-archive $(F77SYSLIB)
 +	ln -s ./libptf77blas.so.$(so_ver) libptf77blas.so.$(so_ver_major)
 +	ln -s ./libptf77blas.so.$(so_ver) libptf77blas.so
  libf77blas.so : libf77blas.a
 -	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libf77blas.a \
-+	ld $(LDFLAGS) --build-id -shared -soname libf77blas.so.$(so_ver_major) \
++	gcc -shared $(LDFLAGS) --build-id -soname libf77blas.so.$(so_ver_major) \
 +           -o libf77blas.so.$(so_ver) --whole-archive libf77blas.a \
             --no-whole-archive $(F77SYSLIB)
 +	ln -s ./libf77blas.so.$(so_ver) libf77blas.so.$(so_ver_major)
 +	ln -s ./libf77blas.so.$(so_ver) libf77blas.so
  libptcblas.so : libptcblas.a
 -	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libptcblas.a
-+	ld $(LDFLAGS) --build-id -shared -soname libptcblas.so.$(so_ver_major) \
++	gcc -shared $(LDFLAGS) --build-id -soname libptcblas.so.$(so_ver_major) \
 +           -o libptcblas.so.$(so_ver) --whole-archive libptcblas.a
 +	ln -s ./libptcblas.so.$(so_ver) libptcblas.so.$(so_ver_major)
 +	ln -s ./libptcblas.so.$(so_ver) libptcblas.so
  libcblas.so : libcblas.a
 -	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libcblas.a
-+	ld $(LDFLAGS) --build-id -shared -soname libcblas.so.$(so_ver_major) \
++	gcc -shared $(LDFLAGS) --build-id -soname libcblas.so.$(so_ver_major) \
 +           -o libcblas.so.$(so_ver) --whole-archive libcblas.a
 +	ln -s ./libcblas.so.$(so_ver) libcblas.so.$(so_ver_major)
 +	ln -s ./libcblas.so.$(so_ver) libcblas.so
