@@ -1,0 +1,88 @@
+--- makes/Make.lib	2008-06-06 20:57:46.000000000 -0400
++++ makes/Make.lib.new	2008-09-01 11:12:11.000000000 -0400
+@@ -3,6 +3,8 @@
+ #
+ # override with libatlas.so only when atlas is built to one lib
+ #
++so_ver_major=3
++so_ver = $(so_ver_major).0
+ DYNlibs = liblapack.so libf77blas.so libcblas.so libatlas.so 
+ PTDYNlibs = liblapack.so libptf77blas.so libptcblas.so libatlas.so 
+ CDYNlibs = liblapack.so libcblas.so libatlas.so 
+@@ -32,38 +34,63 @@
+ 	mv $(tarnam).tar.gz $(tarnam).tgz
+ 
+ ptshared :
+-	- rm -f libatlas.so liblapack.so
++	- rm -f libatlas.so* liblapack.so* \
++                lib*blas.so* libclapack.so* 
+ 	$(MAKE) libatlas.so liblapack.so libptf77blas.so libf77blas.so \
+-                libptcblas.so libcblas.so liblapack.so
++                libptcblas.so libcblas.so libclapack.so
+ shared :
+-	- rm -f libatlas.so liblapack.so
+-	$(MAKE) libatlas.so liblapack.so libf77blas.so libcblas.so liblapack.so
++	- rm -f libatlas.so liblapack.so \
++                libatlas.so.$(so_ver) liblapack.so.$(so_ver)
++	$(MAKE) libatlas.so liblapack.so libf77blas.so libcblas.so libclapack.so
+ cptshared :
+-	- rm -f libatlas.so libclapack.so
++	- rm -f libatlas.so libclapack.so \
++                libatlas.so.$(so_ver) libclapack.so.$(so_ver)
+ 	$(MAKE) libatlas.so libclapack.so libptcblas.so libcblas.so
+ cshared :
+-	- rm -f libatlas.so libclapack.so
++	- rm -f libatlas.so libclapack.so \
++                libatlas.so.$(so_ver) libclapack.so.$(so_ver)
+ 	$(MAKE) libatlas.so libclapack.so libcblas.so
+ 
+ libatlas.so : libatlas.a
+-	ld $(LDFLAGS) -shared -soname libatlas.so -o libatlas.so \
++	ld $(LDFLAGS) --build-id -shared -soname libatlas.so.$(so_ver_major) \
++        -o libatlas.so.$(so_ver) \
+         --whole-archive libatlas.a --no-whole-archive -lc $(LIBS)
++	ln -s ./libatlas.so.$(so_ver) libatlas.so.$(so_ver_major)
++	ln -s ./libatlas.so.$(so_ver) libatlas.so
+ liblapack.so : liblapack.a
+-	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive \
++	ld $(LDFLAGS) --build-id -shared -soname liblapack.so.$(so_ver_major) \
++           -o liblapack.so.$(so_ver) --whole-archive \
+            liblapack.a --no-whole-archive $(F77SYSLIB)
++	ln -s ./liblapack.so.$(so_ver) liblapack.so.$(so_ver_major)
++	ln -s ./liblapack.so.$(so_ver) liblapack.so
+ libclapack.so : libclapack.a
+-	ld $(LDFLAGS) -shared -soname liblapack.so -o liblapack.so \
++	ld $(LDFLAGS) --build-id -shared -soname libclapack.so.$(so_ver_major) \
++           -o libclapack.so.$(so_ver) \
+            --whole-archive libclapack.a
++	ln -s ./libclapack.so.$(so_ver) libclapack.so.$(so_ver_major)
++	ln -s ./libclapack.so.$(so_ver) libclapack.so
+ libptf77blas.so : libptf77blas.a
+-	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libptf77blas.a \
++	ld $(LDFLAGS) --build-id -shared -soname libptf77blas.so.$(so_ver_major) \
++           -o libptf77blas.so.$(so_ver) --whole-archive libptf77blas.a \
+            --no-whole-archive $(F77SYSLIB)
++	ln -s ./libptf77blas.so.$(so_ver) libptf77blas.so.$(so_ver_major)
++	ln -s ./libptf77blas.so.$(so_ver) libptf77blas.so
+ libf77blas.so : libf77blas.a
+-	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libf77blas.a \
++	ld $(LDFLAGS) --build-id -shared -soname libf77blas.so.$(so_ver_major) \
++           -o libf77blas.so.$(so_ver) --whole-archive libf77blas.a \
+            --no-whole-archive $(F77SYSLIB)
++	ln -s ./libf77blas.so.$(so_ver) libf77blas.so.$(so_ver_major)
++	ln -s ./libf77blas.so.$(so_ver) libf77blas.so
+ libptcblas.so : libptcblas.a
+-	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libptcblas.a
++	ld $(LDFLAGS) --build-id -shared -soname libptcblas.so.$(so_ver_major) \
++           -o libptcblas.so.$(so_ver) --whole-archive libptcblas.a
++	ln -s ./libptcblas.so.$(so_ver) libptcblas.so.$(so_ver_major)
++	ln -s ./libptcblas.so.$(so_ver) libptcblas.so
+ libcblas.so : libcblas.a
+-	ld $(LDFLAGS) -shared -soname $@ -o $@ --whole-archive libcblas.a
++	ld $(LDFLAGS) --build-id -shared -soname libcblas.so.$(so_ver_major) \
++           -o libcblas.so.$(so_ver) --whole-archive libcblas.a
++	ln -s ./libcblas.so.$(so_ver) libcblas.so.$(so_ver_major)
++	ln -s ./libcblas.so.$(so_ver) libcblas.so
+ #
+ # Builds one shared lib from all ATLAS files
+ #
