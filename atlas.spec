@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -185,9 +185,8 @@ for type in %{types}; do
 	fi
 done
 %ifarch i386 && %if "%{?enable_native_atlas}" == "0"
-pushd %{buildroot}%{_libdir}
-	ln -s ./atlas-sse2 atlas
-popd
+cp -pr %{buildroot}%{_libdir}/atlas-sse2 %{buildroot}%{_libdir}/atlas
+echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
 %endif
 
 %clean
@@ -249,13 +248,17 @@ rm -rf %{buildroot}
 %dir %{_libdir}/atlas-sse2
 %dir %{_libdir}/atlas
 %{_libdir}/atlas-sse2/*.so.*
+%{_libdir}/atlas/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-sse2.conf
+%config(noreplace) /etc/ld.so.conf.d/atlas.conf
 
 %files sse2-devel
 %defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas-sse2/*.so
 %{_libdir}/atlas-sse2/*.a
+%{_libdir}/atlas/*.so
+%{_libdir}/atlas/*.a
 %{_includedir}/atlas
 %{_includedir}/*.h
 
@@ -277,6 +280,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Dec 16 2008 Deji Akingunola <dakingun@gmail.com> - 3.8.2-4
+- Don't symlink the atlas libdir on i386, cause upgrade issue (BZ#476787)
+- Fix options passed to gcc when making shared libs
+
 * Tue Dec 16 2008 Deji Akingunola <dakingun@gmail.com> - 3.8.2-3
 - Use 'gcc -shared' to build shared libs instead of stock 'ld'
 
