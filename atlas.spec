@@ -250,7 +250,6 @@ rm -rf %{buildroot}
 %{_libdir}/atlas-sse2/*.so.*
 %{_libdir}/atlas/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-sse2.conf
-%config(noreplace) /etc/ld.so.conf.d/atlas.conf
 
 %files sse2-devel
 %defattr(-,root,root,-)
