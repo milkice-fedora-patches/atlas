@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -279,6 +279,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sun Dec 21 2008 Deji Akingunola <dakingun@gmail.com> - 3.8.2-5
+- Link in appropriate libs when creating shared libs, reported by Orcan 'oget' Ogetbil (BZ#475411)
+
 * Tue Dec 16 2008 Deji Akingunola <dakingun@gmail.com> - 3.8.2-4
 - Don't symlink the atlas libdir on i386, cause upgrade issue (BZ#476787)
 - Fix options passed to gcc when making shared libs
