@@ -1,14 +1,14 @@
 %define enable_native_atlas 0
 
 Name:           atlas
-Version:        3.8.2
-Release:        5%{?dist}
+Version:        3.8.3
+Release:        1%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
 License:        BSD
 URL:            http://math-atlas.sourceforge.net/
-Source0:        http://prdownloads.sourceforge.net/math-atlas/%{name}%{version}.tar.bz2
+Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.tar.bz2
 Source1:        README.Fedora
 Patch0:		atlas-fedora_shared.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -48,7 +48,7 @@ with ATLAS (Automatically Tuned Linear Algebra Software).
 # Because a set of ATLAS libraries is a ~5 MB package, separate packages
 # are created for SSE, SSE2, and SSE3 extensions to ix86.
 
-%ifarch i386
+%ifarch i?86
 %define types sse sse2 sse3
 
 %package sse
@@ -184,7 +184,7 @@ for type in %{types}; do
 		> %{buildroot}/etc/ld.so.conf.d/atlas-${type}.conf
 	fi
 done
-%ifarch i386 && %if "%{?enable_native_atlas}" == "0"
+%ifarch i?86 && %if "%{?enable_native_atlas}" == "0"
 cp -pr %{buildroot}%{_libdir}/atlas-sse2 %{buildroot}%{_libdir}/atlas
 echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
 %endif
@@ -192,7 +192,7 @@ echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
 %clean
 rm -rf %{buildroot}
 
-%ifnarch i386 || %if "%{?enable_native_atlas}" == "1"
+%ifnarch i?86 || %if "%{?enable_native_atlas}" == "1"
 
 %post -p /sbin/ldconfig
 
@@ -279,6 +279,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sun Feb 22 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-1
+- Update to version 3.8.3
+
 * Sun Dec 21 2008 Deji Akingunola <dakingun@gmail.com> - 3.8.2-5
 - Link in appropriate libs when creating shared libs, reported by Orcan 'oget' Ogetbil (BZ#475411)
 
