@@ -48,7 +48,7 @@ with ATLAS (Automatically Tuned Linear Algebra Software).
 # Because a set of ATLAS libraries is a ~5 MB package, separate packages
 # are created for SSE, SSE2, and SSE3 extensions to ix86.
 
-%ifarch i?86
+%ifarch i386
 %define types sse sse2 sse3
 
 %package sse
@@ -184,7 +184,7 @@ for type in %{types}; do
 		> %{buildroot}/etc/ld.so.conf.d/atlas-${type}.conf
 	fi
 done
-%ifarch i?86 && %if "%{?enable_native_atlas}" == "0"
+%ifarch i386 && %if "%{?enable_native_atlas}" == "0"
 cp -pr %{buildroot}%{_libdir}/atlas-sse2 %{buildroot}%{_libdir}/atlas
 echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
 %endif
@@ -192,7 +192,7 @@ echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
 %clean
 rm -rf %{buildroot}
 
-%ifnarch i?86 || %if "%{?enable_native_atlas}" == "1"
+%ifnarch i386 || %if "%{?enable_native_atlas}" == "1"
 
 %post -p /sbin/ldconfig
 
