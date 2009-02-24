@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -279,6 +279,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Feb 23 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.8.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
 * Sun Feb 22 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-1
 - Update to version 3.8.3
 
