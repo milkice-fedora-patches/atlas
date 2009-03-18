@@ -1,6 +1,6 @@
 Name:           atlas
 Version:        3.6.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -11,6 +11,7 @@ Source1:        README.Fedora
 Patch0:         http://ftp.debian.org/debian/pool/main/a/atlas3/%{name}3_%{version}-20.diff.gz
 Patch1:         %{name}-%{version}-gfortran.patch
 Patch2:         %{name}-%{version}-ia64-configure.patch
+Patch3:         atlas-sparc64.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Requires:       /etc/ld.so.conf.d
@@ -134,6 +135,30 @@ optimizations for the 3DNow extensions to the ix86 architecture.
 %define types ev6
 %endif
 
+%ifarch sparcv9 sparc64
+%define archt sparc
+%define types base v9
+%endif 
+
+%ifarch sparcv9 sparc64 
+%package v9
+Summary:        ATLAS libraries for ultrasparc
+Group:          System Environment/Libraries
+%description v9
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) libraries compiled with optimizations for the v9 
+extensions to the sparc architecture.
+%package v9-devel
+Summary:        Development libraries for ATLAS with ultrasparc optimisations
+Group:          Development/Libraries
+Requires:       %{name}-v9 = %{version}-%{release}
+%description v9-devel
+This package contains headers and static versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the v9 extensions to the sparc architecture.
+
+%endif
+
 %if "%{?enable_custom_atlas}" == "1"
 # This flag enables building customized ATLAS libraries with all
 # compile-time optimizations. Note that compilation will take a very
@@ -165,6 +190,7 @@ all compile-time optimizations enabled.
 %patch0 -p1
 %patch1 -p0
 %patch2 -p1
+%patch3 -p1
 cp %{SOURCE1} doc
 
 
@@ -413,6 +439,15 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n atlas-3dnow -p /sbin/ldconfig
 
 %endif
+
+%ifarch sparcv9 sparc64
+
+%post -n atlas-v9 -p /sbin/ldconfig
+
+%postun -n atlas-v9 -p /sbin/ldconfig
+
+%endif
+
 %if "%{?enable_custom_atlas}" == "1"
 
 %post -n atlas-custom -p /sbin/ldconfig
@@ -504,9 +539,29 @@ rm -rf $RPM_BUILD_ROOT
 
 %endif
 
+%ifarch sparcv9 sparc64
+%files v9
+%defattr(-,root,root,-)
+%doc debian/copyright doc/README.Fedora
+%dir %{_libdir}/v9
+%{_libdir}/v9/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-v9.conf
+
+%files v9-devel
+%defattr(-,root,root,-)
+%doc debian/copyright doc
+%dir %{_libdir}/v9
+%{_libdir}/v9/*.so
+%{_libdir}/v9/*.a
+%{_includedir}/atlas
+
+%endif
 %endif
 
 %changelog
+* Mon Jan 26 2009 Dennis Gilmore <dennis@ausil.us> 3.6.0-16
+- build v9 sub packages on sparc
+
 * Wed May  7 2008 Quentin Spencer <qspencer@users.sourceforge.net> 3.6.0-15
 - Disable altivec package--it is causing illegal instructions during build.
 

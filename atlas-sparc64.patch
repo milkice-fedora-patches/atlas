@@ -1,0 +1,94 @@
+diff -uNr ATLAS.orig/tune/blas/gemm/CASES/ATL_dmm4x4x16r8_US.c ATLAS/tune/blas/gemm/CASES/ATL_dmm4x4x16r8_US.c
+--- ATLAS.orig/tune/blas/gemm/CASES/ATL_dmm4x4x16r8_US.c	2009-01-26 21:20:44.000000000 -0600
++++ ATLAS/tune/blas/gemm/CASES/ATL_dmm4x4x16r8_US.c	2009-03-18 00:02:10.000000000 -0500
+@@ -107,6 +107,11 @@
+ #define incBn   %g4
+ #define pfB	%g5
+ 
++#if defined(__sparc__) && defined(__arch64__)
++        .register               %g2, #scratch
++        .register               %g3, #scratch
++#endif
++
+ #ifdef DCPLX
+    #define incCm 64
+    #define CSH 4
+diff -uNr ATLAS.orig/tune/blas/gemm/CASES/ATL_dmm4x4x2_US.c ATLAS/tune/blas/gemm/CASES/ATL_dmm4x4x2_US.c
+--- ATLAS.orig/tune/blas/gemm/CASES/ATL_dmm4x4x2_US.c	2009-01-26 21:20:41.000000000 -0600
++++ ATLAS/tune/blas/gemm/CASES/ATL_dmm4x4x2_US.c	2009-03-18 00:02:20.000000000 -0500
+@@ -95,6 +95,11 @@
+ #define incBm   %g3
+ #define incBn   %g4
+ 
++#if defined(__sparc__) && defined(__arch64__)
++        .register               %g2, #scratch
++        .register               %g3, #scratch
++#endif
++
+ #ifdef DCPLX
+    #define incCm 64
+    #define CSH 4
+diff -uNr ATLAS.orig/tune/blas/gemm/CASES/ATL_dmm4x4x8_US.c ATLAS/tune/blas/gemm/CASES/ATL_dmm4x4x8_US.c
+--- ATLAS.orig/tune/blas/gemm/CASES/ATL_dmm4x4x8_US.c	2009-01-26 21:20:40.000000000 -0600
++++ ATLAS/tune/blas/gemm/CASES/ATL_dmm4x4x8_US.c	2009-03-18 00:02:31.000000000 -0500
+@@ -107,6 +107,11 @@
+ #define incBn   %g4
+ #define pfB	%g5
+ 
++#if defined(__sparc__) && defined(__arch64__) 
++        .register               %g2, #scratch
++        .register               %g3, #scratch
++#endif
++
+ #ifdef DCPLX
+    #define CMUL(arg_) ((arg_)*2)
+    #define incCm 64
+diff -uNr ATLAS.orig/tune/blas/gemm/CASES/ATL_smm4x4x16_US.c ATLAS/tune/blas/gemm/CASES/ATL_smm4x4x16_US.c
+--- ATLAS.orig/tune/blas/gemm/CASES/ATL_smm4x4x16_US.c	2009-01-26 21:20:48.000000000 -0600
++++ ATLAS/tune/blas/gemm/CASES/ATL_smm4x4x16_US.c	2009-03-18 00:03:02.000000000 -0500
+@@ -93,6 +93,12 @@
+ #define rC23	%f30
+ #define rC33	%f31
+ #define FSIZE	64
++
++#if defined(__sparc__) && defined(__arch64__)
++        .register               %g2, #scratch
++        .register               %g3, #scratch
++#endif
++
+ #ifdef SCPLX
+    #define CSH 3
+    #define CMUL(arg_) ((arg_)*2)
+diff -uNr ATLAS.orig/tune/blas/gemm/CASES/ATL_smm4x4x2_US.c ATLAS/tune/blas/gemm/CASES/ATL_smm4x4x2_US.c
+--- ATLAS.orig/tune/blas/gemm/CASES/ATL_smm4x4x2_US.c	2009-01-26 21:20:43.000000000 -0600
++++ ATLAS/tune/blas/gemm/CASES/ATL_smm4x4x2_US.c	2009-03-18 00:03:32.000000000 -0500
+@@ -93,6 +93,12 @@
+ #define rC23	%f30
+ #define rC33	%f31
+ #define FSIZE	64
++
++#if defined(__sparc__) && defined(__arch64__)
++        .register               %g2, #scratch
++        .register               %g3, #scratch
++#endif
++
+ #ifdef SCPLX
+    #define CSH 3
+    #define CMUL(arg_) ((arg_)*2)
+diff -uNr ATLAS.orig/tune/blas/gemm/CASES/ATL_smm4x4x72_US.c ATLAS/tune/blas/gemm/CASES/ATL_smm4x4x72_US.c
+--- ATLAS.orig/tune/blas/gemm/CASES/ATL_smm4x4x72_US.c	2009-01-26 21:20:43.000000000 -0600
++++ ATLAS/tune/blas/gemm/CASES/ATL_smm4x4x72_US.c	2009-03-18 00:03:50.000000000 -0500
+@@ -108,6 +108,12 @@
+ #define rC23	%f30
+ #define rC33	%f31
+ #define FSIZE	64
++
++#if defined(__sparc__) && defined(__arch64__)
++        .register               %g2, #scratch
++        .register               %g3, #scratch
++#endif
++
+ #ifdef SCPLX
+    #define CSH 3
+    #define CMUL(arg_) ((arg_)*2)
+Binary files ATLAS.orig/xconfig and ATLAS/xconfig differ
