@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        3%{?dist}
+Release:        3%{?dist}.1
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -121,7 +121,7 @@ optimizations for the sse3 extensions to the ix86 architecture.
 %endif
 %endif
 
-%ifarch x86_64 ppc64
+%ifarch x86_64 ppc64 s390x
 %define mode 64
 %else
 %define mode 32
@@ -279,6 +279,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Apr 21 2009 Karsten Hopp <karsten@redhat.com> 3.8.3-3.1
+- add s390x to 64 bit archs
+
 * Fri Feb 27 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-3
 - Rebuild
 
