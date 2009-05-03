@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        3%{?dist}.1
+Release:        4%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -150,9 +150,11 @@ for type in %{types}; do
 	if [ "$type" = "sse" ]; then
 		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
 		sed -i 's#-DATL_SSE3 -DATL_SSE2##' Make.inc 
+		sed -i 's#-msse3#-msse#' Make.inc 
 	elif [ "$type" = "sse2" ]; then
 		sed -i 's#ARCH =.*#ARCH = P432SSE2#' Make.inc
 		sed -i 's#-DATL_SSE3##' Make.inc 
+		sed -i 's#-msse3#-msse2#' Make.inc 
 	elif [ "$type" = "sse3" ]; then
 		sed -i 's#ARCH =.*#ARCH = P4E32SSE3#' Make.inc
 	fi
@@ -279,6 +281,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sat May 02 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-4
+- Use the right -msse* option for the -sse* subpackages (Fedora bug #498715)
+
 * Tue Apr 21 2009 Karsten Hopp <karsten@redhat.com> 3.8.3-3.1
 - add s390x to 64 bit archs
 
