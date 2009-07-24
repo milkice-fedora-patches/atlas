@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -281,6 +281,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.8.3-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
 * Sat May 02 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-4
 - Use the right -msse* option for the -sse* subpackages (Fedora bug #498715)
 
