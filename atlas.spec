@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -48,7 +48,7 @@ with ATLAS (Automatically Tuned Linear Algebra Software).
 # Because a set of ATLAS libraries is a ~5 MB package, separate packages
 # are created for SSE, SSE2, and SSE3 extensions to ix86.
 
-%ifarch i586
+%ifarch %{ix86}
 %define types sse sse2 sse3
 
 %package sse
@@ -141,7 +141,7 @@ for type in %{types}; do
 	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure -b %{mode} -D c -DWALL -Fa alg '-Wa,--noexecstack -fPIC'\
+	../configure -b %{mode} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	\
@@ -186,7 +186,7 @@ for type in %{types}; do
 		> %{buildroot}/etc/ld.so.conf.d/atlas-${type}.conf
 	fi
 done
-%ifarch i586 && %if "%{?enable_native_atlas}" == "0"
+%ifarch %{ix86} && %if "%{?enable_native_atlas}" == "0"
 cp -pr %{buildroot}%{_libdir}/atlas-sse2 %{buildroot}%{_libdir}/atlas
 echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
 %endif
@@ -194,7 +194,7 @@ echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
 %clean
 rm -rf %{buildroot}
 
-%ifnarch i586 || %if "%{?enable_native_atlas}" == "1"
+%ifnarch %{ix86} || %if "%{?enable_native_atlas}" == "1"
 
 %post -p /sbin/ldconfig
 
@@ -281,6 +281,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Aug 04 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-6
+- Add '-g' to build flag to allow proper genration of debuginfo subpackages (Fedora bug #509813)
+- Build for F12
+
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.8.3-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
