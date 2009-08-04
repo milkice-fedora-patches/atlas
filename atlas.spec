@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -35,10 +35,19 @@ see the documentation for information.
 Summary:        Development libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:	%name-header = %version-%release
 
 %description devel
-This package contains the static libraries and headers for development
+This package contains the shared and static libraries for development
 with ATLAS (Automatically Tuned Linear Algebra Software).
+
+%package header
+Summary:	atlas header files
+Group:		Development/Libraries
+BuildArch:	noarch
+
+%description header
+This package contains the header files for for development with ATLAS.
 
 %define types base
 
@@ -67,11 +76,12 @@ extensions.
 Summary:        Development libraries for ATLAS with SSE extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse = %{version}-%{release}
+Requires:	%name-header = %version-%release
 Obsoletes:	%{name}-3dnow-devel < 3.7
 Provides:	%{name}-3dnow-devel = %{version}-%{release}
 
 %description sse-devel
-This package contains headers and static versions of the ATLAS
+This package contains shared and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the SSE(1) extensions to the ix86 architecture.
 
@@ -91,11 +101,12 @@ SSE(1) and SSE3 extensions.
 Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
+Requires:	%name-header = %version-%release
 Obsoletes:	%{name}-devel < 3.7
 Provides:	%{name}-devel = %{version}-%{release}
 
 %description sse2-devel
-This package contains headers and static versions of the ATLAS
+This package contains shared and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the SSE2 extensions to the ix86 architecture.
 
@@ -112,9 +123,10 @@ Fedora also produces ATLAS build with SSE(1) and SSE2 extensions.
 Summary:        Development libraries for ATLAS with 3DNow extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse3 = %{version}-%{release}
+Requires:	%name-header = %version-%release
 
 %description sse3-devel
-This package contains headers and static versions of the ATLAS
+This package contains shared and static versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the sse3 extensions to the ix86 architecture.
 
@@ -212,8 +224,6 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas/*.so
 %{_libdir}/atlas/*.a
-%{_includedir}/atlas
-%{_includedir}/*.h
 
 %else
 
@@ -241,8 +251,6 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas-sse/*.so
 %{_libdir}/atlas-sse/*.a
-%{_includedir}/atlas
-%{_includedir}/*.h
 
 %files sse2
 %defattr(-,root,root,-)
@@ -260,8 +268,6 @@ rm -rf %{buildroot}
 %{_libdir}/atlas-sse2/*.a
 %{_libdir}/atlas/*.so
 %{_libdir}/atlas/*.a
-%{_includedir}/atlas
-%{_includedir}/*.h
 
 %files sse3
 %defattr(-,root,root,-)
@@ -275,12 +281,18 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas-sse3/*.so
 %{_libdir}/atlas-sse3/*.a
-%{_includedir}/atlas
-%{_includedir}/*.h
 
 %endif
 
+%files header
+%defattr(-,root,root,-)
+%{_includedir}/atlas
+%{_includedir}/*.h
+
 %changelog
+* Tue Aug 04 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-7
+- Create a -header subpackage to avoid multilib conflicts (BZ#508565). 
+
 * Tue Aug 04 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-6
 - Add '-g' to build flag to allow proper genration of debuginfo subpackages (Fedora bug #509813)
 - Build for F12
