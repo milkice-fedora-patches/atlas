@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -285,6 +285,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sun Sep  6 2009 Alex Lancaster <alexlan[AT]fedoraproject org> - 3.8.3-9
+- Rebuild against fixed lapack (see #520518)
+
 * Wed Aug 13 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-8
 - Revert the last change, it doesn't solve the problem. 
 
