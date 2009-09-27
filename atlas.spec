@@ -2,14 +2,16 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
 License:        BSD
 URL:            http://math-atlas.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.tar.bz2
-Source1:        README.Fedora
+Source1:        PPRO32.tgz
+Source2:        K7323DNow.tgz
+Source3:        README.Fedora
 Patch0:		atlas-fedora_shared.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -38,7 +40,7 @@ Requires:       %{name} = %{version}-%{release}
 Obsoletes:	%name-header = %version-%release
 
 %description devel
-This package contains the libraries and headers for development
+This package contains the static libraries and headers for development
 with ATLAS (Automatically Tuned Linear Algebra Software).
 
 %define types base
@@ -46,17 +48,33 @@ with ATLAS (Automatically Tuned Linear Algebra Software).
 %if "%{?enable_native_atlas}" == "0"
 ############## Subpackages for architecture extensions #################
 #
-# Because a set of ATLAS libraries is a ~5 MB package, separate packages
-# are created for SSE, SSE2, and SSE3 extensions to ix86.
-
 %ifarch %{ix86}
-%define types sse sse2 sse3
+%define types base 3dnow sse sse2 sse3
+
+%package 3dnow
+Summary:        ATLAS libraries for 3DNow extensions
+Group:          System Environment/Libraries
+
+%description 3dnow
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) libraries compiled with optimizations for the 3DNow extension
+to the ix86 architecture. Fedora also produces ATLAS build with SSE, SSE2
+and SSE3 extensions.
+
+%package 3dnow-devel
+Summary:        Development libraries for ATLAS with 3DNow extensions
+Group:          Development/Libraries
+Requires:       %{name}-3dnow = %{version}-%{release}
+Obsoletes:	%name-header = %version-%release
+
+%description 3dnow-devel
+This package contains headers and shared and static versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the 3DNow extensions to the ix86 architecture.
 
 %package sse
 Summary:        ATLAS libraries for SSE extensions
 Group:          System Environment/Libraries
-Obsoletes:	%{name}-3dnow < 3.7
-Provides:	%{name}-3dnow = %{version}-%{release}
 
 %description sse
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -69,8 +87,6 @@ Summary:        Development libraries for ATLAS with SSE extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse = %{version}-%{release}
 Obsoletes:	%name-header = %version-%release
-Obsoletes:	%{name}-3dnow-devel < 3.7
-Provides:	%{name}-3dnow-devel = %{version}-%{release}
 
 %description sse-devel
 This package contains headers and shared and static versions of the ATLAS
@@ -80,8 +96,6 @@ optimizations for the SSE(1) extensions to the ix86 architecture.
 %package sse2
 Summary:        ATLAS libraries for SSE2 extensions
 Group:          System Environment/Libraries
-Obsoletes:	%{name} < 3.7
-Provides:	%{name} = %{version}-%{release}
 
 %description sse2
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -94,8 +108,6 @@ Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
 Obsoletes:	%name-header = %version-%release
-Obsoletes:	%{name}-devel < 3.7
-Provides:	%{name}-devel = %{version}-%{release}
 
 %description sse2-devel
 This package contains shared and static versions of the ATLAS
@@ -134,7 +146,9 @@ optimizations for the sse3 extensions to the ix86 architecture.
 %prep
 %setup -q -n ATLAS
 %patch0 -p0 -b .shared
-cp %{SOURCE1} doc
+cp %{SOURCE1} CONFIG/ARCHS/
+cp %{SOURCE2} CONFIG/ARCHS/
+cp %{SOURCE3} doc
 
 %build
 for type in %{types}; do
@@ -151,7 +165,16 @@ for type in %{types}; do
 	--libdir=%{buildroot}%{_libdir}/${libname}	\
 	--with-netlib-lapack=%{_libdir}/liblapack_pic.a
 
-	if [ "$type" = "sse" ]; then
+%ifarch %{ix86}
+	if [ "$type" = "base" ]; then
+		sed -i 's#ARCH =.*#ARCH = PPRO32#' Make.inc
+		sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc 
+		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
+	elif [ "$type" = "3dnow" ]; then
+		sed -i 's#ARCH =.*#ARCH = K7323DNow#' Make.inc
+		sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc 
+		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
+	elif [ "$type" = "sse" ]; then
 		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
 		sed -i 's#-DATL_SSE3 -DATL_SSE2##' Make.inc 
 		sed -i 's#-msse3#-msse#' Make.inc 
@@ -162,6 +185,7 @@ for type in %{types}; do
 	elif [ "$type" = "sse3" ]; then
 		sed -i 's#ARCH =.*#ARCH = P4E32SSE3#' Make.inc
 	fi
+%endif
 	make build
 	cd lib
 	make shared
@@ -190,19 +214,33 @@ for type in %{types}; do
 		> %{buildroot}/etc/ld.so.conf.d/atlas-${type}.conf
 	fi
 done
-%ifarch %{ix86} && %if "%{?enable_native_atlas}" == "0"
-cp -pr %{buildroot}%{_libdir}/atlas-sse2 %{buildroot}%{_libdir}/atlas
-echo "%{_libdir}/atlas"	>> %{buildroot}/etc/ld.so.conf.d/atlas-sse2.conf
-%endif
 
 %clean
 rm -rf %{buildroot}
 
-%ifnarch %{ix86} || %if "%{?enable_native_atlas}" == "1"
-
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
+
+%ifarch %{ix86} && %if "%{?enable_native_atlas}" == "0"
+
+%post -n atlas-3dnow -p /sbin/ldconfig
+
+%postun -n atlas-3dnow -p /sbin/ldconfig
+
+%post -n atlas-sse -p /sbin/ldconfig
+
+%postun -n atlas-sse -p /sbin/ldconfig
+
+%post -n atlas-sse2 -p /sbin/ldconfig
+
+%postun -n atlas-sse2 -p /sbin/ldconfig
+
+%post -n atlas-sse3 -p /sbin/ldconfig
+
+%postun -n atlas-sse3 -p /sbin/ldconfig
+
+%endif
 
 %files
 %defattr(-,root,root,-)
@@ -219,19 +257,22 @@ rm -rf %{buildroot}
 %{_includedir}/atlas
 %{_includedir}/*.h
 
-%else
+%ifarch %{ix86} && %if "%{?enable_native_atlas}" == "0"
 
-%post -n atlas-sse -p /sbin/ldconfig
+%files 3dnow
+%defattr(-,root,root,-)
+%doc doc/README.Fedora
+%dir %{_libdir}/atlas-3dnow
+%{_libdir}/atlas-3dnow/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-3dnow.conf
 
-%postun -n atlas-sse -p /sbin/ldconfig
-
-%post -n atlas-sse2 -p /sbin/ldconfig
-
-%postun -n atlas-sse2 -p /sbin/ldconfig
-
-%post -n atlas-sse3 -p /sbin/ldconfig
-
-%postun -n atlas-sse3 -p /sbin/ldconfig
+%files 3dnow-devel
+%defattr(-,root,root,-)
+%doc doc
+%{_libdir}/atlas-3dnow/*.so
+%{_libdir}/atlas-3dnow/*.a
+%{_includedir}/atlas
+%{_includedir}/*.h
 
 %files sse
 %defattr(-,root,root,-)
@@ -252,9 +293,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc doc/README.Fedora
 %dir %{_libdir}/atlas-sse2
-%dir %{_libdir}/atlas
 %{_libdir}/atlas-sse2/*.so.*
-%{_libdir}/atlas/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-sse2.conf
 
 %files sse2-devel
@@ -262,8 +301,6 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas-sse2/*.so
 %{_libdir}/atlas-sse2/*.a
-%{_libdir}/atlas/*.so
-%{_libdir}/atlas/*.a
 %{_includedir}/atlas
 %{_includedir}/*.h
 
@@ -285,6 +322,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sat Sep 26 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-10
+- Use the new arch. default for Pentium PRO (Fedora bug #510498)
+- (Re-)Introduce 3dNow subpackage
+
 * Sun Sep  6 2009 Alex Lancaster <alexlan[AT]fedoraproject org> - 3.8.3-9
 - Rebuild against fixed lapack (see #520518)
 
