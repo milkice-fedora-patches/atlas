@@ -37,7 +37,7 @@ see the documentation for information.
 Summary:        Development libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
 
 %description devel
 This package contains the static libraries and headers for development
@@ -65,7 +65,7 @@ and SSE3 extensions.
 Summary:        Development libraries for ATLAS with 3DNow extensions
 Group:          Development/Libraries
 Requires:       %{name}-3dnow = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
 
 %description 3dnow-devel
 This package contains headers and shared and static versions of the ATLAS
@@ -86,7 +86,7 @@ extensions.
 Summary:        Development libraries for ATLAS with SSE extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
 
 %description sse-devel
 This package contains headers and shared and static versions of the ATLAS
@@ -107,7 +107,7 @@ SSE(1) and SSE3 extensions.
 Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
 
 %description sse2-devel
 This package contains shared and static versions of the ATLAS
@@ -127,7 +127,7 @@ Fedora also produces ATLAS build with SSE(1) and SSE2 extensions.
 Summary:        Development libraries for ATLAS with 3DNow extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse3 = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
 
 %description sse3-devel
 This package contains shared and static versions of the ATLAS
@@ -322,6 +322,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Sep 29 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-9
+- Obsolete the -header subpackage properly. 
+
 * Sat Sep 26 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-8
 - Use the new arch. default for Pentium PRO (Fedora bug #510498)
 - (Re-)Introduce 3dNow subpackage
