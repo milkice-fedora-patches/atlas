@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
