@@ -38,10 +38,14 @@ lapack libraries that should work as a drop-in replacement for the
 standard ones (they are installed in /usr/lib{64}/atlas* rather than
 /usr/lib{64}).
 
-For i386 systems, 3 ATLAS subpackages are built for SSE1, SSE2, and SSE3 ix86
-extensions, using architectural defaults obtained from PIII, Pentium 4 with
-SSE2 extension and PENTIUM 4 with SSE3 extensions respectively.
+For i386 systems, 4 ATLAS subpackages are built for 3Dnow, SSE1, SSE2, and SSE3
+ix86 extensions, using architectural defaults obtained from Athlon K7, PIII, Pentium 4 with SSE2 extension and PENTIUM 4 with SSE3 extensions respectively.
 
+This packaging allows multiple installation of different atlas sub-packages
+at the same time. The alternatives system (read 'man alternatives' for usage)
+is used in the -devel subpackages to select the appropriate location for the 
+architectural dependent header files.
+ 
 This package is designed to build RPMs that are identical regardless
 of where they are compiled and that provide reasonable performance on
 a wide range of hardware. For users who want optimal performance on
@@ -49,7 +53,7 @@ particular hardware, custom RPMs can be built from the source package
 by setting the RPM macro "enable_native_atlas" to a value of 1. This
 can be done from the command line as in the following example:
 
-rpmbuild -D "enable_native_atlas 1" --rebuild atlas-3.8.2-1.src.rpm
+rpmbuild -D "enable_native_atlas 1" --rebuild atlas-3.8.3-1.src.rpm
 
 This will cause the ATLAS build to use the achitectural default most
 appropriate for the system on which the package is to be built.
