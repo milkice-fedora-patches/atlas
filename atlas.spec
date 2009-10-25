@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        10%{?dist}
+Release:        12%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -37,7 +37,9 @@ see the documentation for information.
 Summary:        Development libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
+Requires(posttans):	chkconfig
+Requires(preun):	chkconfig
 
 %description devel
 This package contains the static libraries and headers for development
@@ -65,7 +67,9 @@ and SSE3 extensions.
 Summary:        Development libraries for ATLAS with 3DNow extensions
 Group:          Development/Libraries
 Requires:       %{name}-3dnow = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
+Requires(posttans):	chkconfig
+Requires(preun):	chkconfig
 
 %description 3dnow-devel
 This package contains headers and shared and static versions of the ATLAS
@@ -86,7 +90,9 @@ extensions.
 Summary:        Development libraries for ATLAS with SSE extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
+Requires(posttans):	chkconfig
+Requires(preun):	chkconfig
 
 %description sse-devel
 This package contains headers and shared and static versions of the ATLAS
@@ -107,7 +113,9 @@ SSE(1) and SSE3 extensions.
 Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
+Requires(posttans):	chkconfig
+Requires(preun):	chkconfig
 
 %description sse2-devel
 This package contains shared and static versions of the ATLAS
@@ -127,7 +135,9 @@ Fedora also produces ATLAS build with SSE(1) and SSE2 extensions.
 Summary:        Development libraries for ATLAS with 3DNow extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse3 = %{version}-%{release}
-Obsoletes:	%name-header = %version-%release
+Obsoletes:	%name-header <= %version-%release
+Requires(posttans):	chkconfig
+Requires(preun):	chkconfig
 
 %description sse3-devel
 This package contains shared and static versions of the ATLAS
@@ -135,12 +145,6 @@ This package contains shared and static versions of the ATLAS
 optimizations for the sse3 extensions to the ix86 architecture.
 
 %endif
-%endif
-
-%ifarch x86_64 ppc64 s390x
-%define mode 64
-%else
-%define mode 32
 %endif
 
 %prep
@@ -154,12 +158,13 @@ cp %{SOURCE3} doc
 for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		libname=atlas
+		%define pr_base %(echo $((%{__isa_bits}+0)))
 	else
 		libname=atlas-${type}
 	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure -b %{mode} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
+	../configure -b %{__isa_bits} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	\
@@ -174,16 +179,20 @@ for type in %{types}; do
 		sed -i 's#ARCH =.*#ARCH = K7323DNow#' Make.inc
 		sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc 
 		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
+		%define pr_3dnow %(echo $((%{__isa_bits}+1)))
 	elif [ "$type" = "sse" ]; then
 		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
 		sed -i 's#-DATL_SSE3 -DATL_SSE2##' Make.inc 
 		sed -i 's#-msse3#-msse#' Make.inc 
+		%define pr_sse %(echo $((%{__isa_bits}+2)))
 	elif [ "$type" = "sse2" ]; then
 		sed -i 's#ARCH =.*#ARCH = P432SSE2#' Make.inc
 		sed -i 's#-DATL_SSE3##' Make.inc 
 		sed -i 's#-msse3#-msse2#' Make.inc 
+		%define pr_sse2 %(echo $((%{__isa_bits}+3)))
 	elif [ "$type" = "sse3" ]; then
 		sed -i 's#ARCH =.*#ARCH = P4E32SSE3#' Make.inc
+		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
 %endif
 	make build
@@ -198,6 +207,7 @@ rm -rf %{buildroot}
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make DESTDIR=%{buildroot} install
+        mv %{buildroot}%{_includedir}/atlas %{buildroot}%{_includedir}/atlas-%{_arch}-${type}
 	if [ "$type" = "base" ]; then
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas/
 	else
@@ -214,6 +224,8 @@ for type in %{types}; do
 		> %{buildroot}/etc/ld.so.conf.d/atlas-${type}.conf
 	fi
 done
+mkdir -p %{buildroot}%{_includedir}/atlas
+
 
 %clean
 rm -rf %{buildroot}
@@ -222,23 +234,78 @@ rm -rf %{buildroot}
 
 %postun -p /sbin/ldconfig
 
+%posttrans devel
+if [ $1 -eq 0 ] ; then
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-base %{pr_base}
+fi
+
+%preun devel
+if [ $1 -ge 0 ] ; then
+/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-base
+fi
+
 %ifarch %{ix86} && %if "%{?enable_native_atlas}" == "0"
 
 %post -n atlas-3dnow -p /sbin/ldconfig
 
 %postun -n atlas-3dnow -p /sbin/ldconfig
 
+%posttrans 3dnow-devel
+if [ $1 -eq 0 ] ; then
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-3dnow  %{pr_3dnow}
+fi
+
+%preun 3dnow-devel
+if [ $1 -ge 0 ] ; then
+/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-3dnow
+fi
+
 %post -n atlas-sse -p /sbin/ldconfig
 
 %postun -n atlas-sse -p /sbin/ldconfig
+
+%posttrans sse-devel
+if [ $1 -eq 0 ] ; then
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-sse  %{pr_sse}
+fi
+
+%preun sse-devel
+if [ $1 -ge 0 ] ; then
+/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse
+fi
 
 %post -n atlas-sse2 -p /sbin/ldconfig
 
 %postun -n atlas-sse2 -p /sbin/ldconfig
 
+%posttrans sse2-devel
+if [ $1 -eq 0 ] ; then
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-sse2  %{pr_sse2}
+fi
+
+%preun sse2-devel
+if [ $1 -ge 0 ] ; then
+/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse2
+fi
+
 %post -n atlas-sse3 -p /sbin/ldconfig
 
 %postun -n atlas-sse3 -p /sbin/ldconfig
+
+%posttrans sse3-devel
+if [ $1 -eq 0 ] ; then
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-sse3  %{pr_sse3}
+fi
+
+%preun sse3-devel
+if [ $1 -ge 0 ] ; then
+/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse3
+fi
 
 %endif
 
@@ -254,8 +321,9 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas/*.so
 %{_libdir}/atlas/*.a
-%{_includedir}/atlas
+%{_includedir}/atlas-%{_arch}-base/
 %{_includedir}/*.h
+%ghost %{_includedir}/atlas
 
 %ifarch %{ix86} && %if "%{?enable_native_atlas}" == "0"
 
@@ -271,8 +339,9 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas-3dnow/*.so
 %{_libdir}/atlas-3dnow/*.a
-%{_includedir}/atlas
+%{_includedir}/atlas-%{_arch}-3dnow/
 %{_includedir}/*.h
+%ghost %{_includedir}/atlas
 
 %files sse
 %defattr(-,root,root,-)
@@ -286,8 +355,9 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas-sse/*.so
 %{_libdir}/atlas-sse/*.a
-%{_includedir}/atlas
+%{_includedir}/atlas-%{_arch}-sse/
 %{_includedir}/*.h
+%ghost %{_includedir}/atlas
 
 %files sse2
 %defattr(-,root,root,-)
@@ -301,8 +371,9 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas-sse2/*.so
 %{_libdir}/atlas-sse2/*.a
-%{_includedir}/atlas
+%{_includedir}/atlas-%{_arch}-sse2/
 %{_includedir}/*.h
+%ghost %{_includedir}/atlas
 
 %files sse3
 %defattr(-,root,root,-)
@@ -316,12 +387,19 @@ rm -rf %{buildroot}
 %doc doc
 %{_libdir}/atlas-sse3/*.so
 %{_libdir}/atlas-sse3/*.a
-%{_includedir}/atlas
+%{_includedir}/atlas-%{_arch}-sse3/
 %{_includedir}/*.h
+%ghost %{_includedir}/atlas
 
 %endif
 
 %changelog
+* Sat Oct 24 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-12
+- Use alternatives to workaround multilib conflicts (BZ#508565). 
+
+* Tue Sep 29 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-11
+- Obsolete the -header subpackage properly. 
+
 * Sat Sep 26 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-10
 - Use the new arch. default for Pentium PRO (Fedora bug #510498)
 - (Re-)Introduce 3dNow subpackage
