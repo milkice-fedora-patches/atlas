@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -123,7 +123,7 @@ This package contains shared and static versions of the ATLAS
 optimizations for the SSE2 extensions to the ix86 architecture.
 
 %package sse3
-Summary:        ATLAS libraries for 3DNow extensions
+Summary:        ATLAS libraries for SSE3 extensions
 Group:          System Environment/Libraries
 
 %description sse3
@@ -132,7 +132,7 @@ Software) libraries compiled with optimizations for the SSE3.
 Fedora also produces ATLAS build with SSE(1) and SSE2 extensions.
 
 %package sse3-devel
-Summary:        Development libraries for ATLAS with 3DNow extensions
+Summary:        Development libraries for ATLAS with SSE3 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse3 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
@@ -320,7 +320,6 @@ fi
 %defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas/*.so
-%{_libdir}/atlas/*.a
 %{_includedir}/atlas-%{_arch}-base/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
@@ -338,7 +337,6 @@ fi
 %defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas-3dnow/*.so
-%{_libdir}/atlas-3dnow/*.a
 %{_includedir}/atlas-%{_arch}-3dnow/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
@@ -354,7 +352,6 @@ fi
 %defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas-sse/*.so
-%{_libdir}/atlas-sse/*.a
 %{_includedir}/atlas-%{_arch}-sse/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
@@ -370,7 +367,6 @@ fi
 %defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas-sse2/*.so
-%{_libdir}/atlas-sse2/*.a
 %{_includedir}/atlas-%{_arch}-sse2/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
@@ -386,7 +382,6 @@ fi
 %defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas-sse3/*.so
-%{_libdir}/atlas-sse3/*.a
 %{_includedir}/atlas-%{_arch}-sse3/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
@@ -394,6 +389,10 @@ fi
 %endif
 
 %changelog
+* Fri Jan 29 2010 Deji Akingunola <dakingun@gmail.com> - 3.8.3-13
+- Remove static libraries.
+- Fix typo in SSE3 subpackage's summary.
+
 * Sat Oct 24 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-12
 - Use alternatives to workaround multilib conflicts (BZ#508565). 
 
