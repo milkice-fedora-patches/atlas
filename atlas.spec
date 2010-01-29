@@ -210,8 +210,10 @@ for type in %{types}; do
         mv %{buildroot}%{_includedir}/atlas %{buildroot}%{_includedir}/atlas-%{_arch}-${type}
 	if [ "$type" = "base" ]; then
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas/
+		rm -f %{buildroot}%{_libdir}/atlas/*.a
 	else
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas-${type}/
+		rm -f %{buildroot}%{_libdir}/atlas-${type}/*.a
 	fi
 	popd
 
