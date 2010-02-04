@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -12,7 +12,10 @@ Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.ta
 Source1:        PPRO32.tgz
 Source2:        K7323DNow.tgz
 Source3:        README.Fedora
+Source4:        USII64.tgz                                              
+Source5:        USII32.tgz                                              
 Patch0:		atlas-fedora_shared.patch
+Patch1:         atlas-sparc-linux.patch  
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran lapack-devel
@@ -150,9 +153,12 @@ optimizations for the sse3 extensions to the ix86 architecture.
 %prep
 %setup -q -n ATLAS
 %patch0 -p0 -b .shared
+%patch1 -p1 -b .sparc
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
+cp %{SOURCE4} CONFIG/ARCHS/
+cp %{SOURCE5} CONFIG/ARCHS/
 
 %build
 for type in %{types}; do
@@ -391,6 +397,9 @@ fi
 %endif
 
 %changelog
+* Wed Feb 03 2010 Dennis Gilmore <dennis@ausil.us> - 3.8.3-14
+- fix sparc build
+
 * Fri Jan 29 2010 Deji Akingunola <dakingun@gmail.com> - 3.8.3-13
 - Remove static libraries.
 - Fix typo in SSE3 subpackage's summary.
