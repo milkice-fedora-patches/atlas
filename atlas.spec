@@ -152,7 +152,7 @@ shared libraries compiled with optimizations for the SSE3 extensions to the ix86
 %prep
 %setup -q -n ATLAS
 %patch0 -p0 -b .shared
-%patch1 -p1 -b .sparc
+#%patch1 -p1 -b .sparc
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
