@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -18,7 +18,7 @@ Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-sparc-linux.patch  
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  gcc-gfortran lapack-devel
+BuildRequires:  gcc-gfortran lapack-static
 
 %description
 The ATLAS (Automatically Tuned Linear Algebra Software) project is an
@@ -45,7 +45,7 @@ Requires(posttans):	chkconfig
 Requires(preun):	chkconfig
 
 %description devel
-This package contains the static libraries and headers for development
+This package contains the libraries and headers for development
 with ATLAS (Automatically Tuned Linear Algebra Software).
 
 %define types base
@@ -75,7 +75,7 @@ Requires(posttans):	chkconfig
 Requires(preun):	chkconfig
 
 %description 3dnow-devel
-This package contains headers and shared and static versions of the ATLAS
+This package contains headers and shared versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the 3DNow extensions to the ix86 architecture.
 
@@ -98,7 +98,7 @@ Requires(posttans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse-devel
-This package contains headers and shared and static versions of the ATLAS
+This package contains headers and shared versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the SSE(1) extensions to the ix86 architecture.
 
@@ -107,8 +107,8 @@ Summary:        ATLAS libraries for SSE2 extensions
 Group:          System Environment/Libraries
 
 %description sse2
-This package contains the ATLAS (Automatically Tuned Linear Algebra
-Software) libraries compiled with optimizations for the SSE2
+This package contains ATLAS (Automatically Tuned Linear Algebra Software)
+shared libraries compiled with optimizations for the SSE2
 extensions to the ix86 architecture. Fedora also produces ATLAS build with
 SSE(1) and SSE3 extensions.
 
@@ -121,9 +121,9 @@ Requires(posttans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse2-devel
-This package contains shared and static versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the SSE2 extensions to the ix86 architecture.
+This package contains ATLAS (Automatically Tuned Linear Algebra Software)
+shared libraries compiled with optimizations for the SSE2 extensions to the 
+ix86 architecture.
 
 %package sse3
 Summary:        ATLAS libraries for SSE3 extensions
@@ -143,9 +143,8 @@ Requires(posttans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse3-devel
-This package contains shared and static versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the sse3 extensions to the ix86 architecture.
+This package contains ATLAS (Automatically Tuned Linear Algebra Software)
+shared libraries compiled with optimizations for the SSE3 extensions to the ix86 architecture.
 
 %endif
 %endif
@@ -397,6 +396,10 @@ fi
 %endif
 
 %changelog
+* Wed Feb 10 2010 Deji Akingunola <dakingun@gmail.com> - 3.8.3-15
+- Disable the problematic sparc patch
+- Change lapack-devel BR to lapack-static, where liblapack_pic.a now resides.
+
 * Wed Feb 03 2010 Dennis Gilmore <dennis@ausil.us> - 3.8.3-14
 - fix sparc build
 
