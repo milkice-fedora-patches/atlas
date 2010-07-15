@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -16,6 +16,7 @@ Source4:        USII64.tgz
 Source5:        USII32.tgz                                              
 Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-sparc-linux.patch  
+Patch2:         atlas-s390-m31.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran lapack-static
@@ -153,6 +154,7 @@ shared libraries compiled with optimizations for the SSE3 extensions to the ix86
 %setup -q -n ATLAS
 %patch0 -p0 -b .shared
 #%patch1 -p1 -b .sparc
+%patch2 -p1 -b .s390
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -396,6 +398,9 @@ fi
 %endif
 
 %changelog
+* Thu Jul 15 2010 Dan Horák <dan[at]danny.cz> - 3.8.3-16
+- fix build on s390 (patch by Karsten Hopp)
+
 * Wed Feb 10 2010 Deji Akingunola <dakingun@gmail.com> - 3.8.3-15
 - Disable the problematic sparc patch
 - Change lapack-devel BR to lapack-static, where liblapack_pic.a now resides.
