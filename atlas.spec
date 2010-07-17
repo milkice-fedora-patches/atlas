@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -42,7 +42,7 @@ Summary:        Development libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttans):	chkconfig
+Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description devel
@@ -72,7 +72,7 @@ Summary:        Development libraries for ATLAS with 3DNow extensions
 Group:          Development/Libraries
 Requires:       %{name}-3dnow = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttans):	chkconfig
+Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description 3dnow-devel
@@ -95,7 +95,7 @@ Summary:        Development libraries for ATLAS with SSE extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttans):	chkconfig
+Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse-devel
@@ -118,7 +118,7 @@ Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttans):	chkconfig
+Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse2-devel
@@ -140,7 +140,7 @@ Summary:        Development libraries for ATLAS with SSE3 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse3 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttans):	chkconfig
+Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse3-devel
@@ -398,6 +398,9 @@ fi
 %endif
 
 %changelog
+* Sat Jul 17 2010 Dan Horák <dan[at]danny.cz> - 3.8.3-17
+- rebuild against fixed lapack libraries
+
 * Thu Jul 15 2010 Dan Horák <dan[at]danny.cz> - 3.8.3-16
 - fix build on s390 (patch by Karsten Hopp)
 
