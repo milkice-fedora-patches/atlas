@@ -2,7 +2,7 @@
 
 Name:           atlas
 Version:        3.8.3
-Release:        18%{?dist}
+Release:        19%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -478,6 +478,9 @@ fi
 %endif
 
 %changelog
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org>
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Mon Jul 26 2010 Deji Akingunola <dakingun@gmail.com> - 3.8.3-18
 - Create a subpackage for SSE2 on x86_64
 
