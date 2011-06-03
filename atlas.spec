@@ -72,7 +72,7 @@ Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttans):	chkconfig
+Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse2-devel
