@@ -6,6 +6,9 @@ updated: October 4, 2005
 updated by Deji Akingunola
 October 15, 2008
 
+updated by Deji Akingunola
+June 15, 2011
+
 Because ATLAS relies on compile-time optimizations to obtain improved
 performance over BLAS and LAPACK, the resulting binaries are closely
 tied to the hardware on which they are compiled, and can likely result
@@ -38,9 +41,15 @@ lapack libraries that should work as a drop-in replacement for the
 standard ones (they are installed in /usr/lib{64}/atlas* rather than
 /usr/lib{64}).
 
-For i386 systems, 4 ATLAS subpackages are built for 3Dnow, SSE1, SSE2, and SSE3
-ix86 extensions, using architectural defaults obtained from Athlon K7, PIII, Pentium 4 with SSE2 extension and PENTIUM 4 with SSE3 extensions respectively.
+For 32bit x86 systems, the default atlas package on was built using Pentium Pro
+architectural defaults using just x87 math optimization. In addition to the
+base 32bit build, 4 ATLAS subpackages are built for 3Dnow, SSE, SSE2, and SSE3
+ix86 extensions, using architectural defaults obtained from Athlon K7, PIII,
+Pentium 4 with SSE2 extension and PENTIUM 4 with SSE3 extensions respectively.
 
+On 64bit x86 systems the default atlas package on was built with SSE2 optimization using architetural default made for AMD's HAMMER processor, and an additional
+SSE3-enabled subpackage was built also using architetural default made for AMD's HAMMER processor.
+  
 This packaging allows multiple installation of different atlas sub-packages
 at the same time. The alternatives system (read 'man alternatives' for usage)
 is used in the -devel subpackages to select the appropriate location for the 
