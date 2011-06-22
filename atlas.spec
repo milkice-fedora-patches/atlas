@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -337,9 +337,9 @@ for type in %{types}; do
 		%ifarch s390 
 			sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
                 %endif
-		sed -i 's#-mtune=z196#-march=z10 -march=z196#' Make.inc
-		sed -i 's#-march=z10#-march=z196#' Make.inc
-		sed -i 's#-march=z9-109#-march=z196#' Make.inc
+		sed -i 's#-march=z196#-march=z10 -mtune=z196#' Make.inc
+		sed -i 's#-march=z10#-march=z10 -mtune=z196#' Make.inc
+		sed -i 's#-march=z9-109#-march=z10 -mtune=z196#' Make.inc
 		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz196#' Make.inc
 		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz196#' Make.inc
 		%define pr_z196 %(echo $((%{__isa_bits}+2)))
@@ -651,11 +651,15 @@ fi
 %endif
 
 %changelog
+* Mon Jun 20 2011 Dan Horák <dan[at]danny.cz> - 3.8.4-2
+- Use -march=z10 for z196 optimised build because the builder is a z10
+  (Christian Bornträger)
+
 * Tue Jun 14 2011 Deji Akingunola <dakingun@gmail.com> - 3.8.4-1
 - Update to 3.8.4
 - Build the default package for SSE2 and add a SSE3 subpackage on x86_64
 - Apply patch (and arch defs.) to build on s390 and s390x (Dan Horák)
-- Fix-up build on s390 and s390x (Christian BorntrÃ¤ger) 
+- Fix-up build on s390 and s390x (Christian Bornträger)
 
 * Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
