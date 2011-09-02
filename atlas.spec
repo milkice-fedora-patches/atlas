@@ -1,8 +1,11 @@
 %define enable_native_atlas 0
 
 Name:           atlas
-Version:        3.8.3
-Release:        18%{?dist}
+Version:        3.8.4
+%if "%{?enable_native_atlas}" != "0"
+%define dist .native
+%endif
+Release:        1%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -14,9 +17,13 @@ Source2:        K7323DNow.tgz
 Source3:        README.Fedora
 Source4:        USII64.tgz                                              
 Source5:        USII32.tgz                                              
+Source6:        IBMz1032.tgz
+Source7:        IBMz1064.tgz
+Source8:        IBMz19632.tgz
+Source9:        IBMz19664.tgz
 Patch0:		atlas-fedora_shared.patch
-Patch1:         atlas-sparc-linux.patch  
-Patch2:         atlas-s390-m31.patch
+Patch1:         atlas-s390port.patch
+Patch2:		atlas-fedora-arm.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran lapack-static
@@ -64,15 +71,15 @@ Group:          System Environment/Libraries
 %description sse2
 This package contains the ATLAS (Automatically Tuned Linear Algebra
 Software) libraries compiled with optimizations for the SSE2
-extensions to the x86_64 architecture. The base ATLAS builds in Fedora for the
-x86_64 architecture are made fro the SSE3 extensions.
+extensions to the x86_64 architecture. The base ATLAS builds for the x86_64
+architecture in this version of Fedora  are made for the SSE3 extensions.
 
 %package sse2-devel
 Summary:        Development libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttans):	chkconfig
+Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse2-devel
@@ -176,18 +183,80 @@ This package contains ATLAS (Automatically Tuned Linear Algebra Software)
 shared libraries compiled with optimizations for the SSE3 extensions to the ix86 architecture.
 
 %endif
+
+%ifarch s390 s390x
+%define types base z10 z196
+
+%package z196
+Summary:        ATLAS libraries for z196
+Group:          System Environment/Libraries
+
+%description z196
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) libraries compiled with optimizations for the z196.
+
+%package z196-devel
+Summary:        Development libraries for ATLAS for z196
+Group:          Development/Libraries
+Requires:       %{name}-z196 = %{version}-%{release}
+Obsoletes:	%name-header <= %version-%release
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description z196-devel
+This package contains headers and shared versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the z196 architecture.
+
+%package z10
+Summary:        ATLAS libraries for z10
+Group:          System Environment/Libraries
+
+%description z10
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) libraries compiled with optimizations for the z10.
+
+%package z10-devel
+Summary:        Development libraries for ATLAS for z10
+Group:          Development/Libraries
+Requires:       %{name}-z10 = %{version}-%{release}
+Obsoletes:	%name-header <= %version-%release
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description z10-devel
+This package contains headers and shared versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the z10 architecture.
+
+%endif
+%endif
+
+%global mode %{__isa_bits}
+%ifarch %{arm}
+%define arch_option -A 38
+%define threads_option -t 2
+%global mode ' '
 %endif
 
 %prep
 %setup -q -n ATLAS
 %patch0 -p0 -b .shared
-#%patch1 -p1 -b .sparc
-%patch2 -p1 -b .s390
+%ifarch s390 s390x
+%patch1 -p1 -b .s390
+%endif
+%ifarch %{arm}
+%patch2 -p0 -b .arm
+%endif
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
 cp %{SOURCE4} CONFIG/ARCHS/
 cp %{SOURCE5} CONFIG/ARCHS/
+cp %{SOURCE6} CONFIG/ARCHS/
+cp %{SOURCE7} CONFIG/ARCHS/
+cp %{SOURCE8} CONFIG/ARCHS/
+cp %{SOURCE9} CONFIG/ARCHS/
 
 %build
 for type in %{types}; do
@@ -199,13 +268,13 @@ for type in %{types}; do
 	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure -b %{__isa_bits} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
+	../configure -b %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	\
-	--with-netlib-lapack=%{_libdir}/liblapack_pic.a	\
-	-Si cputhrchk 0
+	--with-netlib-lapack=%{_libdir}/liblapack_pic.a
 
+%if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
 	if [ "$type" = "sse2" ]; then
 		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE2#' Make.inc
@@ -239,6 +308,54 @@ for type in %{types}; do
 		sed -i 's#ARCH =.*#ARCH = P4E32SSE3#' Make.inc
 		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
+%endif
+
+%ifarch s390 s390x
+# we require a z9/z10/z196 but base,z10 and z196
+# we also need a compiler with -march=z196 support
+# the base support will use z196 tuning
+	if [ "$type" = "base" ]; then
+		%ifarch s390x 
+			sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
+                %endif
+		%ifarch s390 
+			sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
+                %endif
+		sed -i 's#-march=z196#-march=z9-109 -mtune=z196#' Make.inc
+		sed -i 's#-march=z10 -mtune=z196#-march=z9-109 -mtune=z196#' Make.inc
+		sed -i 's#-march=z10#-march=z9-109 -mtune=z10#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz9#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz9#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz9#' Make.inc
+	elif [ "$type" = "z10" ]; then
+		%ifarch s390x 
+			sed -i 's#ARCH =.*#ARCH = IBMz1064#' Make.inc
+                %endif
+		%ifarch s390 
+			sed -i 's#ARCH =.*#ARCH = IBMz1032#' Make.inc
+                %endif
+		sed -i 's#-march=z196#-march=z10#' Make.inc
+		sed -i 's#-march=z10 -mtune=z196#-march=z10#' Make.inc
+		sed -i 's#-march=z9-109#-march=z10#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz10#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz10#' Make.inc
+		%define pr_z10 %(echo $((%{__isa_bits}+1)))
+	elif [ "$type" = "z196" ]; then
+		%ifarch s390x 
+			sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
+                %endif
+		%ifarch s390 
+			sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
+                %endif
+		sed -i 's#-march=z196#-march=z10 -mtune=z196#' Make.inc
+		sed -i 's#-march=z10#-march=z10 -mtune=z196#' Make.inc
+		sed -i 's#-march=z9-109#-march=z10 -mtune=z196#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz196#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz196#' Make.inc
+		%define pr_z196 %(echo $((%{__isa_bits}+2)))
+	fi
+%endif
+
 %endif
 	make build
 	cd lib
@@ -374,6 +491,40 @@ if [ $1 -ge 0 ] ; then
 fi
 
 %endif
+
+%ifarch s390 s390x
+%post -n atlas-z10 -p /sbin/ldconfig
+
+%postun -n atlas-z10 -p /sbin/ldconfig
+
+%posttrans z10-devel
+if [ $1 -eq 0 ] ; then
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-z10  %{pr_z10}
+fi
+
+%preun z10-devel
+if [ $1 -ge 0 ] ; then
+/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z10
+fi
+
+%post -n atlas-z196 -p /sbin/ldconfig
+
+%postun -n atlas-z196 -p /sbin/ldconfig
+
+%posttrans z196-devel
+if [ $1 -eq 0 ] ; then
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-z196  %{pr_z196}
+fi
+
+%preun z196-devel
+if [ $1 -ge 0 ] ; then
+/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z196
+fi
+
+%endif
+
 %endif
 
 %files
@@ -475,9 +626,52 @@ fi
 %ghost %{_includedir}/atlas
 
 %endif
+
+%ifarch s390 s390x
+%files z10
+%defattr(-,root,root,-)
+%doc doc/README.Fedora
+%dir %{_libdir}/atlas-z10
+%{_libdir}/atlas-z10/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z10.conf
+
+%files z10-devel
+%defattr(-,root,root,-)
+%doc doc
+%{_libdir}/atlas-z10/*.so
+%{_includedir}/atlas-%{_arch}-z10/
+%{_includedir}/*.h
+%ghost %{_includedir}/atlas
+
+%files z196
+%defattr(-,root,root,-)
+%doc doc/README.Fedora
+%dir %{_libdir}/atlas-z196
+%{_libdir}/atlas-z196/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z196.conf
+
+%files z196-devel
+%defattr(-,root,root,-)
+%doc doc
+%{_libdir}/atlas-z196/*.so
+%{_includedir}/atlas-%{_arch}-z196/
+%{_includedir}/*.h
+%ghost %{_includedir}/atlas
+%endif
 %endif
 
 %changelog
+* Thu Sep 01 2011 Deji Akingunola <dakingun@gmail.com> - 3.8.4-1
+- Update to 3.8.4
+- Apply patch to enable arm build (Patch provided by Jitesh Shah <jiteshs@marvell.com>)
+- Stop turning off throttle checking, upstream frown at it (seems O.K. for Koji)
+- Use -march=z10 for z196 optimised build because the builder is a z10
+  (Christian Bornträger)
+- Build the default package for SSE2 and add a SSE3 subpackage on x86_64
+  (only on f16 and above)
+- Apply patch (and arch defs.) to build on s390 and s390x (Dan Horák)
+- Fix-up build on s390 and s390x (Christian Bornträger)
+
 * Mon Jul 26 2010 Deji Akingunola <dakingun@gmail.com> - 3.8.3-18
 - Create a subpackage for SSE2 on x86_64
 
