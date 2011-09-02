@@ -234,7 +234,7 @@ optimizations for the z10 architecture.
 
 %global mode %{__isa_bits}
 %ifarch %{arm}
-%define arch_option -A 33
+%define arch_option -A 38
 %define threads_option -t 2
 %global mode ' '
 %endif
@@ -242,8 +242,12 @@ optimizations for the z10 architecture.
 %prep
 %setup -q -n ATLAS
 %patch0 -p0 -b .shared
+%ifarch s390 s390x
 %patch1 -p1 -b .s390
+%endif
+%ifarch %{arm}
 %patch2 -p0 -b .arm
+%endif
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -660,7 +664,7 @@ fi
 
 %changelog
 * Thu Sep 01 2011 Deji Akingunola <dakingun@gmail.com> - 3.8.4-3
-- Aply patch to enable arm build (Patch provided by Jitesh Shah <jiteshs@marvell.com>)
+- Apply patch to enable arm build (Patch provided by Jitesh Shah <jiteshs@marvell.com>)
 - Stop turning off throttle checking, upstream frown at it (seems O.K. for Koji)
 
 * Mon Jun 20 2011 Dan Horák <dan[at]danny.cz> - 3.8.4-2
