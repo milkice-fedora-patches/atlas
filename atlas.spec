@@ -183,6 +183,60 @@ This package contains ATLAS (Automatically Tuned Linear Algebra Software)
 shared libraries compiled with optimizations for the SSE3 extensions to the ix86 architecture.
 
 %endif
+
+%ifarch s390 s390x
+%define types base z10 z196
+
+%package z196
+Summary:        ATLAS libraries for z196
+Group:          System Environment/Libraries
+
+%description z196
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) libraries compiled with optimizations for the z196.
+
+%package z196-devel
+Summary:        Development libraries for ATLAS for z196
+Group:          Development/Libraries
+Requires:       %{name}-z196 = %{version}-%{release}
+Obsoletes:	%name-header <= %version-%release
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description z196-devel
+This package contains headers and shared versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the z196 architecture.
+
+%package z10
+Summary:        ATLAS libraries for z10
+Group:          System Environment/Libraries
+
+%description z10
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) libraries compiled with optimizations for the z10.
+
+%package z10-devel
+Summary:        Development libraries for ATLAS for z10
+Group:          Development/Libraries
+Requires:       %{name}-z10 = %{version}-%{release}
+Obsoletes:	%name-header <= %version-%release
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description z10-devel
+This package contains headers and shared versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the z10 architecture.
+
+%endif
+%endif
+
+%global mode %{__isa_bits}
+%ifarch %{arm}
+%define arch_option -A 38
+%define threads_option -t 2
+%global mode ' '
 %endif
 
 %prep
