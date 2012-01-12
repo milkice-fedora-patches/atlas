@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -663,6 +663,9 @@ fi
 %endif
 
 %changelog
+* Thu Jan 12 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.8.4-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Thu Sep 01 2011 Deji Akingunola <dakingun@gmail.com> - 3.8.4-3
 - Apply patch to enable arm build (Patch provided by Jitesh Shah <jiteshs@marvell.com>)
 - Stop turning off throttle checking, upstream frown at it (seems O.K. for Koji)
