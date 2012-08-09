@@ -667,7 +667,7 @@ fi
 %endif
 
 %changelog
-- Thu Aug 09 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-6
+* Thu Aug 09 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-6
 - Add patch to properly pass -melf_* to the linker with -Wl (bug 817552)
 
 * Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.8.4-5
