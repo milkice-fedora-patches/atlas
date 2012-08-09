@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -24,6 +24,9 @@ Source9:        IBMz19664.tgz
 Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-s390port.patch
 Patch2:		atlas-fedora-arm.patch
+# Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
+# https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
+Patch3:		atlas-melf.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran lapack-static
@@ -248,6 +251,7 @@ optimizations for the z10 architecture.
 %ifarch %{arm}
 %patch2 -p0 -b .arm
 %endif
+%patch3 -p1 -b .melf
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -663,6 +667,9 @@ fi
 %endif
 
 %changelog
+- Thu Aug 09 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-6
+- Add patch to properly pass -melf_* to the linker with -Wl (bug 817552)
+
 * Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.8.4-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
