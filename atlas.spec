@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -667,6 +667,9 @@ fi
 %endif
 
 %changelog
+* Fri Sep 07 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-7
+- Rebuild with lapack 3.4.1
+
 * Thu Aug 09 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-6
 - Add patch to properly pass -melf_* to the linker with -Wl (bug 817552)
 
