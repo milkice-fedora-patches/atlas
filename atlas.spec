@@ -21,7 +21,7 @@ Source6:        IBMz1032.tgz
 Source7:        IBMz1064.tgz
 Source8:        IBMz19632.tgz
 Source9:        IBMz19664.tgz
-Patch0:		atlas-fedora_shared.patch
+#Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-s390port.patch
 Patch2:		atlas-fedora-arm.patch
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
@@ -244,7 +244,7 @@ optimizations for the z10 architecture.
 
 %prep
 %setup -q -n ATLAS
-%patch0 -p0 -b .shared
+#%patch0 -p0 -b .shared
 %ifarch s390 s390x
 %patch1 -p1 -b .s390
 %endif
@@ -667,7 +667,7 @@ fi
 %endif
 
 %changelog
-* Fri Sep 07 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-0
+* Tue Oct 23 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-0
 - Rebase to 3.10.0
 
 * Fri Sep 07 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-7
