@@ -26,7 +26,7 @@ Patch1:         atlas-s390port.patch
 Patch2:		atlas-fedora-arm.patch
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
-Patch3:		atlas-melf.patch
+#Patch3:		atlas-melf.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran lapack-static
@@ -251,7 +251,7 @@ optimizations for the z10 architecture.
 %ifarch %{arm}
 %patch2 -p0 -b .arm
 %endif
-%patch3 -p1 -b .melf
+#%patch3 -p1 -b .melf
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
