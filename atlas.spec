@@ -1,11 +1,11 @@
 %define enable_native_atlas 0
 
 Name:           atlas
-Version:        3.8.4
+Version:        3.10.0
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        7%{?dist}
+Release:        0%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -667,6 +667,9 @@ fi
 %endif
 
 %changelog
+* Fri Sep 07 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-0
+- Rebase to 3.10.0
+
 * Fri Sep 07 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-7
 - Rebuild with lapack 3.4.1
 
