@@ -275,8 +275,8 @@ for type in %{types}; do
 	../configure -b %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
-	--libdir=%{buildroot}%{_libdir}/${libname}	\
-	--with-netlib-lapack=%{_libdir}/liblapack_pic.a
+	--libdir=%{buildroot}%{_libdir}/${libname}	
+#	--with-netlib-lapack=%{_libdir}/liblapack_pic.a
 
 %if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
