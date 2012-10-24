@@ -29,7 +29,8 @@ Patch2:		atlas-fedora-arm.patch
 #Patch3:		atlas-melf.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  gcc-gfortran lapack-static
+BuildRequires:  gcc-gfortran
+# lapack-static
 
 %description
 The ATLAS (Automatically Tuned Linear Algebra Software) project is an
