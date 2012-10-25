@@ -27,6 +27,7 @@ Patch2:		atlas-fedora-arm.patch
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
 #Patch3:		atlas-melf.patch
+Patch4:		atlas-throttling.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran
@@ -253,6 +254,7 @@ optimizations for the z10 architecture.
 %patch2 -p0 -b .arm
 %endif
 #%patch3 -p1 -b .melf
+%patch4 -p1 -b .thrott
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -668,8 +670,9 @@ fi
 %endif
 
 %changelog
-* Tue Oct 23 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-0
+* Thu Oct 25 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-0
 - Rebase to 3.10.0
+- disabled cpu throttling detection
 
 * Fri Sep 07 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-7
 - Rebuild with lapack 3.4.1
