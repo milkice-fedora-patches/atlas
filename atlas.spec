@@ -5,7 +5,7 @@ Version:        3.10.0
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        0%{?dist}
+Release:        1%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -28,6 +28,7 @@ Patch2:		atlas-fedora-arm.patch
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
 #Patch3:		atlas-melf.patch
 Patch4:		atlas-throttling.patch
+Patch5:		atlas-build-id.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran
@@ -255,6 +256,7 @@ optimizations for the z10 architecture.
 %endif
 #%patch3 -p1 -b .melf
 %patch4 -p1 -b .thrott
+%patch5 -p1 -b .buildid
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -284,11 +286,19 @@ for type in %{types}; do
 %if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
 	if [ "$type" = "base" ]; then
-		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE2#' Make.inc
-		sed -i 's#-DATL_SSE3##' Make.inc 
-		sed -i 's#-msse3#-msse2#' Make.inc 
+#		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE2#' Make.inc
+#		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
+#		sed -i 's#-DATL_SSE3##' Make.inc
+#		sed -i 's#-DATL_AVX##' Make.inc 
+#		sed -i 's#-msse3#-msse2#' Make.inc 
+#		sed -i 's#-mavx#-msse2#' Make.inc
+		echo 'skonfigurovane base' 
+#		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
 	elif [ "$type" = "sse3" ]; then
 		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
+#		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
+		sed -i 's#-DATL_AVX##' Make.inc
+		sed -i 's#-mavx#-msse3#' Make.inc 
 		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
 %endif
@@ -373,7 +383,7 @@ for type in %{types}; do
 	popd
 done
 
-%install
+%install 	
 rm -rf %{buildroot}
 for type in %{types}; do
 	pushd %{_arch}_${type}
@@ -540,7 +550,7 @@ fi
 %defattr(-,root,root,-)
 %doc doc/README.Fedora
 %dir %{_libdir}/atlas
-%{_libdir}/atlas/*.so.*
+%{_libdir}/atlas/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}.conf
 
 %files devel
@@ -559,7 +569,7 @@ fi
 %defattr(-,root,root,-)
 %doc doc/README.Fedora
 %dir %{_libdir}/atlas-sse3
-%{_libdir}/atlas-sse3/*.so.*
+%{_libdir}/atlas-sse3/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
 
 %files sse3-devel
