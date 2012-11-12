@@ -275,13 +275,25 @@ for type in %{types}; do
 		%define pr_base %(echo $((%{__isa_bits}+0)))
 		%if "%{?enable_native_atlas}" == "0"
 			%ifarch x86_64
-				%define arch_option -A 32
+				#define arch_option -A 32
 				#ISA - SSE1=256, SSE2=128, SSE3=64, AVX=32
 				%define isa_option -V 448
 			%endif
 		%endif
 	else
 		libname=atlas-${type}
+	fi
+
+	if [ "$type" = "sse3" ]; then
+		echo dummy
+		%define pr_base %(echo $((%{__isa_bits}+0)))
+		%if "%{?enable_native_atlas}" == "0"
+			%ifarch x86_64
+				#define arch_option -A 32
+				#ISA - SSE1=256, SSE2=128, SSE3=64, AVX=32
+				%define isa_option -V 480
+			%endif
+		%endif
 	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
@@ -301,12 +313,13 @@ for type in %{types}; do
 #		sed -i 's#-msse3#-msse2#' Make.inc 
 #		sed -i 's#-mavx#-msse2#' Make.inc
 		echo 'skonfigurovane base' 
-		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
+#		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
 	elif [ "$type" = "sse3" ]; then
-		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
-		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
-		sed -i 's#-DATL_AVX##' Make.inc
-		sed -i 's#-mavx#-msse3#' Make.inc 
+#		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
+#		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
+#		sed -i 's#-DATL_AVX##' Make.inc
+#		sed -i 's#-mavx#-msse3#' Make.inc 
+		echo 'skonfigurovane sse'
 		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
 %endif
