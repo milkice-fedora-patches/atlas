@@ -68,35 +68,37 @@ with ATLAS (Automatically Tuned Linear Algebra Software).
 ############## Subpackages for architecture extensions #################
 #
 %ifarch x86_64
-%define types base sse3
+%define types base
+# sse3
 
-%package sse3
-Summary:        ATLAS libraries for SSE3 extensions
-Group:          System Environment/Libraries
+#package sse3
+#Summary:        ATLAS libraries for SSE3 extensions
+#Group:          System Environment/Libraries
 
-%description sse3
-This package contains the ATLAS (Automatically Tuned Linear Algebra
-Software) libraries compiled with optimizations for the SSE3
-extensions to the x86_64 architecture. The base ATLAS builds in Fedora for the
-x86_64 architecture are made for the SSE2 extensions.
+#description sse3
+#This package contains the ATLAS (Automatically Tuned Linear Algebra
+#Software) libraries compiled with optimizations for the SSE3
+#extensions to the x86_64 architecture. The base ATLAS builds in Fedora for the
+#x86_64 architecture are made for the SSE2 extensions.
 
-%package sse3-devel
-Summary:        Development libraries for ATLAS with SSE3 extensions
-Group:          Development/Libraries
-Requires:       %{name}-sse3 = %{version}-%{release}
-Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
+#package sse3-devel
+#Summary:        Development libraries for ATLAS with SSE3 extensions
+#Group:          Development/Libraries
+#Requires:       %{name}-sse3 = %{version}-%{release}
+#Obsoletes:	%name-header <= %version-%release
+#Requires(posttrans):	chkconfig
+#Requires(preun):	chkconfig
 
-%description sse3-devel
-This package contains shared and static versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the SSE3 extensions to the x86_64 architecture.
+#description sse3-devel
+#This package contains shared and static versions of the ATLAS
+#(Automatically Tuned Linear Algebra Software) libraries compiled with
+#optimizations for the SSE3 extensions to the x86_64 architecture.
 
 %endif
 
 %ifarch %{ix86}
-%define types base 3dnow sse sse2 sse3
+%define types base sse sse2 sse3
+#3dnow 
 
 %package 3dnow
 Summary:        ATLAS libraries for 3DNow extensions
@@ -273,28 +275,10 @@ for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		libname=atlas
 		%define pr_base %(echo $((%{__isa_bits}+0)))
-		%if "%{?enable_native_atlas}" == "0"
-			%ifarch x86_64
-				#define arch_option -A 32
-				#ISA - SSE1=256, SSE2=128, SSE3=64, AVX=32
-				%define isa_option -V 448
-			%endif
-		%endif
 	else
 		libname=atlas-${type}
 	fi
 
-	if [ "$type" = "sse3" ]; then
-		echo dummy
-		%define pr_base %(echo $((%{__isa_bits}+0)))
-		%if "%{?enable_native_atlas}" == "0"
-			%ifarch x86_64
-				#define arch_option -A 32
-				#ISA - SSE1=256, SSE2=128, SSE3=64, AVX=32
-				%define isa_option -V 480
-			%endif
-		%endif
-	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
 	../configure -b %{mode} %{?threads_option} %{?isa_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
@@ -307,15 +291,15 @@ for type in %{types}; do
 %ifarch x86_64
 	if [ "$type" = "base" ]; then
 #		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE2#' Make.inc
-#		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
+		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
 #		sed -i 's#-DATL_SSE3##' Make.inc
-#		sed -i 's#-DATL_AVX##' Make.inc 
+		sed -i 's#-DATL_AVX##' Make.inc 
 #		sed -i 's#-msse3#-msse2#' Make.inc 
-#		sed -i 's#-mavx#-msse2#' Make.inc
+		sed -i 's#-mavx#-msse3#' Make.inc
 		echo 'skonfigurovane base' 
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
 	elif [ "$type" = "sse3" ]; then
-#		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
+#		sed -i 's#ARCH =.*#ARCH = Corei264AVX#' Make.inc
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
 #		sed -i 's#-DATL_AVX##' Make.inc
 #		sed -i 's#-mavx#-msse3#' Make.inc 
@@ -336,7 +320,7 @@ for type in %{types}; do
 		%define pr_3dnow %(echo $((%{__isa_bits}+1)))
 	elif [ "$type" = "sse" ]; then
 		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
-		sed -i 's#-DATL_SSE3 -DATL_SSE2##' Make.inc 
+		sed -i 's#-DATL_SSE3#-DATL_SSE1#' Make.inc 
 		sed -i 's#-msse3#-msse#' Make.inc 
 		%define pr_sse %(echo $((%{__isa_bits}+2)))
 	elif [ "$type" = "sse2" ]; then
@@ -450,24 +434,24 @@ if [ $1 -ge 0 ] ; then
 fi
 
 %if "%{?enable_native_atlas}" == "0"
-%ifarch x86_64
+#ifarch x86_64
 
-%post -n atlas-sse3 -p /sbin/ldconfig
+#post -n atlas-sse3 -p /sbin/ldconfig
 
-%postun -n atlas-sse3 -p /sbin/ldconfig
+#postun -n atlas-sse3 -p /sbin/ldconfig
 
-%posttrans sse3-devel
-if [ $1 -eq 0 ] ; then
-/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-		%{_includedir}/atlas-%{_arch}-sse3  %{pr_sse3}
-fi
+#posttrans sse3-devel
+#if [ $1 -eq 0 ] ; then
+#/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+#		%{_includedir}/atlas-%{_arch}-sse3  %{pr_sse3}
+#fi
 
-%preun sse3-devel
-if [ $1 -ge 0 ] ; then
-/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse3
-fi
+#preun sse3-devel
+#if [ $1 -ge 0 ] ; then
+#/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse3
+#fi
 
-%endif
+#endif
 
 %ifarch %{ix86}
 %post -n atlas-3dnow -p /sbin/ldconfig
@@ -584,24 +568,24 @@ fi
 
 %if "%{?enable_native_atlas}" == "0"
 
-%ifarch x86_64
+#ifarch x86_64
 
-%files sse3
-%defattr(-,root,root,-)
-%doc doc/README.Fedora
-%dir %{_libdir}/atlas-sse3
-%{_libdir}/atlas-sse3/*.so
-%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
+#files sse3
+#defattr(-,root,root,-)
+#doc doc/README.Fedora
+#dir %{_libdir}/atlas-sse3
+#{_libdir}/atlas-sse3/*.so
+#config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
 
-%files sse3-devel
-%defattr(-,root,root,-)
-%doc doc
-%{_libdir}/atlas-sse3/*.so
-%{_includedir}/atlas-%{_arch}-sse3/
-%{_includedir}/*.h
-%ghost %{_includedir}/atlas
+#files sse3-devel
+#defattr(-,root,root,-)
+#doc doc
+#{_libdir}/atlas-sse3/*.so
+#{_includedir}/atlas-%{_arch}-sse3/
+#{_includedir}/*.h
+#ghost %{_includedir}/atlas
 
-%endif
+#endif
 
 %ifarch %{ix86}
 
