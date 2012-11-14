@@ -1,0 +1,24 @@
+diff -up ATLAS/makes/Make.lib.ref ATLAS/makes/Make.lib
+--- ATLAS/makes/Make.lib.ref	2012-11-01 13:41:35.271895924 +0100
++++ ATLAS/makes/Make.lib	2012-11-01 13:43:12.796344243 +0100
+@@ -131,16 +131,16 @@ TRYALL :
+ 	if $(MAKE) GCCTRY outso="$(outso)" libas="$(libas)"  \
+         LIBS="$(F77SYSLIB) -lc $(LIBS) -lgcc" LIBINSTdir="$(LIBINSTdir)"; then \
+            echo "$(outso) built wt gcc and all libs" ; \
+-        elif $(MAKE) LDTRY outso="$(outso)" libas="$(libas)"  \
+-        LIBS="$(F77SYSLIB) -lc $(LIBS) -lgcc" LIBINSTdir="$(LIBINSTdir)"; then \
+-           echo "$(outso) built wt ld and all sys libs" ; \
+-	elif $(MAKE) GCCTRY_norp outso="$(outso)" libas="$(libas)"  \
++        elif $(MAKE) GCCTRY_norp outso="$(outso)" libas="$(libas)"  \
+         LIBS="$(F77SYSLIB) -lc $(LIBS) -lgcc" LIBINSTdir="$(LIBINSTdir)"; then \
+            echo "$(outso) built wt gcc and all libs and no rpath" ; \
+         elif $(MAKE) GCCTRY outso="$(outso)" libas="$(libas)"  \
+         LIBS="-lc $(LIBS) -lgcc" LIBINSTdir="$(LIBINSTdir)"; then \
+            echo "$(outso) built wt gcc and all C libs" ; \
+         elif $(MAKE) LDTRY outso="$(outso)" libas="$(libas)"  \
++        LIBS="$(F77SYSLIB) -lc $(LIBS) -lgcc" LIBINSTdir="$(LIBINSTdir)"; then \
++           echo "$(outso) built wt ld and all sys libs" ; \
++        elif $(MAKE) LDTRY outso="$(outso)" libas="$(libas)"  \
+         LIBS="-lc $(LIBS) -lgcc" LIBINSTdir="$(LIBINSTdir)"; then \
+            echo "$(outso) built wt ld and -lc -lgcc" ; \
+         elif $(MAKE) GCCTRY_norp outso="$(outso)" libas="$(libas)"  \
