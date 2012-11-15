@@ -751,14 +751,15 @@ fi
 %endif
 
 %changelog
-* Thu Oct 25 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-0
+* Thu Nov 15 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-1
 - Rebase to 3.10.0
 - Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow (uncompilable).
 - Unbundled Lapack.
+- Added subpackage static.
 - Disabled incompatible patches.
 - Modified makefile to include build-id.
 - Disabled cpu throttling detection again (sorry, could not work on atlas
-  otherwise, feel free to enable yet again).
+  otherwise, feel free to enable yet again - atlas-throttling.patch).
 - Modified parts of atlas.spec left in place, work still in progress,
   cleanup needed.
 
