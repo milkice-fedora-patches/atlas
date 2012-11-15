@@ -62,6 +62,18 @@ Requires(preun):	chkconfig
 This package contains the libraries and headers for development
 with ATLAS (Automatically Tuned Linear Algebra Software).
 
+%package static
+Summary:        Static libraries for ATLAS
+Group:          Development/Libraries
+Requires:       %{name}-devel = %{version}-%{release}
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description static
+This package contains static version of ATLAS (Automatically Tuned
+Linear Algebra Software).
+
+
 %define types base
 
 %if "%{?enable_native_atlas}" == "0"
@@ -169,6 +181,19 @@ This package contains ATLAS (Automatically Tuned Linear Algebra Software)
 shared libraries compiled with optimizations for the SSE2 extensions to the 
 ix86 architecture.
 
+%package sse2-static
+Summary:        Static libraries for ATLAS with SSE2 extensions
+Group:          Development/Libraries
+Requires:       %{name}-sse2-devel = %{version}-%{release}
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description sse2-static
+This package contains ATLAS (Automatically Tuned Linear Algebra Software)
+static libraries compiled with optimizations for the SSE2 extensions to the 
+ix86 architecture.
+
+
 %package sse3
 Summary:        ATLAS libraries for SSE3 extensions
 Group:          System Environment/Libraries
@@ -189,6 +214,18 @@ Requires(preun):	chkconfig
 %description sse3-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
 shared libraries compiled with optimizations for the SSE3 extensions to the ix86 architecture.
+
+%package sse3-static
+Summary:        Static libraries for ATLAS with SSE2 extensions
+Group:          Development/Libraries
+Requires:       %{name}-sse2-devel = %{version}-%{release}
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description sse3-static
+This package contains ATLAS (Automatically Tuned Linear Algebra Software)
+static libraries compiled with optimizations for the SSE3 extensions to the 
+ix86 architecture.
 
 %endif
 
@@ -403,9 +440,11 @@ for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas/
 		rm -f %{buildroot}%{_libdir}/atlas/*.a
+		cp -pr lib/libatlas.a %{buildroot}%{_libdir}/atlas/
 	else
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas-${type}/
 		rm -f %{buildroot}%{_libdir}/atlas-${type}/*.a
+		cp -pr lib/libatlas.a %{buildroot}%{_libdir}/atlas-${type}/
 	fi
 	popd
 
@@ -572,6 +611,10 @@ fi
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
+%files static
+%defattr(-,root,root,-)
+%{_libdir}/atlas/*.a
+
 %if "%{?enable_native_atlas}" == "0"
 
 #ifarch x86_64
@@ -640,12 +683,20 @@ fi
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
+%files sse2-static
+%defattr(-,root,root,-)
+%{_libdir}/atlas-sse2/*.a
+
 %files sse3
 %defattr(-,root,root,-)
 %doc doc/README.Fedora
 %dir %{_libdir}/atlas-sse3
 %{_libdir}/atlas-sse3/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
+
+%files sse3-static
+%defattr(-,root,root,-)
+%{_libdir}/atlas-sse3/*.a
 
 %files sse3-devel
 %defattr(-,root,root,-)
@@ -673,6 +724,10 @@ fi
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
+%files z10-static
+%defattr(-,root,root,-)
+%{_libdir}/atlas-z10/*.a
+
 %files z196
 %defattr(-,root,root,-)
 %doc doc/README.Fedora
@@ -687,6 +742,11 @@ fi
 %{_includedir}/atlas-%{_arch}-z196/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
+
+%files z196-static
+%defattr(-,root,root,-)
+%{_libdir}/atlas-z196/*.a
+
 %endif
 %endif
 
