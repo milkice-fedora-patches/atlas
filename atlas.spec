@@ -50,9 +50,6 @@ necessarily optimal for any specific hardware configuration.  However,
 the source package can be used to compile customized ATLAS packages;
 see the documentation for information.
 
-This package requires an x86_64 processor with SSE3 extension. For
-oldest x86_64 CPU's with SSE2 only, use 32-bit i686 package.
-
 %package devel
 Summary:        Development libraries for ATLAS
 Group:          Development/Libraries
@@ -157,7 +154,7 @@ Group:          System Environment/Libraries
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
 shared libraries compiled with optimizations for the SSE2
 extensions to the ix86 architecture. Fedora also produces ATLAS build with
-SSE3 extensions.
+SSE(1) and SSE3 extensions.
 
 %package sse2-devel
 Summary:        Development libraries for ATLAS with SSE2 extensions
@@ -179,7 +176,7 @@ Group:          System Environment/Libraries
 %description sse3
 This package contains the ATLAS (Automatically Tuned Linear Algebra
 Software) libraries compiled with optimizations for the SSE3.
-Fedora also produces ATLAS build with and SSE2 extensions.
+Fedora also produces ATLAS build with SSE(1) and SSE2 extensions.
 
 %package sse3-devel
 Summary:        Development libraries for ATLAS with SSE3 extensions
@@ -299,33 +296,36 @@ for type in %{types}; do
 		sed -i 's#-DATL_AVX##' Make.inc 
 #		sed -i 's#-msse3#-msse2#' Make.inc 
 		sed -i 's#-mavx#-msse3#' Make.inc
+		echo 'skonfigurovane base' 
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
-#	elif [ "$type" = "sse3" ]; then
+	elif [ "$type" = "sse3" ]; then
 #		sed -i 's#ARCH =.*#ARCH = Corei264AVX#' Make.inc
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
 #		sed -i 's#-DATL_AVX##' Make.inc
 #		sed -i 's#-mavx#-msse3#' Make.inc 
-#		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
+		echo 'skonfigurovane sse'
+		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
 %endif
 
 %ifarch %{ix86}
 	if [ "$type" = "base" ]; then
 		sed -i 's#ARCH =.*#ARCH = PPRO32#' Make.inc
+		#sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc
 		sed -i 's#-DATL_SSE3##' Make.inc
 		sed -i 's#-DATL_SSE2##' Make.inc
 		sed -i 's#-DATL_SSE1##' Make.inc  
 		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
-#	elif [ "$type" = "3dnow" ]; then
-#		sed -i 's#ARCH =.*#ARCH = K7323DNow#' Make.inc
-#		sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc 
-#		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
-#		%define pr_3dnow %(echo $((%{__isa_bits}+1)))
-#	elif [ "$type" = "sse" ]; then
-#		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
-#		sed -i 's#-DATL_SSE3#-DATL_SSE1#' Make.inc 
-#		sed -i 's#-msse3#-msse#' Make.inc 
-#		%define pr_sse %(echo $((%{__isa_bits}+2)))
+	elif [ "$type" = "3dnow" ]; then
+		sed -i 's#ARCH =.*#ARCH = K7323DNow#' Make.inc
+		sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc 
+		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
+		%define pr_3dnow %(echo $((%{__isa_bits}+1)))
+	elif [ "$type" = "sse" ]; then
+		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
+		sed -i 's#-DATL_SSE3#-DATL_SSE1#' Make.inc 
+		sed -i 's#-msse3#-msse#' Make.inc 
+		%define pr_sse %(echo $((%{__isa_bits}+2)))
 	elif [ "$type" = "sse2" ]; then
 		#sed -i 's#ARCH =.*#ARCH = P432SSE2#' Make.inc
 		sed -i 's#ARCH =.*#ARCH = x86SSE232SSE2#' Make.inc
@@ -689,16 +689,16 @@ fi
 %endif
 
 %changelog
-* Thu Oct 25 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-1
+* Thu Oct 25 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-0
 - Rebase to 3.10.0
-- Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow (uncompilable)
-- Unbundled Lapack
-- Deleted incompatible patches
-- Modified makefile to include build-id
+- Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow (uncompilable).
+- Unbundled Lapack.
+- Disabled incompatible patches.
+- Modified makefile to include build-id.
 - Disabled cpu throttling detection again (sorry, could not work on atlas
   otherwise, feel free to enable yet again).
-- Modified parts of atlas.spec left in place to easily revert changes,
-  work still in progress
+- Modified parts of atlas.spec left in place, work still in progress,
+  cleanup needed.
 
 * Fri Sep 07 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-7
 - Rebuild with lapack 3.4.1
