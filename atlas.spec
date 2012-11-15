@@ -301,8 +301,10 @@ for type in %{types}; do
 	elif [ "$type" = "sse3" ]; then
 #		sed -i 's#ARCH =.*#ARCH = Corei264AVX#' Make.inc
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
-#		sed -i 's#-DATL_AVX##' Make.inc
-#		sed -i 's#-mavx#-msse3#' Make.inc 
+		sed -i 's#-DATL_AVX##' Make.inc
+		sed -i 's#-DATL_SSE2##' Make.inc
+		sed -i 's#-mavx#-msse2#' Make.inc 
+		sed -i 's#-msse3#-msse2#' Make.inc 
 		echo 'skonfigurovane sse'
 		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
@@ -327,7 +329,7 @@ for type in %{types}; do
 		sed -i 's#-msse3#-msse#' Make.inc 
 		%define pr_sse %(echo $((%{__isa_bits}+2)))
 	elif [ "$type" = "sse2" ]; then
-		#sed -i 's#ARCH =.*#ARCH = P432SSE2#' Make.inc
+#		sed -i 's#ARCH =.*#ARCH = P432SSE2#' Make.inc
 		sed -i 's#ARCH =.*#ARCH = x86SSE232SSE2#' Make.inc
 		sed -i 's#-DATL_SSE3#-DATL_SSE2#' Make.inc 
 		sed -i 's#-msse3#-msse2#' Make.inc 
