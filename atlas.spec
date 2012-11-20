@@ -14,7 +14,7 @@ URL:            http://math-atlas.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.tar.bz2
 Source1:        PPRO32.tgz
 #Source2:        K7323DNow.tgz
-Source3:        README.Fedora
+Source3:        README.dist
 Source4:        USII64.tgz                                              
 Source5:        USII32.tgz                                              
 Source6:        IBMz1032.tgz
@@ -43,7 +43,7 @@ well as a few routines from LAPACK.
 
 The performance improvements in ATLAS are obtained largely via
 compile-time optimizations and tend to be specific to a given hardware
-configuration. In order to package ATLAS for Fedora some compromises
+configuration. In order to package ATLAS some compromises
 are necessary so that good performance can be obtained on a variety
 of hardware. This set of ATLAS binary packages is therefore not
 necessarily optimal for any specific hardware configuration.  However,
@@ -90,7 +90,7 @@ Linear Algebra Software).
 #description sse3
 #This package contains the ATLAS (Automatically Tuned Linear Algebra
 #Software) libraries compiled with optimizations for the SSE3
-#extensions to the x86_64 architecture. The base ATLAS builds in Fedora for the
+#extensions to the x86_64 architecture. The base ATLAS builds for the
 #x86_64 architecture are made for the SSE2 extensions.
 
 #package sse3-devel
@@ -165,8 +165,8 @@ Group:          System Environment/Libraries
 %description sse2
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
 shared libraries compiled with optimizations for the SSE2
-extensions to the ix86 architecture. Fedora also produces ATLAS build with
-SSE(1) and SSE3 extensions.
+extensions to the ix86 architecture. ATLAS builds with
+SSE(1) and SSE3 extensions also exist.
 
 %package sse2-devel
 Summary:        Development libraries for ATLAS with SSE2 extensions
@@ -201,7 +201,7 @@ Group:          System Environment/Libraries
 %description sse3
 This package contains the ATLAS (Automatically Tuned Linear Algebra
 Software) libraries compiled with optimizations for the SSE3.
-Fedora also produces ATLAS build with SSE(1) and SSE2 extensions.
+ATLAS builds with SSE(1) and SSE2 extensions also exist.
 
 %package sse3-devel
 Summary:        Development libraries for ATLAS with SSE3 extensions
@@ -598,7 +598,7 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc doc/README.Fedora
+%doc doc/README.dist
 %dir %{_libdir}/atlas
 %{_libdir}/atlas/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}.conf
@@ -670,7 +670,7 @@ fi
 
 %files sse2
 %defattr(-,root,root,-)
-%doc doc/README.Fedora
+%doc doc/README.dist
 %dir %{_libdir}/atlas-sse2
 %{_libdir}/atlas-sse2/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse2.conf
@@ -689,7 +689,7 @@ fi
 
 %files sse3
 %defattr(-,root,root,-)
-%doc doc/README.Fedora
+%doc doc/README.dist
 %dir %{_libdir}/atlas-sse3
 %{_libdir}/atlas-sse3/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
@@ -711,7 +711,7 @@ fi
 %ifarch s390 s390x
 %files z10
 %defattr(-,root,root,-)
-%doc doc/README.Fedora
+%doc doc/README.dist
 %dir %{_libdir}/atlas-z10
 %{_libdir}/atlas-z10/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z10.conf
@@ -730,7 +730,7 @@ fi
 
 %files z196
 %defattr(-,root,root,-)
-%doc doc/README.Fedora
+%doc doc/README.dist
 %dir %{_libdir}/atlas-z196
 %{_libdir}/atlas-z196/*.so
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z196.conf
@@ -760,6 +760,7 @@ fi
 - Modified makefile to include build-id.
 - Disabled cpu throttling detection again (sorry, could not work on atlas
   otherwise, feel free to enable yet again - atlas-throttling.patch).
+- Removed mentions of "Fedora" to promote redistribution.
 - Modified parts of atlas.spec left in place, work still in progress,
   cleanup needed.
 
