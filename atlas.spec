@@ -333,7 +333,7 @@ for type in %{types}; do
 		sed -i 's#-DATL_AVX##' Make.inc 
 #		sed -i 's#-msse3#-msse2#' Make.inc 
 		sed -i 's#-mavx#-msse3#' Make.inc
-		echo 'skonfigurovane base' 
+		echo 'base makefile edited' 
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
 	elif [ "$type" = "sse3" ]; then
 #		sed -i 's#ARCH =.*#ARCH = Corei264AVX#' Make.inc
@@ -342,7 +342,7 @@ for type in %{types}; do
 		sed -i 's#-DATL_SSE2##' Make.inc
 		sed -i 's#-mavx#-msse2#' Make.inc 
 		sed -i 's#-msse3#-msse2#' Make.inc 
-		echo 'skonfigurovane sse'
+		echo 'sse makefile edited'
 		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
 %endif
@@ -432,7 +432,6 @@ for type in %{types}; do
 done
 
 %install 	
-rm -rf %{buildroot}
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make DESTDIR=%{buildroot} install
@@ -459,9 +458,6 @@ for type in %{types}; do
 done
 mkdir -p %{buildroot}%{_includedir}/atlas
 
-
-%clean
-rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 
