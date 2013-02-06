@@ -253,6 +253,18 @@ This package contains headers and shared versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the z196 architecture.
 
+%package z196-static
+Summary:        Static libraries for ATLAS
+Group:          Development/Libraries
+Requires:       %{name}-devel = %{version}-%{release}
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description z196-static
+This package contains static version of ATLAS (Automatically Tuned
+Linear Algebra Software) for the z196 architecture.
+
+
 %package z10
 Summary:        ATLAS libraries for z10
 Group:          System Environment/Libraries
@@ -273,6 +285,18 @@ Requires(preun):	chkconfig
 This package contains headers and shared versions of the ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the z10 architecture.
+
+%package z10-static
+Summary:        Static libraries for ATLAS
+Group:          Development/Libraries
+Requires:       %{name}-devel = %{version}-%{release}
+Requires(posttrans):	chkconfig
+Requires(preun):	chkconfig
+
+%description z10-static
+This package contains static version of ATLAS (Automatically Tuned
+Linear Algebra Software) for the z10 architecture.
+
 
 %endif
 %endif
