@@ -1,7 +1,7 @@
 %define enable_native_atlas 0
 
 Name:           atlas
-Version:        3.10.0
+Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
@@ -771,6 +771,9 @@ fi
 %endif
 
 %changelog
+* Wed Feb 06 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
+- Rebase to 3.10.1
+
 * Thu Nov 15 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-1
 - Rebase to 3.10.0
 - Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow (uncompilable).
