@@ -447,6 +447,16 @@ for type in %{types}; do
 	fi
 %endif
 
+%ifarch ppc
+	sed -i 's#ARCH =.*#ARCH = POWER4#' Make.inc
+	sed -i 's#-DATL_ARCH_POWER7#-DATL_ARCH_POWER4#' Make.inc
+	sed -i 's#power7#power4#' Make.inc
+	sed -i 's#-DATL_VSX##' Make.inc
+	sed -i 's#-mvsx##' Make.inc
+	sed -i 's#-DATL_AltiVec##' Make.inc
+	sed -i 's#-m64#-m32#' Make.inc
+%endif
+
 %endif
 	make build
 	cd lib
