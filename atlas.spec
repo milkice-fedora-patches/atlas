@@ -5,7 +5,7 @@ Version:        3.10.0
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -771,6 +771,9 @@ fi
 %endif
 
 %changelog
+* Wed Mar 13 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-2
+- s390 patch partially accepted upstream
+
 * Thu Nov 15 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-1
 - Rebase to 3.10.0
 - Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow (uncompilable).
