@@ -17,9 +17,9 @@ Source1:        PPRO32.tgz
 Source3:        README.dist
 Source4:        USII64.tgz                                              
 Source5:        USII32.tgz                                              
-Source6:        IBMz1032.tgz
-Source7:        IBMz1064.tgz
-Source8:        IBMz19632.tgz
+#Source6:        IBMz1032.tgz
+#Source7:        IBMz1064.tgz
+#Source8:        IBMz19632.tgz
 Source9:        IBMz19664.tgz
 #Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-s390port.patch
@@ -230,72 +230,74 @@ ix86 architecture.
 %endif
 
 %ifarch s390 s390x
-%define types base z10 z196
+%define types base 
+#z196
+#z10
 
-%package z196
-Summary:        ATLAS libraries for z196
-Group:          System Environment/Libraries
+#%package z196
+#Summary:        ATLAS libraries for z196
+#Group:          System Environment/Libraries
+#
+#%description z196
+#This package contains the ATLAS (Automatically Tuned Linear Algebra
+#Software) libraries compiled with optimizations for the z196.
+#
+#%package z196-devel
+#Summary:        Development libraries for ATLAS for z196
+#Group:          Development/Libraries
+#Requires:       %{name}-z196 = %{version}-%{release}
+#Obsoletes:	%name-header <= %version-%release
+#Requires(posttrans):	chkconfig
+#Requires(preun):	chkconfig
+#
+#%description z196-devel
+#This package contains headers and shared versions of the ATLAS
+#(Automatically Tuned Linear Algebra Software) libraries compiled with
+#optimizations for the z196 architecture.
 
-%description z196
-This package contains the ATLAS (Automatically Tuned Linear Algebra
-Software) libraries compiled with optimizations for the z196.
+#%package z196-static
+#Summary:        Static libraries for ATLAS
+#Group:          Development/Libraries
+#Requires:       %{name}-devel = %{version}-%{release}
+#Requires(posttrans):	chkconfig
+#Requires(preun):	chkconfig
 
-%package z196-devel
-Summary:        Development libraries for ATLAS for z196
-Group:          Development/Libraries
-Requires:       %{name}-z196 = %{version}-%{release}
-Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
-
-%description z196-devel
-This package contains headers and shared versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the z196 architecture.
-
-%package z196-static
-Summary:        Static libraries for ATLAS
-Group:          Development/Libraries
-Requires:       %{name}-devel = %{version}-%{release}
-Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
-
-%description z196-static
-This package contains static version of ATLAS (Automatically Tuned
-Linear Algebra Software) for the z196 architecture.
+#%description z196-static
+#This package contains static version of ATLAS (Automatically Tuned
+#Linear Algebra Software) for the z196 architecture.
 
 
-%package z10
-Summary:        ATLAS libraries for z10
-Group:          System Environment/Libraries
-
-%description z10
-This package contains the ATLAS (Automatically Tuned Linear Algebra
-Software) libraries compiled with optimizations for the z10.
-
-%package z10-devel
-Summary:        Development libraries for ATLAS for z10
-Group:          Development/Libraries
-Requires:       %{name}-z10 = %{version}-%{release}
-Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
-
-%description z10-devel
-This package contains headers and shared versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the z10 architecture.
-
-%package z10-static
-Summary:        Static libraries for ATLAS
-Group:          Development/Libraries
-Requires:       %{name}-devel = %{version}-%{release}
-Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
-
-%description z10-static
-This package contains static version of ATLAS (Automatically Tuned
-Linear Algebra Software) for the z10 architecture.
+#%package z10
+#Summary:        ATLAS libraries for z10
+#Group:          System Environment/Libraries
+#
+#%description z10
+#This package contains the ATLAS (Automatically Tuned Linear Algebra
+#Software) libraries compiled with optimizations for the z10.
+#
+#%package z10-devel
+#Summary:        Development libraries for ATLAS for z10
+#Group:          Development/Libraries
+#Requires:       %{name}-z10 = %{version}-%{release}
+#Obsoletes:	%name-header <= %version-%release
+#Requires(posttrans):	chkconfig
+#Requires(preun):	chkconfig
+#
+#%description z10-devel
+#This package contains headers and shared versions of the ATLAS
+#(Automatically Tuned Linear Algebra Software) libraries compiled with
+#optimizations for the z10 architecture.
+#
+#%package z10-static
+#Summary:        Static libraries for ATLAS
+#Group:          Development/Libraries
+#Requires:       %{name}-devel = %{version}-%{release}
+#Requires(posttrans):	chkconfig
+#Requires(preun):	chkconfig
+#
+#%description z10-static
+#This package contains static version of ATLAS (Automatically Tuned
+#Linear Algebra Software) for the z10 architecture.
 
 
 %endif
@@ -309,6 +311,8 @@ Linear Algebra Software) for the z10 architecture.
 %endif
 
 %prep
+uname -a
+cat /proc/cpuinfo
 %setup -q -n ATLAS
 #patch0 -p0 -b .shared
 %ifarch s390 s390x
@@ -325,9 +329,9 @@ cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE3} doc
 cp %{SOURCE4} CONFIG/ARCHS/
 cp %{SOURCE5} CONFIG/ARCHS/
-cp %{SOURCE6} CONFIG/ARCHS/
-cp %{SOURCE7} CONFIG/ARCHS/
-cp %{SOURCE8} CONFIG/ARCHS/
+#cp %{SOURCE6} CONFIG/ARCHS/
+#cp %{SOURCE7} CONFIG/ARCHS/
+#cp %{SOURCE8} CONFIG/ARCHS/
 cp %{SOURCE9} CONFIG/ARCHS/
 
 %build
@@ -406,43 +410,49 @@ for type in %{types}; do
 # we also need a compiler with -march=z196 support
 # the base support will use z196 tuning
 	if [ "$type" = "base" ]; then
+		#%ifarch s390x 
+		#	sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
+                #%endif
+		#%ifarch s390 
+	#		sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
+        #        %endif
+#		sed -i 's#-march=z196#-march=z9-109 -mtune=z196#' Make.inc
+#		sed -i 's#-march=z10 -mtune=z196#-march=z9-109 -mtune=z196#' Make.inc
+#		sed -i 's#-march=z10#-march=z9-109 -mtune=z10#' Make.inc
+#		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz9#' Make.inc
+#		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz9#' Make.inc
+#		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz9#' Make.inc
+#	elif [ "$type" = "z10" ]; then
+#		%ifarch s390x 
+#		
+#			cat Make.inc | grep "ARCH ="
+#			sed -i 's#ARCH =.*#ARCH = IBMz1064#' Make.inc
+#               %endif
+#		%ifarch s390 
+#		#	sed -i 's#ARCH =.*#ARCH = IBMz1032#' Make.inc
+#			cat Make.inc | grep "ARCH ="
+ #               %endif
+#		sed -i 's#-march=z196#-march=z10#' Make.inc
+#		sed -i 's#-march=z10 -mtune=z196#-march=z10#' Make.inc
+#		sed -i 's#-march=z9-109#-march=z10#' Make.inc
+#		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz10#' Make.inc
+#		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz10#' Make.inc
+#		%define pr_z10 %(echo $((%{__isa_bits}+1)))
+#	elif [ "$type" = "z196" ]; then
+
+		cat Make.inc | grep "ARCH"	
+		cat Make.inc | grep "march"	
 		%ifarch s390x 
 			sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
-                %endif
+               %endif
 		%ifarch s390 
 			sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
                 %endif
-		sed -i 's#-march=z196#-march=z9-109 -mtune=z196#' Make.inc
-		sed -i 's#-march=z10 -mtune=z196#-march=z9-109 -mtune=z196#' Make.inc
-		sed -i 's#-march=z10#-march=z9-109 -mtune=z10#' Make.inc
-		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz9#' Make.inc
-		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz9#' Make.inc
-		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz9#' Make.inc
-	elif [ "$type" = "z10" ]; then
-		%ifarch s390x 
-			sed -i 's#ARCH =.*#ARCH = IBMz1064#' Make.inc
-                %endif
-		%ifarch s390 
-			sed -i 's#ARCH =.*#ARCH = IBMz1032#' Make.inc
-                %endif
-		sed -i 's#-march=z196#-march=z10#' Make.inc
-		sed -i 's#-march=z10 -mtune=z196#-march=z10#' Make.inc
-		sed -i 's#-march=z9-109#-march=z10#' Make.inc
-		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz10#' Make.inc
-		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz10#' Make.inc
-		%define pr_z10 %(echo $((%{__isa_bits}+1)))
-	elif [ "$type" = "z196" ]; then
-		%ifarch s390x 
-			sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
-                %endif
-		%ifarch s390 
-			sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
-                %endif
-		sed -i 's#-march=z196#-march=z10 -mtune=z196#' Make.inc
+		#sed -i 's#-march=z196#-march=z10 -mtune=z196#' Make.inc
 		sed -i 's#-march=z10#-march=z10 -mtune=z196#' Make.inc
-		sed -i 's#-march=z9-109#-march=z10 -mtune=z196#' Make.inc
-		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz196#' Make.inc
-		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz196#' Make.inc
+		#sed -i 's#-march=z9-109#-march=z10 -mtune=z196#' Make.inc
+		#sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz196#' Make.inc
+		#sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz196#' Make.inc
 		%define pr_z196 %(echo $((%{__isa_bits}+2)))
 	fi
 %endif
@@ -591,39 +601,40 @@ fi
 
 %endif
 
-%ifarch s390 s390x
-%post -n atlas-z10 -p /sbin/ldconfig
+#%ifarch s390 s390x
+#%post -n atlas-z10 -p /sbin/ldconfig
 
-%postun -n atlas-z10 -p /sbin/ldconfig
+#%postun -n atlas-z10 -p /sbin/ldconfig
 
-%posttrans z10-devel
-if [ $1 -eq 0 ] ; then
-/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-		%{_includedir}/atlas-%{_arch}-z10  %{pr_z10}
-fi
+#%posttrans z10-devel
+#if [ $1 -eq 0 ] ; then
+#/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+#		%{_includedir}/atlas-%{_arch}-z10  %{pr_z10}
+#fi
 
-%preun z10-devel
-if [ $1 -ge 0 ] ; then
-/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z10
-fi
+#%preun z10-devel
+#if [ $1 -ge 0 ] ; then
+#/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z10
+#fi
 
-%post -n atlas-z196 -p /sbin/ldconfig
+#%post -n atlas-z196 -p /sbin/ldconfig
 
-%postun -n atlas-z196 -p /sbin/ldconfig
+#%postun -n atlas-z196 -p /sbin/ldconfig
 
-%posttrans z196-devel
-if [ $1 -eq 0 ] ; then
-/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-		%{_includedir}/atlas-%{_arch}-z196  %{pr_z196}
-fi
+#%posttrans z196-devel
+#if [ $1 -eq 0 ] ; then
+#/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+#		%{_includedir}/atlas-%{_arch}-z196  %{pr_z196}
+#fi
 
-%preun z196-devel
-if [ $1 -ge 0 ] ; then
-/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z196
-fi
+#%preun z196-devel
+#if [ $1 -ge 0 ] ; then
+#/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z196
+#fi
 
-%endif
+#%endif
 
+echo ahoj
 %endif
 
 %files
@@ -738,46 +749,46 @@ fi
 
 %endif
 
-%ifarch s390 s390x
-%files z10
-%defattr(-,root,root,-)
-%doc doc/README.dist
-%dir %{_libdir}/atlas-z10
-%{_libdir}/atlas-z10/*.so
-%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z10.conf
+#%ifarch s390 s390x
+#%files z10
+#%defattr(-,root,root,-)
+#%doc doc/README.dist
+#%dir %{_libdir}/atlas-z10
+#%{_libdir}/atlas-z10/*.so
+#%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z10.conf
+#
+#%files z10-devel
+#%defattr(-,root,root,-)
+#%doc doc
+#%{_libdir}/atlas-z10/*.so
+#%{_includedir}/atlas-%{_arch}-z10/
+#%{_includedir}/*.h
+#%ghost %{_includedir}/atlas
+#
+#%files z10-static
+#%defattr(-,root,root,-)
+#%{_libdir}/atlas-z10/*.a
 
-%files z10-devel
-%defattr(-,root,root,-)
-%doc doc
-%{_libdir}/atlas-z10/*.so
-%{_includedir}/atlas-%{_arch}-z10/
-%{_includedir}/*.h
-%ghost %{_includedir}/atlas
+#%files z196
+#%defattr(-,root,root,-)
+#%doc doc/README.dist
+#%dir %{_libdir}/atlas-z196
+#%{_libdir}/atlas-z196/*.so
+#%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z196.conf
 
-%files z10-static
-%defattr(-,root,root,-)
-%{_libdir}/atlas-z10/*.a
+#%files z196-devel
+#%defattr(-,root,root,-)
+#%doc doc
+#%{_libdir}/atlas-z196/*.so
+#%{_includedir}/atlas-%{_arch}-z196/
+#%{_includedir}/*.h
+#%ghost %{_includedir}/atlas
 
-%files z196
-%defattr(-,root,root,-)
-%doc doc/README.dist
-%dir %{_libdir}/atlas-z196
-%{_libdir}/atlas-z196/*.so
-%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z196.conf
+#%files z196-static
+#%defattr(-,root,root,-)
+#%{_libdir}/atlas-z196/*.a
 
-%files z196-devel
-%defattr(-,root,root,-)
-%doc doc
-%{_libdir}/atlas-z196/*.so
-%{_includedir}/atlas-%{_arch}-z196/
-%{_includedir}/*.h
-%ghost %{_includedir}/atlas
-
-%files z196-static
-%defattr(-,root,root,-)
-%{_libdir}/atlas-z196/*.a
-
-%endif
+#%endif
 %endif
 
 %changelog
