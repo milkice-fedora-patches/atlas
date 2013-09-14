@@ -20,7 +20,8 @@ Source5:        USII32.tgz
 #Source6:        IBMz1032.tgz
 #Source7:        IBMz1064.tgz
 #Source8:        IBMz19632.tgz
-Source9:        IBMz19664.tgz
+#Source9:        IBMz19664.tgz
+Source10: 	lapack-3.4.2-clean.tgz
 #Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-s390port.patch
 Patch2:		atlas-fedora-arm.patch
@@ -110,53 +111,6 @@ Linear Algebra Software).
 
 %ifarch %{ix86}
 %define types base sse2 sse3
-#3dnow sse 
-
-#%%package 3dnow
-#Summary:        ATLAS libraries for 3DNow extensions
-#Group:          System Environment/Libraries
-
-#%%description 3dnow
-#This package contains the ATLAS (Automatically Tuned Linear Algebra
-#Software) libraries compiled with optimizations for the 3DNow extension
-#to the ix86 architecture. Fedora also produces ATLAS build with SSE, SSE2
-#and SSE3 extensions.
-
-#%%package 3dnow-devel
-#Summary:        Development libraries for ATLAS with 3DNow extensions
-#Group:          Development/Libraries
-#Requires:       %{name}-3dnow = %{version}-%{release}
-#Obsoletes:	%name-header <= %version-%release
-#Requires(posttrans):	chkconfig
-#Requires(preun):	chkconfig
-
-#%%description 3dnow-devel
-#This package contains headers and shared versions of the ATLAS
-#(Automatically Tuned Linear Algebra Software) libraries compiled with
-#optimizations for the 3DNow extensions to the ix86 architecture.
-
-#%%package sse
-#Summary:        ATLAS libraries for SSE extensions
-#Group:          System Environment/Libraries
-
-#%%description sse
-#This package contains the ATLAS (Automatically Tuned Linear Algebra
-#Software) libraries compiled with optimizations for the SSE(1) extensions
-#to the ix86 architecture. Fedora also produces ATLAS build with SSE2 and SSE3
-#extensions.
-
-#%%package sse-devel
-#Summary:        Development libraries for ATLAS with SSE extensions
-#Group:          Development/Libraries
-#Requires:       %{name}-sse = %{version}-%{release}
-#Obsoletes:	%name-header <= %version-%release
-#Requires(posttrans):	chkconfig
-#Requires(preun):	chkconfig
-
-#%%description sse-devel
-#This package contains headers and shared versions of the ATLAS
-#(Automatically Tuned Linear Algebra Software) libraries compiled with
-#optimizations for the SSE(1) extensions to the ix86 architecture.
 
 %package sse2
 Summary:        ATLAS libraries for SSE2 extensions
@@ -332,7 +286,7 @@ cp %{SOURCE5} CONFIG/ARCHS/
 #cp %{SOURCE6} CONFIG/ARCHS/
 #cp %{SOURCE7} CONFIG/ARCHS/
 #cp %{SOURCE8} CONFIG/ARCHS/
-cp %{SOURCE9} CONFIG/ARCHS/
+#cp %{SOURCE9} CONFIG/ARCHS/
 
 %build
 
@@ -349,8 +303,8 @@ for type in %{types}; do
 	../configure -b %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
-	--libdir=%{buildroot}%{_libdir}/${libname}	
-#	--with-netlib-lapack=%{_libdir}/liblapack_pic.a
+	--libdir=%{buildroot}%{_libdir}/${libname}	\
+	--with-netlib-lapack-tarfile=%{SOURCE10}
 
 %if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
