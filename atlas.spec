@@ -595,7 +595,7 @@ echo ahoj
 %defattr(-,root,root,-)
 %doc doc/README.dist
 %dir %{_libdir}/atlas
-%{_libdir}/atlas/*.so
+%{_libdir}/atlas/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}.conf
 
 %files devel
