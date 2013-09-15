@@ -15,13 +15,18 @@ Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.ta
 Source1:        PPRO32.tgz
 #Source2:        K7323DNow.tgz
 Source3:        README.dist
-Source4:        USII64.tgz                                              
-Source5:        USII32.tgz                                              
+#Source4:        USII64.tgz                                              
+#Source5:        USII32.tgz                                              
 #Source6:        IBMz1032.tgz
 #Source7:        IBMz1064.tgz
 #Source8:        IBMz19632.tgz
 #Source9:        IBMz19664.tgz
 Source10: 	lapack-3.4.2-clean.tgz
+#archdefs taken from debian:
+Source11: 	POWER332.tar.bz2
+Source12: 	IBMz932.tar.bz2
+Source13: 	IBMz964.tar.bz2
+
 #Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-s390port.patch
 Patch2:		atlas-fedora-arm.patch
@@ -33,7 +38,6 @@ Patch5:		atlas-build-id.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran
-# lapack-static
 
 %description
 The ATLAS (Automatically Tuned Linear Algebra Software) project is an
@@ -265,25 +269,26 @@ ix86 architecture.
 %endif
 
 %prep
-uname -a
-cat /proc/cpuinfo
+#uname -a
+#cat /proc/cpuinfo
 %setup -q -n ATLAS
 #patch0 -p0 -b .shared
 %ifarch s390 s390x
 %patch1 -p1 -b .s390
 %endif
-%ifarch %{arm}
-%patch2 -p0 -b .arm
-%endif
+#arm patch not applicable, probably not needed
+#%ifarch %{arm}
+#%patch2 -p0 -b .arm
+#%endif
 #patch3 -p1 -b .melf
 %patch4 -p1 -b .thrott
 %patch5 -p1 -b .buildid
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
-cp %{SOURCE4} CONFIG/ARCHS/
-cp %{SOURCE5} CONFIG/ARCHS/
-#cp %{SOURCE6} CONFIG/ARCHS/
+cp %{SOURCE11} CONFIG/ARCHS/
+cp %{SOURCE12} CONFIG/ARCHS/
+cp %{SOURCE13} CONFIG/ARCHS/
 #cp %{SOURCE7} CONFIG/ARCHS/
 #cp %{SOURCE8} CONFIG/ARCHS/
 #cp %{SOURCE9} CONFIG/ARCHS/
@@ -364,61 +369,59 @@ for type in %{types}; do
 # we also need a compiler with -march=z196 support
 # the base support will use z196 tuning
 	if [ "$type" = "base" ]; then
-		#%ifarch s390x 
-		#	sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
-                #%endif
-		#%ifarch s390 
-	#		sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
-        #        %endif
-#		sed -i 's#-march=z196#-march=z9-109 -mtune=z196#' Make.inc
+		%ifarch s390x 
+			sed -i 's#ARCH =.*#ARCH = IBMz964#' Make.inc
+                %endif
+		%ifarch s390 
+			sed -i 's#ARCH =.*#ARCH = IBMz932#' Make.inc
+                %endif
+		sed -i 's#-march=z196#-march=z9-109 -mtune=z196#' Make.inc
 #		sed -i 's#-march=z10 -mtune=z196#-march=z9-109 -mtune=z196#' Make.inc
-#		sed -i 's#-march=z10#-march=z9-109 -mtune=z10#' Make.inc
-#		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz9#' Make.inc
-#		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz9#' Make.inc
+		sed -i 's#-march=z10#-march=z9-109 -mtune=z10#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz9#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz9#' Make.inc
 #		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz9#' Make.inc
-#	elif [ "$type" = "z10" ]; then
-#		%ifarch s390x 
-#		
+	elif [ "$type" = "z10" ]; then
+		%ifarch s390x 
+		
 #			cat Make.inc | grep "ARCH ="
-#			sed -i 's#ARCH =.*#ARCH = IBMz1064#' Make.inc
-#               %endif
-#		%ifarch s390 
-#		#	sed -i 's#ARCH =.*#ARCH = IBMz1032#' Make.inc
+			sed -i 's#ARCH =.*#ARCH = IBMz1064#' Make.inc
+                %endif
+		%ifarch s390 
+			sed -i 's#ARCH =.*#ARCH = IBMz1032#' Make.inc
 #			cat Make.inc | grep "ARCH ="
- #               %endif
-#		sed -i 's#-march=z196#-march=z10#' Make.inc
-#		sed -i 's#-march=z10 -mtune=z196#-march=z10#' Make.inc
-#		sed -i 's#-march=z9-109#-march=z10#' Make.inc
-#		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz10#' Make.inc
-#		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz10#' Make.inc
-#		%define pr_z10 %(echo $((%{__isa_bits}+1)))
-#	elif [ "$type" = "z196" ]; then
+                %endif
+		sed -i 's#-march=z196#-march=z10#' Make.inc
+		sed -i 's#-mtune=z196##' Make.inc
+		sed -i 's#-march=z9-109#-march=z10#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz196#-DATL_ARCH_IBMz10#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz10#' Make.inc
+		%define pr_z10 %(echo $((%{__isa_bits}+1)))
+	elif [ "$type" = "z196" ]; then
 
-		cat Make.inc | grep "ARCH"	
-		cat Make.inc | grep "march"	
 		%ifarch s390x 
 			sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
-               %endif
+                %endif
 		%ifarch s390 
 			sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
                 %endif
-		#sed -i 's#-march=z196#-march=z10 -mtune=z196#' Make.inc
+		sed -i 's#-march=z196#-march=z10 -mtune=z196#' Make.inc
 		sed -i 's#-march=z10#-march=z10 -mtune=z196#' Make.inc
-		#sed -i 's#-march=z9-109#-march=z10 -mtune=z196#' Make.inc
-		#sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz196#' Make.inc
-		#sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz196#' Make.inc
+		sed -i 's#-march=z9-109#-march=z10 -mtune=z196#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz196#' Make.inc
+		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz196#' Make.inc
 		%define pr_z196 %(echo $((%{__isa_bits}+2)))
 	fi
 %endif
 
 %ifarch ppc
-	sed -i 's#ARCH =.*#ARCH = POWER4#' Make.inc
-	sed -i 's#-DATL_ARCH_POWER7#-DATL_ARCH_POWER4#' Make.inc
-	sed -i 's#power7#power4#' Make.inc
-	sed -i 's#-DATL_VSX##' Make.inc
-	sed -i 's#-mvsx##' Make.inc
-	sed -i 's#-DATL_AltiVec##' Make.inc
-	sed -i 's#-m64#-m32#' Make.inc
+	sed -i 's#ARCH =.*#ARCH = POWER332#' Make.inc
+	sed -i 's#-DATL_ARCH_POWER7#-DATL_ARCH_POWER3#g' Make.inc
+	sed -i 's#power7#power3#g' Make.inc
+	sed -i 's#-DATL_VSX##g' Make.inc
+	sed -i 's#-mvsx##g' Make.inc
+	sed -i 's#-DATL_AltiVec##g' Make.inc
+	sed -i 's#-m64#-m32#g' Make.inc
 %endif
 
 %endif
@@ -426,6 +429,11 @@ for type in %{types}; do
 	cd lib
 	make shared
 	make ptshared
+	find ./ -maxdepth 1 -iname '*.so' | while read f; do
+		mv "$f" "$f".3.0
+		ln -s "$f".3.0 "$f".3
+		ln -s "$f".3.0 "$f"
+	done
 	popd
 done
 
@@ -588,7 +596,6 @@ fi
 
 #%endif
 
-echo ahoj
 %endif
 
 %files
@@ -667,7 +674,7 @@ echo ahoj
 %defattr(-,root,root,-)
 %doc doc/README.dist
 %dir %{_libdir}/atlas-sse2
-%{_libdir}/atlas-sse2/*.so
+%{_libdir}/atlas-sse2/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse2.conf
 
 %files sse2-devel
@@ -686,7 +693,7 @@ echo ahoj
 %defattr(-,root,root,-)
 %doc doc/README.dist
 %dir %{_libdir}/atlas-sse3
-%{_libdir}/atlas-sse3/*.so
+%{_libdir}/atlas-sse3/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
 
 %files sse3-static
@@ -746,7 +753,7 @@ echo ahoj
 %endif
 
 %changelog
-* Wed Feb 06 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
+* Sun Sep 15 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
 - Rebase to 3.10.1
 
 * Thu Nov 15 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.0-1
@@ -824,7 +831,7 @@ echo ahoj
 * Sun Sep  6 2009 Alex Lancaster <alexlan[AT]fedoraproject org> - 3.8.3-9
 - Rebuild against fixed lapack (see #520518)
 
-* Wed Aug 13 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-8
+* Thu Aug 13 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-8
 - Revert the last change, it doesn't solve the problem. 
 
 * Tue Aug 04 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-7
