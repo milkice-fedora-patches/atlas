@@ -35,6 +35,7 @@ Patch2:		atlas-fedora-arm.patch
 #Patch3:		atlas-melf.patch
 Patch4:		atlas-throttling.patch
 Patch5:		atlas-build-id.patch
+Patch6:		atlas-arm_m32_flag.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran
@@ -261,11 +262,12 @@ ix86 architecture.
 %endif
 %endif
 
-%global mode %{__isa_bits}
 %ifarch %{arm}
 %define arch_option -A 38
 %define threads_option -t 2
-%global mode ' '
+%global mode %{nil}
+%else
+%global mode -b %{__isa_bits}
 %endif
 
 %prep
@@ -283,6 +285,7 @@ ix86 architecture.
 #patch3 -p1 -b .melf
 %patch4 -p1 -b .thrott
 %patch5 -p1 -b .buildid
+%patch6 -p1 -b .m32
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -305,7 +308,7 @@ for type in %{types}; do
 
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure -b %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
+	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	\
