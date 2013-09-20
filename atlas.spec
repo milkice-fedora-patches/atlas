@@ -766,7 +766,7 @@ fi
 %endif
 
 %changelog
-* Fri Sep 20 2012 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
+* Fri Sep 20 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
 - Rebase to 3.10.1
 - Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow, z10, z196 (uncompilable).
 - Modified incompatible patches.
