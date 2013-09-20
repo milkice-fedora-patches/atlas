@@ -788,9 +788,6 @@ fi
 * Sun Jan 27 2013 Peter Robinson <pbrobinson@fedoraproject.org> 3.8.4-8
 - Rebuild for ARM glibc/binutils issues
 
-* Sun Sep 15 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
-- Rebase to 3.10.1
-
 * Fri Sep 07 2012 Orion Poplawski <orion@nwra.com> - 3.8.4-7
 - Rebuild with lapack 3.4.1
 
