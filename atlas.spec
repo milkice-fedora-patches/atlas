@@ -38,7 +38,7 @@ Patch3:		atlas-melf.patch
 Patch4:		atlas-throttling.patch
 
 #credits Lukas Slebodnik
-Patch5:		atlas-shared_libraries_ls.patch
+Patch5:		atlas-shared_libraries.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -366,11 +366,6 @@ for type in %{types}; do
 		sed -i 's#-DATL_SSE2##' Make.inc
 		sed -i 's#-DATL_SSE1##' Make.inc  
 		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
-	elif [ "$type" = "3dnow" ]; then
-		sed -i 's#ARCH =.*#ARCH = K7323DNow#' Make.inc
-		sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc 
-		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
-		%define pr_3dnow %(echo $((%{__isa_bits}+1)))
 	elif [ "$type" = "sse" ]; then
 		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
 		sed -i 's#-DATL_SSE3#-DATL_SSE1#' Make.inc 
