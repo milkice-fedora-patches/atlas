@@ -26,19 +26,38 @@ Source10: 	lapack-3.4.2-clean.tgz
 Source11: 	POWER332.tar.bz2
 Source12: 	IBMz932.tar.bz2
 Source13: 	IBMz964.tar.bz2
+#upstream arm uses softfp abi, fedora arm uses hard
+Source14: 	ARMv732NEON.tar.bz2
 
 #Patch0:		atlas-fedora_shared.patch
 Patch1:         atlas-s390port.patch
 Patch2:		atlas-fedora-arm.patch
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
-#Patch3:		atlas-melf.patch
+Patch3:		atlas-melf.patch
 Patch4:		atlas-throttling.patch
-Patch5:		atlas-build-id.patch
-Patch6:		atlas-arm_m32_flag.patch
+
+#credits Lukas Slebodnik
+Patch5:		atlas-shared_libraries_ls.patch
+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran
+
+%ifarch x86_64
+Obsoletes:      atlas-sse3 < 3.10
+%endif
+
+%ifarch %{ix86}
+Obsoletes:      atlas-3dnow < 3.10
+Obsoletes:      atlas-sse < 3.10
+%endif
+
+%ifarch s390 s390x
+Obsoletes:      atlas-z10 < 3.10
+Obsoletes:      atlas-z196 < 3.10
+%endif
+
 
 %description
 The ATLAS (Automatically Tuned Linear Algebra Software) project is an
@@ -263,11 +282,14 @@ ix86 architecture.
 %endif
 
 %ifarch %{arm}
-%define arch_option -A 38
+#beware - arch constant can change between releases
+%define arch_option -A 46 
 %define threads_option -t 2
+%global armflags -mfpu=neon -mfloat-abi=hard
 %global mode %{nil}
 %else
 %global mode -b %{__isa_bits}
+%global armflags %{nil}
 %endif
 
 %prep
@@ -282,22 +304,21 @@ ix86 architecture.
 #%ifarch %{arm}
 #%patch2 -p0 -b .arm
 #%endif
-#patch3 -p1 -b .melf
+%patch3 -p1 -b .melf
 %patch4 -p1 -b .thrott
-%patch5 -p1 -b .buildid
-%patch6 -p1 -b .m32
+%patch5 -p2 -b .sharedlib
+#%patch6 -p1 -b .m32
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
 cp %{SOURCE11} CONFIG/ARCHS/
 cp %{SOURCE12} CONFIG/ARCHS/
 cp %{SOURCE13} CONFIG/ARCHS/
-#cp %{SOURCE7} CONFIG/ARCHS/
+cp %{SOURCE14} CONFIG/ARCHS/
 #cp %{SOURCE8} CONFIG/ARCHS/
 #cp %{SOURCE9} CONFIG/ARCHS/
 
 %build
-
 for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		libname=atlas
@@ -308,7 +329,7 @@ for type in %{types}; do
 
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
+	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '%{armflags} -g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	\
@@ -432,11 +453,16 @@ for type in %{types}; do
 	cd lib
 	make shared
 	make ptshared
-	find ./ -maxdepth 1 -iname '*.so' | while read f; do
-		mv "$f" "$f".3.0
-		ln -s "$f".3.0 "$f".3
-		ln -s "$f".3.0 "$f"
-	done
+#	ln -s libtatlas.so.3.10 libtatlas.so
+#	ln -s libtatlas.so.3.10 libtatlas.so.3
+#	ln -s libsatlas.so.3.10 libsatlas.so
+#	ln -s libsatlas.so.3.10 libsatlas.so.3
+
+#	find ./ -maxdepth 1 -iname '*.so' | while read f; do
+#		mv "$f" "$f".3.0
+#		ln -s "$f".3.0 "$f".3
+#		ln -s "$f".3.0 "$f"
+#	done
 	popd
 done
 
