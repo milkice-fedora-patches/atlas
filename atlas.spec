@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -478,6 +478,13 @@ done
 mkdir -p %{buildroot}%{_includedir}/atlas
 
 
+%check
+for type in %{types}; do
+	pushd %{_arch}_${type}
+	make check ptcheck
+done
+
+
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
@@ -766,6 +773,9 @@ fi
 %endif
 
 %changelog
+* Mon Sep 23 2013 Orion Poplawski <orion@cora.nwra.com> - 3.10.1-2
+- Add %%check section
+
 * Fri Sep 20 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
 - Rebase to 3.10.1
 - Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow, z10, z196 (uncompilable).
