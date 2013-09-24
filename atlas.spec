@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -38,6 +38,8 @@ Patch4:		atlas-throttling.patch
 
 #credits Lukas Slebodnik
 Patch5:		atlas-shared_libraries.patch
+
+Patch6:		atlas-affinity.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -289,6 +291,9 @@ ix86 architecture.
 %else
 %global mode -b %{__isa_bits}
 %global armflags %{nil}
+%if "%{?enable_native_atlas}" == "0"
+%define threads_option -t 16
+%endif
 %endif
 
 %prep
@@ -306,6 +311,10 @@ ix86 architecture.
 %patch3 -p1 -b .melf
 %patch4 -p1 -b .thrott
 %patch5 -p2 -b .sharedlib
+#affinity crashes with fewer processors than the builder but increases performance of locally builded library
+%if "%{?enable_native_atlas}" == "0"
+%patch6 -p1 -b .affinity
+%endif
 #%patch6 -p1 -b .m32
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
@@ -766,6 +775,9 @@ fi
 %endif
 
 %changelog
+* Tue Sep 24 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-2
+- disable affinity to prevent crash on systems with fewer cpus
+
 * Fri Sep 20 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-1
 - Rebase to 3.10.1
 - Dropped x86_64-SSE2, ix86-SSE1, ix86-3DNow, z10, z196 (uncompilable).
