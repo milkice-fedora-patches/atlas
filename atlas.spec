@@ -492,6 +492,7 @@ mkdir -p %{buildroot}%{_includedir}/atlas
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make check ptcheck
+	popd
 done
 %endif
 
