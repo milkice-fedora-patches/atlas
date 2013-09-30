@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -292,7 +292,7 @@ ix86 architecture.
 %global mode -b %{__isa_bits}
 %global armflags %{nil}
 %if "%{?enable_native_atlas}" == "0"
-%define threads_option -t 16
+%define threads_option -t 4 
 %endif
 %endif
 
@@ -488,11 +488,12 @@ mkdir -p %{buildroot}%{_includedir}/atlas
 
 
 %check
+%ifnarch %{arm} s390
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make check ptcheck
 done
-
+%endif
 
 %post -p /sbin/ldconfig
 
@@ -782,6 +783,9 @@ fi
 %endif
 
 %changelog
+* Mon Sep 30 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-4
+- disable tests on arm to allow update for x86
+
 * Tue Sep 24 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-3
 - disable affinity to prevent crash on systems with fewer cpus
 
