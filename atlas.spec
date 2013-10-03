@@ -333,7 +333,7 @@ sed -i -e 's,-mfloat-abi=softfp,-mfloat-abi=hard,' CONFIG/src/atlcomp.txt
 sed -i -e 's,-mfpu=vfpv3,,' tune/blas/gemm/CASES/*.flg
 %endif
 # Debug
-sed -i -e 's,> \(.*\)/ptsanity.out,> \1/ptsanity.out || cat \1/ptsanity.out \&\& exit 1,' makes/Make.*
+#sed -i -e 's,> \(.*\)/ptsanity.out,> \1/ptsanity.out || cat \1/ptsanity.out \&\& exit 1,' makes/Make.*
 
 %build
 for type in %{types}; do
@@ -796,7 +796,6 @@ fi
 * Wed Oct 2 2013 Orion Poplawski <orion@cora.nwra.com> - 3.10.1-5
 - Add -DATL_ARM_HARDFP=1 for arm build
 - Rework how arm flags are set
-- Add some diag output for still failing arm test
 
 * Mon Sep 30 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-4
 - disable tests on arm to allow update for x86
