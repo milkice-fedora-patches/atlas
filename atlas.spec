@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -286,7 +286,7 @@ ix86 architecture.
 #beware - arch constant can change between releases
 %define arch_option -A 46 
 %define threads_option -t 2
-%global armflags -mfpu=neon -mfloat-abi=hard
+%global armflags -DATL_ARM_HARDFP=1
 %global mode %{nil}
 %else
 %global mode -b %{__isa_bits}
@@ -325,6 +325,15 @@ cp %{SOURCE13} CONFIG/ARCHS/
 cp %{SOURCE14} CONFIG/ARCHS/
 #cp %{SOURCE8} CONFIG/ARCHS/
 #cp %{SOURCE9} CONFIG/ARCHS/
+%ifarch %{arm}
+# Set arm flags in atlcomp.txt
+sed -i -e 's,-mfpu=vfpv3,-mfpu=neon,' CONFIG/src/atlcomp.txt
+sed -i -e 's,-mfloat-abi=softfp,-mfloat-abi=hard,' CONFIG/src/atlcomp.txt
+# Some extra arm flags not needed
+sed -i -e 's,-mfpu=vfpv3,,' tune/blas/gemm/CASES/*.flg
+%endif
+# Debug
+sed -i -e 's,> \(.*\)/ptsanity.out,> \1/ptsanity.out || cat \1/ptsanity.out \&\& exit 1,' makes/Make.*
 
 %build
 for type in %{types}; do
@@ -784,6 +793,11 @@ fi
 %endif
 
 %changelog
+* Wed Oct 2 2013 Orion Poplawski <orion@cora.nwra.com> - 3.10.1-5
+- Add -DATL_ARM_HARDFP=1 for arm build
+- Rework how arm flags are set
+- Add some diag output for still failing arm test
+
 * Mon Sep 30 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-4
 - disable tests on arm to allow update for x86
 
