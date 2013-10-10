@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -497,7 +497,7 @@ mkdir -p %{buildroot}%{_includedir}/atlas
 
 
 %check
-%ifnarch %{arm} s390
+%ifnarch s390
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make check ptcheck
@@ -793,6 +793,9 @@ fi
 %endif
 
 %changelog
+* Thu Oct 10 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-6
+- make check on arm enabled - seems to work
+
 * Wed Oct 2 2013 Orion Poplawski <orion@cora.nwra.com> - 3.10.1-5
 - Add -DATL_ARM_HARDFP=1 for arm build
 - Rework how arm flags are set
