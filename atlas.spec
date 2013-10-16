@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -44,6 +44,8 @@ Patch6:		atlas-affinity.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran
+
+Provides: bundled(lapack)
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3 < 3.10
@@ -793,6 +795,9 @@ fi
 %endif
 
 %changelog
+* Wed Oct 16 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-7
+- Provides: bundled(lapack)
+
 * Thu Oct 10 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-6
 - make check on arm enabled - seems to work
 
