@@ -41,7 +41,7 @@ Patch5:		atlas-shared_libraries.patch
 
 Patch6:		atlas-affinity.patch
 
-Patch7:		atlas-fedora-aarch64.patch
+Patch7:		atlas-aarch64.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
