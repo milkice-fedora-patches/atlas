@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -40,6 +40,8 @@ Patch4:		atlas-throttling.patch
 Patch5:		atlas-shared_libraries.patch
 
 Patch6:		atlas-affinity.patch
+
+Patch7:		atlas-fedora-aarch64.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -284,7 +286,7 @@ ix86 architecture.
 %endif
 %endif
 
-%ifarch %{arm}
+%ifarch %{arm} aarch64
 #beware - arch constant can change between releases
 %define arch_option -A 46 
 %define threads_option -t 2
@@ -317,7 +319,10 @@ ix86 architecture.
 %if "%{?enable_native_atlas}" == "0"
 %patch6 -p1 -b .affinity
 %endif
-#%patch6 -p1 -b .m32
+%ifarch %{aarch64}
+%patch7 -p0 -b .aarch64
+%endif
+
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -795,6 +800,9 @@ fi
 %endif
 
 %changelog
+* Tue Nov 05 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-8
+- patch for aarch64 from https://bugzilla.redhat.com/attachment.cgi?id=755555
+
 * Wed Oct 16 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-7
 - Provides: bundled(lapack)
 
