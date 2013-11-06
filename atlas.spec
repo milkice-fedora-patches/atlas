@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -27,6 +27,7 @@ Patch2:		atlas-fedora-arm.patch
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
 Patch3:		atlas-melf.patch
+Patch4:		atlas-aarch64.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran lapack-static
@@ -236,7 +237,7 @@ optimizations for the z10 architecture.
 %endif
 
 %global mode %{__isa_bits}
-%ifarch %{arm}
+%ifarch %{arm} aarch64
 %define arch_option -A 38
 %define threads_option -t 2
 %global mode ' '
@@ -252,6 +253,9 @@ optimizations for the z10 architecture.
 %patch2 -p0 -b .arm
 %endif
 %patch3 -p1 -b .melf
+%ifarch %{aarch64}
+%patch4 -p0 -b .aarch64
+%endif
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -667,6 +671,9 @@ fi
 %endif
 
 %changelog
+* Wed Nov 06 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-10
+- support for aarch64
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.8.4-9
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
