@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -89,8 +89,8 @@ Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description devel
-This package contains the libraries and headers for development
-with ATLAS (Automatically Tuned Linear Algebra Software).
+This package contains headers for development with ATLAS
+(Automatically Tuned Linear Algebra Software).
 
 %package static
 Summary:        Static libraries for ATLAS
@@ -161,8 +161,8 @@ Requires(preun):	chkconfig
 
 %description sse2-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
-shared libraries compiled with optimizations for the SSE2 extensions to the 
-ix86 architecture.
+headers for libraries compiled with optimizations for the SSE2 extensions
+to the ix86 architecture.
 
 %package sse2-static
 Summary:        Static libraries for ATLAS with SSE2 extensions
@@ -184,7 +184,6 @@ Group:          System Environment/Libraries
 %description sse3
 This package contains the ATLAS (Automatically Tuned Linear Algebra
 Software) libraries compiled with optimizations for the SSE3.
-ATLAS builds with SSE(1) and SSE2 extensions also exist.
 
 %package sse3-devel
 Summary:        Development libraries for ATLAS with SSE3 extensions
@@ -196,7 +195,8 @@ Requires(preun):	chkconfig
 
 %description sse3-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
-shared libraries compiled with optimizations for the SSE3 extensions to the ix86 architecture.
+headers for libraries compiled with optimizations for the SSE3 extensions
+to the ix86 architecture.
 
 %package sse3-static
 Summary:        Static libraries for ATLAS with SSE2 extensions
@@ -800,6 +800,9 @@ fi
 %endif
 
 %changelog
+* Wed Nov 13 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-9
+- updated subpackage description
+
 * Tue Nov 05 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-8
 - patch for aarch64 from https://bugzilla.redhat.com/attachment.cgi?id=755555
 
