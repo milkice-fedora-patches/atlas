@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -21,7 +21,7 @@ Source3:        README.dist
 #Source7:        IBMz1064.tgz
 #Source8:        IBMz19632.tgz
 #Source9:        IBMz19664.tgz
-Source10: 	lapack-3.4.2-clean.tgz
+Source10: 	 http://www.netlib.org/lapack/lapack-3.5.0.tgz
 #archdefs taken from debian:
 Source11: 	POWER332.tar.bz2
 Source12: 	IBMz932.tar.bz2
@@ -800,6 +800,9 @@ fi
 %endif
 
 %changelog
+* Wed Nov 20 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-10
+- updated lapack to 3.5.0
+
 * Wed Nov 13 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-9
 - updated subpackage description
 
