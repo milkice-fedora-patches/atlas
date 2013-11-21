@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -57,7 +57,7 @@ Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description devel
-This package contains the libraries and headers for development
+This package contains headers for  development
 with ATLAS (Automatically Tuned Linear Algebra Software).
 
 %define types base
@@ -87,9 +87,9 @@ Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse3-devel
-This package contains shared and static versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the SSE3 extensions to the x86_64 architecture.
+This package contains header files for ATLAS (Automatically Tuned
+Linear Algebra Software) libraries compiled with optimizations
+for the SSE3 extensions to the x86_64 architecture.
 
 %endif
 
@@ -115,7 +115,7 @@ Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description 3dnow-devel
-This package contains headers and shared versions of the ATLAS
+This package contains headers for ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the 3DNow extensions to the ix86 architecture.
 
@@ -138,7 +138,7 @@ Requires(posttrans):	chkconfig
 Requires(preun):	chkconfig
 
 %description sse-devel
-This package contains headers and shared versions of the ATLAS
+This package contains headers for ATLAS
 (Automatically Tuned Linear Algebra Software) libraries compiled with
 optimizations for the SSE(1) extensions to the ix86 architecture.
 
@@ -162,7 +162,7 @@ Requires(preun):	chkconfig
 
 %description sse2-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
-shared libraries compiled with optimizations for the SSE2 extensions to the 
+header files compiled with optimizations for the SSE2 extensions to the 
 ix86 architecture.
 
 %package sse3
@@ -184,7 +184,7 @@ Requires(preun):	chkconfig
 
 %description sse3-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
-shared libraries compiled with optimizations for the SSE3 extensions to the ix86 architecture.
+header files compiled with optimizations for the SSE3 extensions to the ix86 architecture.
 
 %endif
 
@@ -671,6 +671,9 @@ fi
 %endif
 
 %changelog
+* Thu Nov 21 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-11
+- modified description of *-devel subpackages
+
 * Wed Nov 06 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-10
 - support for aarch64
 
