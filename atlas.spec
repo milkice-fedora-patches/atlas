@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -502,6 +502,18 @@ for type in %{types}; do
 		> %{buildroot}/etc/ld.so.conf.d/atlas-%{_arch}-${type}.conf
 	fi
 done
+
+#create pkgconfig file
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/pkgconfig/
+cat > $RPM_BUILD_ROOT%{_libdir}/pkgconfig/atlas.pc << DATA
+Name: %{name}
+Version: %{version}
+Description: %{summary}
+Cflags: -I%{_includedir}atlas
+Libs: -L%{_libdir}/atlas -lsatlas
+DATA
+
+
 mkdir -p %{buildroot}%{_includedir}/atlas
 
 
@@ -668,6 +680,7 @@ fi
 %{_includedir}/atlas-%{_arch}-base/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
+%{_libdir}/pkgconfig/atlas.pc
 
 %files static
 %defattr(-,root,root,-)
@@ -809,6 +822,9 @@ fi
 %endif
 
 %changelog
+* Thu Oct 23 2014 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-15
+- added pkgconfig file
+
 * Fri Aug 15 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.10.1-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
