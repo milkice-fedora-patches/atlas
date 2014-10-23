@@ -509,8 +509,8 @@ cat > $RPM_BUILD_ROOT%{_libdir}/pkgconfig/atlas.pc << DATA
 Name: %{name}
 Version: %{version}
 Description: %{summary}
-Cflags: -I%{_includedir}atlas
-Libs: -L%{_libdir}/atlas -lsatlas
+Cflags: -I%{_includedir}/atlas/
+Libs: -L%{_libdir}/atlas/ -lsatlas
 DATA
 
 
