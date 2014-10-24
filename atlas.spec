@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -87,7 +87,7 @@ Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
+Requires(postun):	chkconfig
 
 %description devel
 This package contains headers for development with ATLAS
@@ -98,7 +98,7 @@ Summary:        Static libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name}-devel = %{version}-%{release}
 Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
+Requires(postun):	chkconfig
 
 %description static
 This package contains static version of ATLAS (Automatically Tuned
@@ -130,7 +130,7 @@ Linear Algebra Software).
 #Requires:       %{name}-sse3 = %{version}-%{release}
 #Obsoletes:	%name-header <= %version-%release
 #Requires(posttrans):	chkconfig
-#Requires(preun):	chkconfig
+#Requires(postun):	chkconfig
 
 #description sse3-devel
 #This package contains shared and static versions of the ATLAS
@@ -158,7 +158,7 @@ Group:          Development/Libraries
 Requires:       %{name}-sse2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
+Requires(postun):	chkconfig
 
 %description sse2-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -170,7 +170,7 @@ Summary:        Static libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2-devel = %{version}-%{release}
 Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
+Requires(postun):	chkconfig
 
 %description sse2-static
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -192,7 +192,7 @@ Group:          Development/Libraries
 Requires:       %{name}-sse3 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
+Requires(postun):	chkconfig
 
 %description sse3-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -204,7 +204,7 @@ Summary:        Static libraries for ATLAS with SSE2 extensions
 Group:          Development/Libraries
 Requires:       %{name}-sse2-devel = %{version}-%{release}
 Requires(posttrans):	chkconfig
-Requires(preun):	chkconfig
+Requires(postun):	chkconfig
 
 %description sse3-static
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -232,7 +232,7 @@ ix86 architecture.
 #Requires:       %{name}-z196 = %{version}-%{release}
 #Obsoletes:	%name-header <= %version-%release
 #Requires(posttrans):	chkconfig
-#Requires(preun):	chkconfig
+#Requires(postun):	chkconfig
 #
 #%description z196-devel
 #This package contains headers and shared versions of the ATLAS
@@ -244,7 +244,7 @@ ix86 architecture.
 #Group:          Development/Libraries
 #Requires:       %{name}-devel = %{version}-%{release}
 #Requires(posttrans):	chkconfig
-#Requires(preun):	chkconfig
+#Requires(postun):	chkconfig
 
 #%description z196-static
 #This package contains static version of ATLAS (Automatically Tuned
@@ -265,7 +265,7 @@ ix86 architecture.
 #Requires:       %{name}-z10 = %{version}-%{release}
 #Obsoletes:	%name-header <= %version-%release
 #Requires(posttrans):	chkconfig
-#Requires(preun):	chkconfig
+#Requires(postun):	chkconfig
 #
 #%description z10-devel
 #This package contains headers and shared versions of the ATLAS
@@ -277,7 +277,7 @@ ix86 architecture.
 #Group:          Development/Libraries
 #Requires:       %{name}-devel = %{version}-%{release}
 #Requires(posttrans):	chkconfig
-#Requires(preun):	chkconfig
+#Requires(postun):	chkconfig
 #
 #%description z10-static
 #This package contains static version of ATLAS (Automatically Tuned
@@ -538,12 +538,10 @@ done
 %postun -p /sbin/ldconfig
 
 %posttrans devel
-if [ $1 -eq 0 ] ; then
 /usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 		%{_includedir}/atlas-%{_arch}-base %{pr_base}
-fi
 
-%preun devel
+%postun devel
 if [ $1 -ge 0 ] ; then
 /usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-base
 fi
@@ -556,12 +554,10 @@ fi
 #postun -n atlas-sse3 -p /sbin/ldconfig
 
 #posttrans sse3-devel
-#if [ $1 -eq 0 ] ; then
 #/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 #		%{_includedir}/atlas-%{_arch}-sse3  %{pr_sse3}
-#fi
 
-#preun sse3-devel
+#postun sse3-devel
 #if [ $1 -ge 0 ] ; then
 #/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse3
 #fi
@@ -574,12 +570,10 @@ fi
 #%%postun -n atlas-3dnow -p /sbin/ldconfig
 
 #%%posttrans 3dnow-devel
-#if [ $1 -eq 0 ] ; then
 #/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 #		%{_includedir}/atlas-%{_arch}-3dnow  %{pr_3dnow}
-#fi
 
-#%%preun 3dnow-devel
+#%%postun 3dnow-devel
 #if [ $1 -ge 0 ] ; then
 #/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-3dnow
 #fi
@@ -589,12 +583,10 @@ fi
 #%%postun -n atlas-sse -p /sbin/ldconfig
 
 #%%posttrans sse-devel
-#if [ $1 -eq 0 ] ; then
 #/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 #		%{_includedir}/atlas-%{_arch}-sse  %{pr_sse}
-#fi
 
-#%%preun sse-devel
+#%%postun sse-devel
 #if [ $1 -ge 0 ] ; then
 #/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse
 #fi
@@ -604,12 +596,10 @@ fi
 %postun -n atlas-sse2 -p /sbin/ldconfig
 
 %posttrans sse2-devel
-if [ $1 -eq 0 ] ; then
 /usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 		%{_includedir}/atlas-%{_arch}-sse2  %{pr_sse2}
-fi
 
-%preun sse2-devel
+%postun sse2-devel
 if [ $1 -ge 0 ] ; then
 /usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse2
 fi
@@ -619,12 +609,10 @@ fi
 %postun -n atlas-sse3 -p /sbin/ldconfig
 
 %posttrans sse3-devel
-if [ $1 -eq 0 ] ; then
 /usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 		%{_includedir}/atlas-%{_arch}-sse3  %{pr_sse3}
-fi
 
-%preun sse3-devel
+%postun sse3-devel
 if [ $1 -ge 0 ] ; then
 /usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-sse3
 fi
@@ -637,12 +625,10 @@ fi
 #%postun -n atlas-z10 -p /sbin/ldconfig
 
 #%posttrans z10-devel
-#if [ $1 -eq 0 ] ; then
 #/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 #		%{_includedir}/atlas-%{_arch}-z10  %{pr_z10}
-#fi
 
-#%preun z10-devel
+#%postun z10-devel
 #if [ $1 -ge 0 ] ; then
 #/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z10
 #fi
@@ -652,12 +638,10 @@ fi
 #%postun -n atlas-z196 -p /sbin/ldconfig
 
 #%posttrans z196-devel
-#if [ $1 -eq 0 ] ; then
 #/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
 #		%{_includedir}/atlas-%{_arch}-z196  %{pr_z196}
-#fi
 
-#%preun z196-devel
+#%postun z196-devel
 #if [ $1 -ge 0 ] ; then
 #/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z196
 #fi
@@ -822,6 +806,9 @@ fi
 %endif
 
 %changelog
+* Fri Oct 24 2014 Orion Poplawski <orion@cora.nwra.com> - 3.10.1-16
+- Fix alternatives install
+
 * Thu Oct 23 2014 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-15
 - added pkgconfig file
 
