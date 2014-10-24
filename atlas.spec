@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -398,6 +398,17 @@ for type in %{types}; do
 		> %{buildroot}/etc/ld.so.conf.d/atlas-%{_arch}-${type}.conf
 	fi
 done
+
+#create pkgconfig file
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/pkgconfig/
+cat > $RPM_BUILD_ROOT%{_libdir}/pkgconfig/atlas.pc << DATA
+Name: %{name}
+Version: %{version}
+Description: %{summary}
+Cflags: -I%{_includedir}/atlas/
+Libs: -L%{_libdir}/atlas/ -lf77blas -lclapack -lcblas -latlas -llapack
+DATA
+
 mkdir -p %{buildroot}%{_includedir}/atlas
 
 
@@ -551,6 +562,7 @@ fi
 %{_includedir}/atlas-%{_arch}-base/
 %{_includedir}/*.h
 %ghost %{_includedir}/atlas
+%{_libdir}/pkgconfig/atlas.pc
 
 %if "%{?enable_native_atlas}" == "0"
 
@@ -671,6 +683,9 @@ fi
 %endif
 
 %changelog
+* Fri Oct 24 2014 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-12
+- added pkgconfig file
+
 * Thu Nov 21 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-11
 - modified description of *-devel subpackages
 
