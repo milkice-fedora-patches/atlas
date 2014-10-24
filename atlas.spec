@@ -44,8 +44,6 @@ Patch6:		atlas-affinity.patch
 Patch7:		atlas-aarch64port.patch
 Patch8:		atlas-genparse.patch
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
 BuildRequires:  gcc-gfortran
 
 Provides: bundled(lapack)
@@ -651,14 +649,12 @@ fi
 %endif
 
 %files
-%defattr(-,root,root,-)
 %doc doc/README.dist
 %dir %{_libdir}/atlas
 %{_libdir}/atlas/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}.conf
 
 %files devel
-%defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas/*.so
 %{_includedir}/atlas-%{_arch}-base/
@@ -667,7 +663,6 @@ fi
 %{_libdir}/pkgconfig/atlas.pc
 
 %files static
-%defattr(-,root,root,-)
 %{_libdir}/atlas/*.a
 
 %if "%{?enable_native_atlas}" == "0"
@@ -675,14 +670,12 @@ fi
 #ifarch x86_64
 
 #files sse3
-#defattr(-,root,root,-)
 #doc doc/README.Fedora
 #dir %{_libdir}/atlas-sse3
 #{_libdir}/atlas-sse3/*.so
 #config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
 
 #files sse3-devel
-#defattr(-,root,root,-)
 #doc doc
 #{_libdir}/atlas-sse3/*.so
 #{_includedir}/atlas-%{_arch}-sse3/
@@ -694,14 +687,12 @@ fi
 %ifarch %{ix86}
 
 #%%files 3dnow
-#%%defattr(-,root,root,-)
 #%%doc doc/README.Fedora
 #%%dir %{_libdir}/atlas-3dnow
 #%%{_libdir}/atlas-3dnow/*.so.*
 #%%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-3dnow.conf
 
 #%%files 3dnow-devel
-#%%defattr(-,root,root,-)
 #%%doc doc
 #%%{_libdir}/atlas-3dnow/*.so
 #%%{_includedir}/atlas-%{_arch}-3dnow/
@@ -709,14 +700,12 @@ fi
 #%%ghost %{_includedir}/atlas
 
 #%%files sse
-#%%defattr(-,root,root,-)
 #%%doc doc/README.Fedora
 #%%dir %{_libdir}/atlas-sse
 #%%{_libdir}/atlas-sse/*.so.*
 #%%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse.conf
 
 #%%files sse-devel
-#%%defattr(-,root,root,-)
 #%%doc doc
 #%%{_libdir}/atlas-sse/*.so
 #%%{_includedir}/atlas-%{_arch}-sse/
@@ -724,14 +713,12 @@ fi
 #%%ghost %{_includedir}/atlas
 
 %files sse2
-%defattr(-,root,root,-)
 %doc doc/README.dist
 %dir %{_libdir}/atlas-sse2
 %{_libdir}/atlas-sse2/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse2.conf
 
 %files sse2-devel
-%defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas-sse2/*.so
 %{_includedir}/atlas-%{_arch}-sse2/
@@ -739,22 +726,18 @@ fi
 %ghost %{_includedir}/atlas
 
 %files sse2-static
-%defattr(-,root,root,-)
 %{_libdir}/atlas-sse2/*.a
 
 %files sse3
-%defattr(-,root,root,-)
 %doc doc/README.dist
 %dir %{_libdir}/atlas-sse3
 %{_libdir}/atlas-sse3/*.so.*
 %config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-sse3.conf
 
 %files sse3-static
-%defattr(-,root,root,-)
 %{_libdir}/atlas-sse3/*.a
 
 %files sse3-devel
-%defattr(-,root,root,-)
 %doc doc
 %{_libdir}/atlas-sse3/*.so
 %{_includedir}/atlas-%{_arch}-sse3/
@@ -765,14 +748,12 @@ fi
 
 #%ifarch s390 s390x
 #%files z10
-#%defattr(-,root,root,-)
 #%doc doc/README.dist
 #%dir %{_libdir}/atlas-z10
 #%{_libdir}/atlas-z10/*.so
 #%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z10.conf
 #
 #%files z10-devel
-#%defattr(-,root,root,-)
 #%doc doc
 #%{_libdir}/atlas-z10/*.so
 #%{_includedir}/atlas-%{_arch}-z10/
@@ -780,18 +761,15 @@ fi
 #%ghost %{_includedir}/atlas
 #
 #%files z10-static
-#%defattr(-,root,root,-)
 #%{_libdir}/atlas-z10/*.a
 
 #%files z196
-#%defattr(-,root,root,-)
 #%doc doc/README.dist
 #%dir %{_libdir}/atlas-z196
 #%{_libdir}/atlas-z196/*.so
 #%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z196.conf
 
 #%files z196-devel
-#%defattr(-,root,root,-)
 #%doc doc
 #%{_libdir}/atlas-z196/*.so
 #%{_includedir}/atlas-%{_arch}-z196/
@@ -799,7 +777,6 @@ fi
 #%ghost %{_includedir}/atlas
 
 #%files z196-static
-#%defattr(-,root,root,-)
 #%{_libdir}/atlas-z196/*.a
 
 #%endif
