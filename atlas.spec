@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -43,6 +43,14 @@ Patch6:		atlas-affinity.patch
 
 Patch7:		atlas-aarch64port.patch
 Patch8:		atlas-genparse.patch
+
+# ppc64le patches
+Patch95:	initialize_malloc_memory.invtrsm.wms.oct23.patch
+Patch96:	xlf.command.not.found.patch
+Patch98:	getdoublearr.stripwhite.patch
+Patch99:	ppc64le-remove-vsx.patch
+Patch100:	ppc64le-abiv2.patch
+Patch110:	p8-mem-barrier.patch
 
 BuildRequires:  gcc-gfortran
 
@@ -332,6 +340,16 @@ cp %{SOURCE13} CONFIG/ARCHS/
 cp %{SOURCE14} CONFIG/ARCHS/
 #cp %{SOURCE8} CONFIG/ARCHS/
 #cp %{SOURCE9} CONFIG/ARCHS/
+
+%ifarch ppc64le
+%patch99 -p2
+%patch98 -p2
+%patch96 -p2
+%patch95 -p2
+%patch100 -p2
+%patch110 -p1
+%endif
+
 %ifarch %{arm}
 # Set arm flags in atlcomp.txt
 sed -i -e 's,-mfpu=vfpv3,-mfpu=neon,' CONFIG/src/atlcomp.txt
@@ -341,6 +359,7 @@ sed -i -e 's,-mfpu=vfpv3,,' tune/blas/gemm/CASES/*.flg
 %endif
 # Debug
 #sed -i -e 's,> \(.*\)/ptsanity.out,> \1/ptsanity.out || cat \1/ptsanity.out \&\& exit 1,' makes/Make.*
+
 
 %build
 for type in %{types}; do
@@ -465,6 +484,14 @@ for type in %{types}; do
 	sed -i 's#-mvsx##g' Make.inc
 	sed -i 's#-DATL_AltiVec##g' Make.inc
 	sed -i 's#-m64#-m32#g' Make.inc
+%endif
+
+%ifarch ppc64le
+	sed -i 's#-mvsx##g' Make.inc
+	sed -i 's#-DATL_VSX##g' Make.inc
+	sed -i 's#-DATL_AltiVec##g' Make.inc
+	sed -i 's#-maltivec##g' Make.inc
+	sed -i 's#ARCH =.*#ARCH = POWER464#' Make.inc
 %endif
 
 %endif
@@ -783,6 +810,9 @@ fi
 %endif
 
 %changelog
+* Thu Oct 30 2014 Jaromir Capik <jcapik@redhat.com> - 3.10.1-17
+- patching for Power8 to pass performance tunings and tests on P8 builders
+
 * Fri Oct 24 2014 Orion Poplawski <orion@cora.nwra.com> - 3.10.1-16
 - Fix alternatives install
 
