@@ -277,6 +277,7 @@ for type in %{types}; do
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
 	../configure -b %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '-g -Wa,--noexecstack -fPIC'\
+	-Si cputhrchk 0					\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	\
@@ -685,6 +686,7 @@ fi
 %changelog
 * Fri Oct 24 2014 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-12
 - added pkgconfig file
+- disabled cpu throttling detection to be able to rebuild
 
 * Thu Nov 21 2013 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-11
 - modified description of *-devel subpackages
