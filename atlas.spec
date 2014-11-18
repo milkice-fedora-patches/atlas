@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -28,6 +28,7 @@ Patch2:		atlas-fedora-arm.patch
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
 Patch3:		atlas-melf.patch
 Patch4:		atlas-aarch64.patch
+Patch5:		atlas-3.8.4-corei1.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  gcc-gfortran lapack-static
@@ -256,6 +257,7 @@ optimizations for the z10 architecture.
 %ifarch %{aarch64}
 %patch4 -p0 -b .aarch64
 %endif
+%patch5 -p1 -b .corei1
 cp %{SOURCE1} CONFIG/ARCHS/
 cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -684,6 +686,10 @@ fi
 %endif
 
 %changelog
+* Tue Nov 18 2014 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-13
+- fixed intel cpu detection
+  https://bugzilla.redhat.com/show_bug.cgi?id=1164967
+
 * Fri Oct 24 2014 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-12
 - added pkgconfig file
 - disabled cpu throttling detection to be able to rebuild

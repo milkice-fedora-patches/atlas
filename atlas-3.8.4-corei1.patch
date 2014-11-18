@@ -1,0 +1,14 @@
+diff -up wrk/CONFIG/src/backend/archinfo_x86.c.wrk wrk/CONFIG/src/backend/archinfo_x86.c
+--- wrk/CONFIG/src/backend/archinfo_x86.c.wrk	2014-11-18 15:12:59.419444222 +0100
++++ wrk/CONFIG/src/backend/archinfo_x86.c	2014-11-18 15:16:53.602254317 +0100
+@@ -309,9 +309,9 @@ enum MACHTYPE Chip2Mach(enum CHIP chip,
+       case 0x1A:
+       case 0x1E:
+       case 0x1F:
++      case 0x25:
+          iret = IntCorei1;
+          break;
+-      case 0x25:
+       case 0x2A:
+          iret = IntCorei2;
+ 	 break;
