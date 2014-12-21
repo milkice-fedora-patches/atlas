@@ -5,7 +5,7 @@ Version:        3.8.4
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -686,6 +686,9 @@ fi
 %endif
 
 %changelog
+* Sat Dec 20 2014 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.8.4-14
+- Rebuild with thread safe lapack.
+
 * Tue Nov 18 2014 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.8.4-13
 - fixed intel cpu detection
   https://bugzilla.redhat.com/show_bug.cgi?id=1164967
