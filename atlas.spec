@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        17%{?dist}
+Release:        18%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -21,7 +21,6 @@ Source3:        README.dist
 #Source7:        IBMz1064.tgz
 #Source8:        IBMz19632.tgz
 #Source9:        IBMz19664.tgz
-Source10: 	 http://www.netlib.org/lapack/lapack-3.5.0.tgz
 #archdefs taken from debian:
 Source11: 	POWER332.tar.bz2
 Source12: 	IBMz932.tar.bz2
@@ -44,6 +43,8 @@ Patch6:		atlas-affinity.patch
 Patch7:		atlas-aarch64port.patch
 Patch8:		atlas-genparse.patch
 
+Patch9:		atlas.3.10.1-unbundle.patch
+
 # ppc64le patches
 Patch95:	initialize_malloc_memory.invtrsm.wms.oct23.patch
 Patch96:	xlf.command.not.found.patch
@@ -52,9 +53,9 @@ Patch99:	ppc64le-remove-vsx.patch
 Patch100:	ppc64le-abiv2.patch
 Patch110:	p8-mem-barrier.patch
 
-BuildRequires:  gcc-gfortran
+BuildRequires:  gcc-gfortran, lapack-devel
 
-Provides: bundled(lapack)
+#Provides: bundled(lapack)
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3 < 3.10
@@ -331,6 +332,8 @@ ix86 architecture.
 %endif
 %patch8 -p1 -b .genparse
 
+%patch9 -p1 -b .unbundle
+
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
 cp %{SOURCE3} doc
@@ -375,8 +378,11 @@ for type in %{types}; do
 	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '%{armflags} -g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
-	--libdir=%{buildroot}%{_libdir}/${libname}	\
-	--with-netlib-lapack-tarfile=%{SOURCE10}
+	--libdir=%{buildroot}%{_libdir}/${libname}	
+	#--with-netlib-lapack-tarfile=%{SOURCE10}
+
+	#matches both SLAPACK and SSLAPACK
+	sed -i 's#SLAPACKlib.*#SLAPACKlib = %{_libdir}/liblapack.so#' Make.inc
 
 %if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
@@ -810,6 +816,9 @@ fi
 %endif
 
 %changelog
+* Fri Jan 23 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-18
+- unbundled lapack (only a few modified routines shipped with atlas sources are supposed to stay)
+
 * Thu Oct 30 2014 Jaromir Capik <jcapik@redhat.com> - 3.10.1-17
 - patching for Power8 to pass performance tunings and tests on P8 builders
 
