@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        18%{?dist}
+Release:        19%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -95,6 +95,7 @@ Requires:       %{name} = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
 Requires(postun):	chkconfig
+Requires: lapack-devel
 
 %description devel
 This package contains headers for development with ATLAS
@@ -166,6 +167,7 @@ Requires:       %{name}-sse2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
 Requires(postun):	chkconfig
+Requires: lapack-devel
 
 %description sse2-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -200,6 +202,7 @@ Requires:       %{name}-sse3 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
 Requires(postun):	chkconfig
+Requires: lapack-devel
 
 %description sse3-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -541,7 +544,7 @@ Name: %{name}
 Version: %{version}
 Description: %{summary}
 Cflags: -I%{_includedir}/atlas/
-Libs: -L%{_libdir}/atlas/ -lsatlas
+Libs: -L%{_libdir}/atlas/ -lsatlas -llapack
 DATA
 
 
@@ -816,6 +819,9 @@ fi
 %endif
 
 %changelog
+* Wed Jan 28 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-19
+- updated chkconfig and dependencies of atlas-devel after unbundling
+
 * Fri Jan 23 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-18
 - unbundled lapack (only a few modified routines shipped with atlas sources are supposed to stay)
 
