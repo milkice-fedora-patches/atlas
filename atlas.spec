@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -848,6 +848,9 @@ fi
 %endif
 
 %changelog
+* Mon Feb 02 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-17
+- rebuild with new lapack, https://bugzilla.redhat.com/show_bug.cgi?id=1149032
+
 * Fri Oct 31 2014 Jaromir Capik <jcapik@redhat.com> - 3.10.1-16
 - patching for Power8 to pass performance tunings and tests on P8 builders
 
