@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        19%{?dist}
+Release:        20%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -53,9 +53,7 @@ Patch99:	ppc64le-remove-vsx.patch
 Patch100:	ppc64le-abiv2.patch
 Patch110:	p8-mem-barrier.patch
 
-BuildRequires:  gcc-gfortran, lapack-devel
-
-#Provides: bundled(lapack)
+BuildRequires:  gcc-gfortran, lapack-static
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3 < 3.10
@@ -366,8 +364,19 @@ sed -i -e 's,-mfpu=vfpv3,,' tune/blas/gemm/CASES/*.flg
 # Debug
 #sed -i -e 's,> \(.*\)/ptsanity.out,> \1/ptsanity.out || cat \1/ptsanity.out \&\& exit 1,' makes/Make.*
 
+# Generate lapack library
+mkdir lapacklib
+cd lapacklib
+ar x %{_libdir}/liblapack_pic.a
+# Remove functions that have ATLAS implementations
+rm cgelqf.o cgels.o cgeqlf.o cgeqrf.o cgerqf.o cgesv.o cgetrf.o cgetri.o cgetrs.o clarfb.o clarft.o clauum.o cposv.o cpotrf.o cpotri.o cpotrs.o ctrtri.o dgelqf.o dgels.o dgeqlf.o dgeqrf.o dgerqf.o dgesv.o dgetrf.o dgetri.o dgetrs.o dlamch.o dlarfb.o dlarft.o dlauum.o dposv.o dpotrf.o dpotri.o dpotrs.o dtrtri.o ieeeck.o ilaenv.o lsame.o sgelqf.o sgels.o sgeqlf.o sgeqrf.o sgerqf.o sgesv.o sgetrf.o sgetri.o sgetrs.o slamch.o slarfb.o slarft.o slauum.o sposv.o spotrf.o spotri.o spotrs.o strtri.o xerbla.o zgelqf.o zgels.o zgeqlf.o zgeqrf.o zgerqf.o zgesv.o zgetrf.o zgetri.o zgetrs.o zlarfb.o zlarft.o zlauum.o zposv.o zpotrf.o zpotri.o zpotrs.o ztrtri.o 
+# Create new library
+ar rcs ../liblapack_pic_pruned.a *.o
+cd ..
+
 
 %build
+p=$(pwd)
 for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		libname=atlas
@@ -385,7 +394,7 @@ for type in %{types}; do
 	#--with-netlib-lapack-tarfile=%{SOURCE10}
 
 	#matches both SLAPACK and SSLAPACK
-	sed -i 's#SLAPACKlib.*#SLAPACKlib = %{_libdir}/liblapack.so#' Make.inc
+	sed -i "s#SLAPACKlib.*#SLAPACKlib = ${p}/liblapack_pic_pruned.a#" Make.inc
 
 %if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
@@ -544,7 +553,7 @@ Name: %{name}
 Version: %{version}
 Description: %{summary}
 Cflags: -I%{_includedir}/atlas/
-Libs: -L%{_libdir}/atlas/ -lsatlas -llapack
+Libs: -L%{_libdir}/atlas/ -lsatlas
 DATA
 
 
@@ -819,6 +828,10 @@ fi
 %endif
 
 %changelog
+* Fri Jan 30 2015 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.10.1-20
+- Link statically to system LAPACK as in earlier versions of Fedora and as
+  in OpenBLAS (BZ #1181369).
+
 * Wed Jan 28 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-19
 - updated chkconfig and dependencies of atlas-devel after unbundling
 
