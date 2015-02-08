@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        20%{?dist}
+Release:        21%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -93,7 +93,6 @@ Requires:       %{name} = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
 Requires(postun):	chkconfig
-Requires: lapack-devel
 
 %description devel
 This package contains headers for development with ATLAS
@@ -165,7 +164,6 @@ Requires:       %{name}-sse2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
 Requires(postun):	chkconfig
-Requires: lapack-devel
 
 %description sse2-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -200,7 +198,6 @@ Requires:       %{name}-sse3 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	chkconfig
 Requires(postun):	chkconfig
-Requires: lapack-devel
 
 %description sse3-devel
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -828,6 +825,9 @@ fi
 %endif
 
 %changelog
+* Sat Feb 07 2015 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.10.1-21
+- Devel packages don't need to require lapack-devel anymore.
+
 * Fri Jan 30 2015 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.10.1-20
 - Link statically to system LAPACK as in earlier versions of Fedora and as
   in OpenBLAS (BZ #1181369).
