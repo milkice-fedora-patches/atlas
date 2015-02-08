@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        17%{?dist}
+Release:        18%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -15,13 +15,12 @@ Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.ta
 Source1:        PPRO32.tgz
 #Source2:        K7323DNow.tgz
 Source3:        README.dist
-#Source4:        USII64.tgz                                              
-#Source5:        USII32.tgz                                              
+#Source4:        USII64.tgz
+#Source5:        USII32.tgz
 #Source6:        IBMz1032.tgz
 #Source7:        IBMz1064.tgz
 #Source8:        IBMz19632.tgz
 #Source9:        IBMz19664.tgz
-Source10: 	 http://www.netlib.org/lapack/lapack-3.5.0.tgz
 #archdefs taken from debian:
 Source11: 	POWER332.tar.bz2
 Source12: 	IBMz932.tar.bz2
@@ -43,6 +42,7 @@ Patch6:		atlas-affinity.patch
 
 Patch7:		atlas-aarch64port.patch
 Patch8:		atlas-genparse.patch
+Patch9:		atlas.3.10.1-unbundle.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -55,8 +55,7 @@ Patch100:	ppc64le-abiv2.patch
 Patch110:	p8-mem-barrier.patch
 
 BuildRequires:  gcc-gfortran
-
-Provides: bundled(lapack)
+BuildRequires:  lapack-static
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3 < 3.10
@@ -182,7 +181,7 @@ Requires(preun):	chkconfig
 
 %description sse2-static
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
-static libraries compiled with optimizations for the SSE2 extensions to the 
+static libraries compiled with optimizations for the SSE2 extensions to the
 ix86 architecture.
 
 
@@ -216,13 +215,13 @@ Requires(preun):	chkconfig
 
 %description sse3-static
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
-static libraries compiled with optimizations for the SSE3 extensions to the 
+static libraries compiled with optimizations for the SSE3 extensions to the
 ix86 architecture.
 
 %endif
 
 %ifarch s390 s390x
-%define types base 
+%define types base
 #z196
 #z10
 
@@ -297,7 +296,7 @@ ix86 architecture.
 
 %ifarch %{arm}
 #beware - arch constant can change between releases
-%define arch_option -A 46 
+%define arch_option -A 46
 %define threads_option -t 2
 %global armflags -DATL_ARM_HARDFP=1
 %global mode %{nil}
@@ -305,7 +304,7 @@ ix86 architecture.
 %global mode -b %{__isa_bits}
 %global armflags %{nil}
 %if "%{?enable_native_atlas}" == "0"
-%define threads_option -t 4 
+%define threads_option -t 4
 %endif
 %endif
 
@@ -332,6 +331,7 @@ ix86 architecture.
 %patch7 -p1 -b .aarch64
 %endif
 %patch8 -p1 -b .genparse
+%patch9 -p1 -b .unbundle
 
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
@@ -362,8 +362,19 @@ sed -i -e 's,-mfpu=vfpv3,,' tune/blas/gemm/CASES/*.flg
 # Debug
 #sed -i -e 's,> \(.*\)/ptsanity.out,> \1/ptsanity.out || cat \1/ptsanity.out \&\& exit 1,' makes/Make.*
 
+# Generate lapack library
+mkdir lapacklib
+cd lapacklib
+ar x %{_libdir}/liblapack_pic.a
+# Remove functions that have ATLAS implementations
+rm cgelqf.o cgels.o cgeqlf.o cgeqrf.o cgerqf.o cgesv.o cgetrf.o cgetri.o cgetrs.o clarfb.o clarft.o clauum.o cposv.o cpotrf.o cpotri.o cpotrs.o ctrtri.o dgelqf.o dgels.o dgeqlf.o dgeqrf.o dgerqf.o dgesv.o dgetrf.o dgetri.o dgetrs.o dlamch.o dlarfb.o dlarft.o dlauum.o dposv.o dpotrf.o dpotri.o dpotrs.o dtrtri.o ieeeck.o ilaenv.o lsame.o sgelqf.o sgels.o sgeqlf.o sgeqrf.o sgerqf.o sgesv.o sgetrf.o sgetri.o sgetrs.o slamch.o slarfb.o slarft.o slauum.o sposv.o spotrf.o spotri.o spotrs.o strtri.o xerbla.o zgelqf.o zgels.o zgeqlf.o zgeqrf.o zgerqf.o zgesv.o zgetrf.o zgetri.o zgetrs.o zlarfb.o zlarft.o zlauum.o zposv.o zpotrf.o zpotri.o zpotrs.o ztrtri.o
+# Create new library
+ar rcs ../liblapack_pic_pruned.a *.o
+cd ..
+
 
 %build
+p=$(pwd)
 for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		libname=atlas
@@ -377,8 +388,11 @@ for type in %{types}; do
 	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '%{armflags} -g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
-	--libdir=%{buildroot}%{_libdir}/${libname}	\
-	--with-netlib-lapack-tarfile=%{SOURCE10}
+	--libdir=%{buildroot}%{_libdir}/${libname}
+	#--with-netlib-lapack-tarfile=%{SOURCE10}
+
+        #matches both SLAPACK and SSLAPACK
+        sed -i "s#SLAPACKlib.*#SLAPACKlib = ${p}/liblapack_pic_pruned.a#" Make.inc
 
 %if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
@@ -386,18 +400,18 @@ for type in %{types}; do
 #		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE2#' Make.inc
 		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
 #		sed -i 's#-DATL_SSE3##' Make.inc
-		sed -i 's#-DATL_AVX##' Make.inc 
-#		sed -i 's#-msse3#-msse2#' Make.inc 
+		sed -i 's#-DATL_AVX##' Make.inc
+#		sed -i 's#-msse3#-msse2#' Make.inc
 		sed -i 's#-mavx#-msse3#' Make.inc
-		echo 'base makefile edited' 
-#		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
+		echo 'base makefile edited'
+#		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
 	elif [ "$type" = "sse3" ]; then
 #		sed -i 's#ARCH =.*#ARCH = Corei264AVX#' Make.inc
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
 		sed -i 's#-DATL_AVX##' Make.inc
 		sed -i 's#-DATL_SSE2##' Make.inc
-		sed -i 's#-mavx#-msse2#' Make.inc 
-		sed -i 's#-msse3#-msse2#' Make.inc 
+		sed -i 's#-mavx#-msse2#' Make.inc
+		sed -i 's#-msse3#-msse2#' Make.inc
 		echo 'sse makefile edited'
 		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
 	fi
@@ -409,18 +423,18 @@ for type in %{types}; do
 		#sed -i 's#-DATL_SSE3 -DATL_SSE2 -DATL_SSE1##' Make.inc
 		sed -i 's#-DATL_SSE3##' Make.inc
 		sed -i 's#-DATL_SSE2##' Make.inc
-		sed -i 's#-DATL_SSE1##' Make.inc  
-		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc 
+		sed -i 's#-DATL_SSE1##' Make.inc
+		sed -i 's#-mfpmath=sse -msse3#-mfpmath=387#' Make.inc
 	elif [ "$type" = "sse" ]; then
 		sed -i 's#ARCH =.*#ARCH = PIII32SSE1#' Make.inc
-		sed -i 's#-DATL_SSE3#-DATL_SSE1#' Make.inc 
-		sed -i 's#-msse3#-msse#' Make.inc 
+		sed -i 's#-DATL_SSE3#-DATL_SSE1#' Make.inc
+		sed -i 's#-msse3#-msse#' Make.inc
 		%define pr_sse %(echo $((%{__isa_bits}+2)))
 	elif [ "$type" = "sse2" ]; then
 #		sed -i 's#ARCH =.*#ARCH = P432SSE2#' Make.inc
 		sed -i 's#ARCH =.*#ARCH = x86SSE232SSE2#' Make.inc
-		sed -i 's#-DATL_SSE3#-DATL_SSE2#' Make.inc 
-		sed -i 's#-msse3#-msse2#' Make.inc 
+		sed -i 's#-DATL_SSE3#-DATL_SSE2#' Make.inc
+		sed -i 's#-msse3#-msse2#' Make.inc
 		%define pr_sse2 %(echo $((%{__isa_bits}+3)))
 	elif [ "$type" = "sse3" ]; then
 		sed -i 's#ARCH =.*#ARCH = P4E32SSE3#' Make.inc
@@ -433,10 +447,10 @@ for type in %{types}; do
 # we also need a compiler with -march=z196 support
 # the base support will use z196 tuning
 	if [ "$type" = "base" ]; then
-		%ifarch s390x 
+		%ifarch s390x
 			sed -i 's#ARCH =.*#ARCH = IBMz964#' Make.inc
                 %endif
-		%ifarch s390 
+		%ifarch s390
 			sed -i 's#ARCH =.*#ARCH = IBMz932#' Make.inc
                 %endif
 		sed -i 's#-march=z196#-march=z9-109 -mtune=z196#' Make.inc
@@ -446,12 +460,12 @@ for type in %{types}; do
 		sed -i 's#-DATL_ARCH_IBMz10#-DATL_ARCH_IBMz9#' Make.inc
 #		sed -i 's#-DATL_ARCH_IBMz9#-DATL_ARCH_IBMz9#' Make.inc
 	elif [ "$type" = "z10" ]; then
-		%ifarch s390x 
-		
+		%ifarch s390x
+
 #			cat Make.inc | grep "ARCH ="
 			sed -i 's#ARCH =.*#ARCH = IBMz1064#' Make.inc
                 %endif
-		%ifarch s390 
+		%ifarch s390
 			sed -i 's#ARCH =.*#ARCH = IBMz1032#' Make.inc
 #			cat Make.inc | grep "ARCH ="
                 %endif
@@ -463,10 +477,10 @@ for type in %{types}; do
 		%define pr_z10 %(echo $((%{__isa_bits}+1)))
 	elif [ "$type" = "z196" ]; then
 
-		%ifarch s390x 
+		%ifarch s390x
 			sed -i 's#ARCH =.*#ARCH = IBMz19664#' Make.inc
                 %endif
-		%ifarch s390 
+		%ifarch s390
 			sed -i 's#ARCH =.*#ARCH = IBMz19632#' Make.inc
                 %endif
 		sed -i 's#-march=z196#-march=z10 -mtune=z196#' Make.inc
@@ -504,7 +518,7 @@ for type in %{types}; do
 	popd
 done
 
-%install 	
+%install
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make DESTDIR=%{buildroot} install
@@ -848,6 +862,9 @@ fi
 %endif
 
 %changelog
+* Sat Feb 07 2015 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.10.1-18
+- Really do the unbundling of lapack.
+
 * Mon Feb 02 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-17
 - rebuild with new lapack, https://bugzilla.redhat.com/show_bug.cgi?id=1149032
 
@@ -971,10 +988,10 @@ fi
 - Fix typo in SSE3 subpackage's summary.
 
 * Sat Oct 24 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-12
-- Use alternatives to workaround multilib conflicts (BZ#508565). 
+- Use alternatives to workaround multilib conflicts (BZ#508565).
 
 * Tue Sep 29 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-11
-- Obsolete the -header subpackage properly. 
+- Obsolete the -header subpackage properly.
 
 * Sat Sep 26 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-10
 - Use the new arch. default for Pentium PRO (Fedora bug #510498)
@@ -984,10 +1001,10 @@ fi
 - Rebuild against fixed lapack (see #520518)
 
 * Thu Aug 13 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-8
-- Revert the last change, it doesn't solve the problem. 
+- Revert the last change, it doesn't solve the problem.
 
 * Tue Aug 04 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-7
-- Create a -header subpackage to avoid multilib conflicts (BZ#508565). 
+- Create a -header subpackage to avoid multilib conflicts (BZ#508565).
 
 * Tue Aug 04 2009 Deji Akingunola <dakingun@gmail.com> - 3.8.3-6
 - Add '-g' to build flag to allow proper genration of debuginfo subpackages (Fedora bug #509813)
