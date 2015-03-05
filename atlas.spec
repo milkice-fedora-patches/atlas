@@ -5,7 +5,7 @@ Version:        3.10.1
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        21%{?dist}
+Release:        22%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -54,6 +54,8 @@ Patch100:	ppc64le-abiv2.patch
 Patch110:	p8-mem-barrier.patch
 
 BuildRequires:  gcc-gfortran, lapack-static
+
+Provides: bundled(lapack)
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3 < 3.10
@@ -825,6 +827,9 @@ fi
 %endif
 
 %changelog
+* Thu Mar 05 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-22
+- lapack bundled again, mark this.
+
 * Sat Feb 07 2015 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.10.1-21
 - Devel packages don't need to require lapack-devel anymore.
 
