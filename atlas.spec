@@ -1,11 +1,11 @@
 %define enable_native_atlas 0
 
 Name:           atlas
-Version:        3.10.1
+Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        22%{?dist}
+Release:        1%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -295,8 +295,6 @@ ix86 architecture.
 %endif
 
 %ifarch %{arm}
-#beware - arch constant can change between releases
-%define arch_option -A 46 
 %define threads_option -t 2
 %global armflags -DATL_ARM_HARDFP=1
 %global mode %{nil}
@@ -306,6 +304,12 @@ ix86 architecture.
 %if "%{?enable_native_atlas}" == "0"
 %define threads_option -t 4 
 %endif
+%endif
+
+# disable the archdef for ppc64le
+# do it only one time.
+%ifarch ppc64le
+%define arch_option -Si archdef 0
 %endif
 
 %prep
@@ -827,6 +831,11 @@ fi
 %endif
 
 %changelog
+* Thu May 14 2015 Orion Poplawski <orion@cora.nwra.com> - 3.10.2-1
+- Update to 3.10.2 (bug #1118596)
+- Autodetect arm arch
+- Add arch_option for ppc64le
+
 * Thu Mar 05 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.1-22
 - lapack bundled again, mark this.
 
