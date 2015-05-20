@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -531,11 +531,11 @@ for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas/
 		rm -f %{buildroot}%{_libdir}/atlas/*.a
-		cp -pr lib/libatlas.a %{buildroot}%{_libdir}/atlas/
+		cp -pr lib/libcblas.a lib/libatlas.a lib/libf77blas.a lib/liblapack.a %{buildroot}%{_libdir}/atlas/
 	else
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas-${type}/
 		rm -f %{buildroot}%{_libdir}/atlas-${type}/*.a
-		cp -pr lib/libatlas.a %{buildroot}%{_libdir}/atlas-${type}/
+		cp -pr lib/libcblas.a lib/libatlas.a lib/libf77blas.a lib/liblapack.a %{buildroot}%{_libdir}/atlas-${type}/
 	fi
 	popd
 
@@ -831,6 +831,10 @@ fi
 %endif
 
 %changelog
+* Wed May 20 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.2-2
+- include all single-threaded wrapper libraries in -static subpackage
+- bz#1222079
+
 * Thu May 14 2015 Orion Poplawski <orion@cora.nwra.com> - 3.10.2-1
 - Update to 3.10.2 (bug #1118596)
 - Autodetect arm arch
