@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -28,7 +28,6 @@ Source13: 	IBMz964.tar.bz2
 #upstream arm uses softfp abi, fedora arm uses hard
 Source14: 	ARMv732NEON.tar.bz2
 
-Patch1:         atlas-s390port.patch
 Patch2:		atlas-fedora-arm.patch
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
@@ -317,9 +316,6 @@ ix86 architecture.
 #cat /proc/cpuinfo
 %setup -q -n ATLAS
 #patch0 -p0 -b .shared
-%ifarch s390 s390x
-%patch1 -p1 -b .s390
-%endif
 #arm patch not applicable, probably not needed
 #%ifarch %{arm}
 #%patch2 -p0 -b .arm
@@ -831,6 +827,9 @@ fi
 %endif
 
 %changelog
+* Fri Jun 05 2015 Dan Horák <dan[at]danny.cz> - 3.10.2-3
+- drop upstreamed s390 patch
+
 * Wed May 20 2015 Frantisek Kluknavsky <fkluknav@redhat.com> - 3.10.2-2
 - include all single-threaded wrapper libraries in -static subpackage
 - bz#1222079
