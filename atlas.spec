@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -345,7 +345,7 @@ cp %{SOURCE14} CONFIG/ARCHS/
 #cp %{SOURCE9} CONFIG/ARCHS/
 
 %ifarch ppc64le
-%patch99 -p2
+%patch99 -p1
 %patch98 -p2
 %patch96 -p2
 %patch95 -p2
@@ -827,6 +827,9 @@ fi
 %endif
 
 %changelog
+* Thu Jul 09 2015 Than Ngo <than@redhat.com> 3.10.2-6
+- fix ppc64le patch
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.10.2-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
