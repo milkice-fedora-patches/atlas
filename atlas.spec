@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -42,6 +42,7 @@ Patch6:		atlas-affinity.patch
 Patch7:		atlas-aarch64port.patch
 Patch8:		atlas-genparse.patch
 
+# Unbundle LAPACK (BZ #1181369)
 Patch9:		atlas.3.10.1-unbundle.patch
 
 # ppc64le patches
@@ -53,8 +54,6 @@ Patch100:	ppc64le-abiv2.patch
 Patch110:	p8-mem-barrier.patch
 
 BuildRequires:  gcc-gfortran, lapack-static
-
-Provides: bundled(lapack)
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3 < 3.10
@@ -827,6 +826,9 @@ fi
 %endif
 
 %changelog
+* Wed Oct 28 2015 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.10.2-7
+- Drop bundled(lapack) which was already fixed in atlas-3.10.1-18.
+
 * Thu Jul 09 2015 Than Ngo <than@redhat.com> 3.10.2-6
 - fix ppc64le patch
 
