@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -308,6 +308,10 @@ ix86 architecture.
 # do it only one time.
 %ifarch ppc64le
 %define arch_option -Si archdef 0
+%endif
+
+%ifarch ppc64
+%define arch_option -A 7
 %endif
 
 %prep
@@ -826,6 +830,9 @@ fi
 %endif
 
 %changelog
+* Wed Nov 04 2015 Than Ngo <than@redhat.com> - 3.10.2-8
+- add correct machine type for ppc64 -> fix build failure on ppc64
+
 * Wed Oct 28 2015 Susi Lehtola <jussilehtola@fedoraproject.org> - 3.10.2-7
 - Drop bundled(lapack) which was already fixed in atlas-3.10.1-18.
 
