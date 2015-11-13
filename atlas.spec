@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -311,7 +311,10 @@ ix86 architecture.
 %endif
 
 %ifarch ppc64
-%define arch_option -A 7
+%global arch_option -A 7
+%global assembler_option -Wa,--noexecstack,-mpower7
+%else
+%global assembler_option -Wa,--noexecstack
 %endif
 
 %prep
@@ -389,7 +392,7 @@ for type in %{types}; do
 
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '%{armflags} -g -Wa,--noexecstack -fPIC'\
+	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '%{armflags} -g %{assembler_option} -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	
@@ -830,6 +833,9 @@ fi
 %endif
 
 %changelog
+* Fri Nov 13 2015 Than Ngo <than@redhat.com> 3.10.2-9
+- add correct assembler option for ppc64
+
 * Wed Nov 04 2015 Than Ngo <than@redhat.com> - 3.10.2-8
 - add correct machine type for ppc64 -> fix build failure on ppc64
 
