@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -27,6 +27,7 @@ Source12: 	IBMz932.tar.bz2
 Source13: 	IBMz964.tar.bz2
 #upstream arm uses softfp abi, fedora arm uses hard
 Source14: 	ARMv732NEON.tar.bz2
+Source15:	POWER864LEVSXp4.tar.bz2
 
 Patch2:		atlas-fedora-arm.patch
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
@@ -45,13 +46,16 @@ Patch8:		atlas-genparse.patch
 # Unbundle LAPACK (BZ #1181369)
 Patch9:		atlas.3.10.1-unbundle.patch
 
-# ppc64le patches
-Patch95:	initialize_malloc_memory.invtrsm.wms.oct23.patch
-Patch96:	xlf.command.not.found.patch
-Patch98:	getdoublearr.stripwhite.patch
-Patch99:	ppc64le-remove-vsx.patch
-Patch100:	ppc64le-abiv2.patch
-Patch110:	p8-mem-barrier.patch
+# for ppc64 ppc64le
+# https://bugzilla.redhat.com/show_bug.cgi?id=1080073#c40
+Patch95:        getdoublearr.stripwhite.patch
+Patch96:        initialize_malloc_memory.invtrsm.wms.oct23.patch
+Patch97:        atlas.3.10.2-ppc64le_abiv2.patch
+Patch98:        atlas-new_archdef_for_ppc64le.patch
+Patch99:        atlas.3.10.2-add_power8_cpu.patch
+
+# for ppc64le
+Patch100:       atlas.3.10.2-ppc64le_do_not_use_files_with_lvx.patch
 
 BuildRequires:  gcc-gfortran, lapack-static
 
@@ -304,19 +308,6 @@ ix86 architecture.
 %endif
 %endif
 
-# disable the archdef for ppc64le
-# do it only one time.
-%ifarch ppc64le
-%define arch_option -Si archdef 0
-%endif
-
-%ifarch ppc64
-%global arch_option -A 7
-%global assembler_option -Wa,--noexecstack,-mpower7
-%else
-%global assembler_option -Wa,--noexecstack
-%endif
-
 %prep
 #uname -a
 #cat /proc/cpuinfo
@@ -337,7 +328,6 @@ ix86 architecture.
 %patch7 -p1 -b .aarch64
 %endif
 %patch8 -p1 -b .genparse
-
 %patch9 -p1 -b .unbundle
 
 cp %{SOURCE1} CONFIG/ARCHS/
@@ -347,16 +337,20 @@ cp %{SOURCE11} CONFIG/ARCHS/
 cp %{SOURCE12} CONFIG/ARCHS/
 cp %{SOURCE13} CONFIG/ARCHS/
 cp %{SOURCE14} CONFIG/ARCHS/
+cp %{SOURCE15} CONFIG/ARCHS/
 #cp %{SOURCE8} CONFIG/ARCHS/
 #cp %{SOURCE9} CONFIG/ARCHS/
 
-%ifarch ppc64le
+%ifarch ppc64le ppc64
+%patch95 -p1 -b .than
+%patch96 -p1
+%patch97 -p1
+%patch98 -p1
 %patch99 -p1
-%patch98 -p2
-%patch96 -p2
-%patch95 -p2
-%patch100 -p2
-%patch110 -p1
+%endif
+
+%ifarch ppc64le
+%patch100 -p1
 %endif
 
 %ifarch %{arm}
@@ -392,7 +386,7 @@ for type in %{types}; do
 
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '%{armflags} -g %{assembler_option} -fPIC'\
+	../configure  %{mode} %{?threads_option} %{?arch_option} -D c -DWALL -Fa alg '%{armflags} -g -Wa,--noexecstack -fPIC'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	
@@ -507,14 +501,6 @@ for type in %{types}; do
 	sed -i 's#-mvsx##g' Make.inc
 	sed -i 's#-DATL_AltiVec##g' Make.inc
 	sed -i 's#-m64#-m32#g' Make.inc
-%endif
-
-%ifarch ppc64le
-	sed -i 's#-mvsx##g' Make.inc
-	sed -i 's#-DATL_VSX##g' Make.inc
-	sed -i 's#-DATL_AltiVec##g' Make.inc
-	sed -i 's#-maltivec##g' Make.inc
-	sed -i 's#ARCH =.*#ARCH = POWER464#' Make.inc
 %endif
 
 %endif
@@ -833,6 +819,9 @@ fi
 %endif
 
 %changelog
+* Thu Nov 26 2015 Than Ngo <than@redhat.com> 3.10.2-10
+- backport upstream patch for power8 support
+
 * Fri Nov 13 2015 Than Ngo <than@redhat.com> 3.10.2-9
 - add correct assembler option for ppc64
 

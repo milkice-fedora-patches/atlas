@@ -1,0 +1,32 @@
+Subject: atlas new archdef for ppc64le
+From: Michel Normand <normand@linux.vnet.ibm.com>
+Date: Sun, 13 Jun 2014 18:02:47 +0200
+
+Need to define different archdef names
+for ppc64 (that is Big Endian) and ppc64le (that is Little Endian).
+This is already done upstream in atlas 3.11.30 with issue
+https://sourceforge.net/p/math-atlas/patches/66/
+
+Required at least as long as I need the bypass of
+atlas.3.10.2-ppc64le_do_not_use_files_with_lvx.patch
+
+Signed-off-by: Michel Normand <normand@linux.vnet.ibm.com>
+---
+ CONFIG/src/SpewMakeInc.c |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+Index: ATLAS/CONFIG/src/SpewMakeInc.c
+===================================================================
+--- ATLAS.orig/CONFIG/src/SpewMakeInc.c
++++ ATLAS/CONFIG/src/SpewMakeInc.c
+@@ -542,6 +542,10 @@ int main(int nargs, char **args)
+    fprintf(fpout, "#  -------------------------------------------------\n");
+    fprintf(fpout, "   ARCH = %s", machnam[mach]);
+    fprintf(fpout, "%d", ptrbits);
++   /* for ppc64le archi add 'LE' characters */
++   #if defined(__powerpc64__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
++      fprintf(fpout, "%s", "LE");
++   #endif
+    if (ISAX)
+       fprintf(fpout, "%s", ISAXNAM[ISAX]);
+    if (!USEIEEE)

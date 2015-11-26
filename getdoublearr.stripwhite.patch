@@ -1,18 +1,6 @@
-Subject: getdoublearr.stripwhite
-From: Michel Normand <normand@fr.ibm.com>
-
-GetDoubleArr must only handle the comma delimited list at string head
-and ignore anything after the first blank character.
-
-Signed-off-by: Michel Normand <normand@fr.ibm.com>
----
- ATLAS/include/atlas_genparse.h |   16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-Index: atlas/ATLAS/include/atlas_genparse.h
-===================================================================
---- atlas.orig/ATLAS/include/atlas_genparse.h
-+++ atlas/ATLAS/include/atlas_genparse.h
+diff -up ATLAS/include/atlas_genparse.h.than ATLAS/include/atlas_genparse.h
+--- ATLAS/include/atlas_genparse.h.than	2015-11-26 10:53:55.056586198 -0500
++++ ATLAS/include/atlas_genparse.h	2015-11-26 10:56:00.168537914 -0500
 @@ -149,13 +149,24 @@ static int asmNames2bitfield(char *str)
  }
  
@@ -40,8 +28,8 @@ Index: atlas/ATLAS/include/atlas_genparse.h
     assert(sscanf(str, "%le", d) == 1);
     while (i < N)
     {
-@@ -166,6 +177,7 @@ static int GetDoubleArr(char *str, int N
-	break;
+@@ -167,6 +178,7 @@ static int GetDoubleArr(char *str, int N
+ 	break;
        i++;
     }
 +   free(dupstr);
