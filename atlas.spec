@@ -342,7 +342,7 @@ cp %{SOURCE15} CONFIG/ARCHS/
 #cp %{SOURCE9} CONFIG/ARCHS/
 
 %ifarch ppc64le ppc64
-%patch95 -p1 -b .than
+%patch95 -p1
 %patch96 -p1
 %patch97 -p1
 %patch98 -p1

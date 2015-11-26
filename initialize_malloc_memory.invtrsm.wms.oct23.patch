@@ -1,6 +1,22 @@
---- ./ATLAS.first/tune/blas/level3/invtrsm.c	2013-10-22 19:35:03.000000000 +0000
-+++ ./ATLAS/tune/blas/level3/invtrsm.c	2013-10-23 21:24:01.000000000 +0000
-@@ -525,6 +525,7 @@
+From: Michel Normand <normand@linux.vnet.ibm.com>
+Subject: initialize malloc memory.invtrsm.wms.oct23
+Date: Mon, 14 Apr 2014 17:18:53 +0200
+References: http://sourceforge.net/p/math-atlas/mailman/message/32471499/
+
+initialize malloc memory invtrsm.c
+
+
+Signed-off-by:  Will Schmidt <will_schmidt@vnet.ibm.com>
+Signed-off-by: Michel Normand <normand@linux.vnet.ibm.com>
+---
+ ATLAS/tune/blas/level3/invtrsm.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: ATLAS/tune/blas/level3/invtrsm.c
+===================================================================
+--- ATLAS.orig/tune/blas/level3/invtrsm.c
++++ ATLAS/tune/blas/level3/invtrsm.c
+@@ -525,6 +525,7 @@ static double RunTiming
     a = A = malloc(i * ATL_MulBySize(incA));
     if (A)
     {
