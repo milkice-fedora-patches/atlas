@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -401,9 +401,9 @@ for type in %{types}; do
 #		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE2#' Make.inc
 		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
 #		sed -i 's#-DATL_SSE3##' Make.inc
-		sed -i 's#-DATL_AVX##' Make.inc 
+		sed -i 's#-DATL_AVX\b##' Make.inc
 #		sed -i 's#-msse3#-msse2#' Make.inc 
-		sed -i 's#-mavx#-msse3#' Make.inc
+		sed -i 's#-mavx\b#-msse3#' Make.inc
 		echo 'base makefile edited' 
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
 	elif [ "$type" = "sse3" ]; then
@@ -819,6 +819,9 @@ fi
 %endif
 
 %changelog
+* Wed Dec 14 2016 Merlin Mathesius <mmathesi@redhat.com> - 3.10.2-13
+- Correct Make.inc adjustments that were going awry to fix FTBFS (BZ#1402627).
+
 * Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.2-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
