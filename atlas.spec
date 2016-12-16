@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -401,17 +401,18 @@ for type in %{types}; do
 #		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE2#' Make.inc
 		sed -i 's#ARCH =.*#ARCH = HAMMER64SSE3#' Make.inc
 #		sed -i 's#-DATL_SSE3##' Make.inc
-		sed -i 's#-DATL_AVX\b##' Make.inc
+		sed -i 's#-DATL_AVX\w*##g' Make.inc
 #		sed -i 's#-msse3#-msse2#' Make.inc 
-		sed -i 's#-mavx\b#-msse3#' Make.inc
+		sed -i 's#-mavx\w*#-msse3#g' Make.inc
+		sed -i 's#-mfma\w*#-msse3#g' Make.inc
 		echo 'base makefile edited' 
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc 
 	elif [ "$type" = "sse3" ]; then
 #		sed -i 's#ARCH =.*#ARCH = Corei264AVX#' Make.inc
 #		sed -i 's#PMAKE = $(MAKE) .*#PMAKE = $(MAKE) -j 1#' Make.inc
-		sed -i 's#-DATL_AVX##' Make.inc
+		sed -i 's#-DATL_AVX\w*##g' Make.inc
 		sed -i 's#-DATL_SSE2##' Make.inc
-		sed -i 's#-mavx#-msse2#' Make.inc 
+		sed -i 's#-mavx\w*#-msse2#g' Make.inc 
 		sed -i 's#-msse3#-msse2#' Make.inc 
 		echo 'sse makefile edited'
 		%define pr_sse3 %(echo $((%{__isa_bits}+4)))
@@ -819,6 +820,9 @@ fi
 %endif
 
 %changelog
+* Fri Dec 16 2016 Orion Poplawski <orion@cora.nwra.com> - 3.10.2-14
+- Limit instruction set on x86_64 (bug #1405397)
+
 * Wed Dec 14 2016 Merlin Mathesius <mmathesi@redhat.com> - 3.10.2-13
 - Correct Make.inc adjustments that were going awry to fix FTBFS (BZ#1402627).
 
