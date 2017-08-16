@@ -5,7 +5,7 @@ Version:        3.10.2
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        19%{?dist}
+Release:        20%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -820,6 +820,9 @@ fi
 %endif
 
 %changelog
+* Wed Aug 16 2017 Tom Callaway <spot@fedoraproject.org> - 3.10.2-20
+- rebuild again for fixed lapack
+
 * Thu Aug 10 2017 Jakub Martisko <jamartis@redhat.com> - 3.10.2-19
 - Rebuild for updated lapack
 
