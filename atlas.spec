@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -821,6 +821,9 @@ fi
 %endif
 
 %changelog
+* Tue Jan 30 2018 Björn Esser <besser82@fedoraproject.org> - 3.10.3-2
+- Rebuilt for GCC8
+
 * Thu Aug 17 2017 Jakub Martisko <jamartis@redhat.com> - 3.10.3-1
 - Update to new 3.10.3 stable version.
 - Remove ppc64/ppc64le related patches.
