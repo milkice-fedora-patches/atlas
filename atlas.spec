@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -406,7 +406,7 @@ cd ..
 
 %build
 p=$(pwd)
-
+%undefine _strict_symbol_defs_build
 %ifarch %{arm}
 %global mode %{nil}
 %else
@@ -461,7 +461,7 @@ p=$(pwd)
 %if "%{?enable_native_atlas}" != "0"
 %define	threads_option %{nil}
 %define base_options %{nil}
-%define flags %{nil}
+%define flags %{nil} 
 %endif
 
 for type in %{types}; do
@@ -495,10 +495,9 @@ for type in %{types}; do
 			%define pr_power8 %(echo $((%{__isa_bits}+4)))
 		fi
 	fi
-
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure  %{mode} $thread_options $arg_options -D c -DWALL -Fa alg '%{flags} -g -Wa,--noexecstack -fPIC'\
+	../configure  %{mode} $thread_options $arg_options -D c -DWALL -Fa alg '%{flags} -g -Wa,--noexecstack -fPIC ${RPM_LD_FLAGS}'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	
@@ -821,6 +820,9 @@ fi
 %endif
 
 %changelog
+* Wed Apr 11 2018 Jakub Martisko <jamartis@redhat.com> - 3.10.3-5
+- Pass RPM_LD_FLAGS to linker
+
 * Thu Mar 01 2018 Jakub Martisko <jamartis@redhat.com> - 3.10.3-4
 - Add gcc to buildrequires
 
