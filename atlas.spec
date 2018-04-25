@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -46,7 +46,7 @@ Patch8:		atlas-genparse.patch
 # Unbundle LAPACK (BZ #1181369)
 Patch9:		atlas.3.10.1-unbundle.patch
 
-BuildRequires:  gcc-gfortran, lapack-static
+BuildRequires:  gcc-gfortran, lapack-static, gcc
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3 < 3.10.3-1
@@ -821,6 +821,9 @@ fi
 %endif
 
 %changelog
+* Wed Apr 25 2018 Jakub Martisko <jamartis@redhat.com> - 3.10.3-4
+- Add gcc to buildrequires
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.3-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
