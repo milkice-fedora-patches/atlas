@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 Group:          System Environment/Libraries
@@ -86,8 +86,8 @@ Summary:        Development libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3-devel < 3.10.3-1
@@ -107,8 +107,8 @@ This package contains headers for development with ATLAS
 Summary:        Static libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name}-devel = %{version}-%{release}
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %ifarch x86_64
 Obsoletes:      atlas-sse3-static < 3.10.3-1
@@ -158,8 +158,8 @@ Summary:        Development libraries for ATLAS for Corei2 (Ivy/Sandy bridge) CP
 Group:          Development/Libraries
 Requires:       %{name}-corei2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description corei2-devel
 This package contains shared and static versions of the ATLAS
@@ -185,8 +185,8 @@ optimizations for the corei2 (Ivy/Sandy bridge) CPUs.
 #Group:          Development/Libraries
 #Requires:       %{name}-corei1 = %{version}-%{release}
 #Obsoletes:	%name-header <= %version-%release
-#Requires(posttrans):	chkconfig
-#Requires(postun):	chkconfig
+#Requires(posttrans):	/usr/sbin/alternatives
+#Requires(postun):	/usr/sbin/alternatives
 
 #%description corei1-devel
 #This package contains shared and static versions of the ATLAS
@@ -197,8 +197,8 @@ optimizations for the corei2 (Ivy/Sandy bridge) CPUs.
 #Summary:        Static libraries for ATLAS for Corei1 (/Nehalem/Westmere) CPUs
 #Group:          Development/Libraries
 #Requires:       %{name}-corei1-devel = %{version}-%{release}
-#Requires(posttrans):	chkconfig
-#Requires(postun):	chkconfig
+#Requires(posttrans):	/usr/sbin/alternatives
+#Requires(postun):	/usr/sbin/alternatives
 
 #%description corei1-static
 #This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -223,8 +223,8 @@ Summary:        Development libraries for ATLAS for z196
 Group:          Development/Libraries
 Requires:       %{name}-z196 = %{version}-%{release}
 Obsoletes:	%name-z196-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description z196-devel
 This package contains headers and shared versions of the ATLAS
@@ -235,8 +235,8 @@ optimizations for the z196 architecture.
 Summary:        Static libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name}-z196-devel = %{version}-%{release}
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description z196-static
 This package contains static version of ATLAS (Automatically Tuned
@@ -256,8 +256,8 @@ Summary:        Development libraries for ATLAS for z10
 Group:          Development/Libraries
 Requires:       %{name}-z10 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description z10-devel
 This package contains headers and shared versions of the ATLAS
@@ -268,8 +268,8 @@ optimizations for the z10 architecture.
 Summary:        Static libraries for ATLAS
 Group:          Development/Libraries
 Requires:       %{name}-devel = %{version}-%{release}
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description z10-static
 This package contains static version of ATLAS (Automatically Tuned
@@ -296,8 +296,8 @@ Summary:        Development libraries for ATLAS for Power 8
 Group:          Development/Libraries
 Requires:       %{name}-power8 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description power8-devel
 This package contains shared and static versions of the ATLAS
@@ -308,8 +308,8 @@ optimizations for the Power 8 CPUs.
 Summary:        Static libraries for ATLAS for Power 8
 Group:          Development/Libraries
 Requires:       %{name}-power8-devel = %{version}-%{release}
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description power8-static
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -330,8 +330,8 @@ Summary:        Development libraries for ATLAS for Power 7
 Group:          Development/Libraries
 Requires:       %{name}-power7 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description power7-devel
 This package contains shared and static versions of the ATLAS
@@ -342,8 +342,8 @@ optimizations for the Power 7 CPUs.
 Summary:        Static libraries for ATLAS for Power 7
 Group:          Development/Libraries
 Requires:       %{name}-power7-devel = %{version}-%{release}
-Requires(posttrans):	chkconfig
-Requires(postun):	chkconfig
+Requires(posttrans):	/usr/sbin/alternatives
+Requires(postun):	/usr/sbin/alternatives
 
 %description power7-static
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -820,6 +820,9 @@ fi
 %endif
 
 %changelog
+* Sun Oct 14 2018 Peter Robinson <pbrobinson@fedoraproject.org> 3.10.3-7
+- Update requires for alternatives
+
 * Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.3-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
