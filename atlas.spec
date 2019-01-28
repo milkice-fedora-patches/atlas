@@ -8,7 +8,6 @@ Version:        3.10.3
 Release:        7%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
-Group:          System Environment/Libraries
 License:        BSD
 URL:            http://math-atlas.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.tar.bz2
@@ -83,7 +82,6 @@ see the documentation for information.
 
 %package devel
 Summary:        Development libraries for ATLAS
-Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	/usr/sbin/alternatives
@@ -105,7 +103,6 @@ This package contains headers for development with ATLAS
 
 %package static
 Summary:        Static libraries for ATLAS
-Group:          Development/Libraries
 Requires:       %{name}-devel = %{version}-%{release}
 Requires(posttrans):	/usr/sbin/alternatives
 Requires(postun):	/usr/sbin/alternatives
@@ -137,7 +134,6 @@ Linear Algebra Software).
 
 %package corei2-static
 Summary:        ATLAS libraries for Corei2 (Ivy/Sandy bridge) CPUs
-Group:          System Environment/Libraries
 
 %description corei2-static
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -146,7 +142,6 @@ CPUs. The base ATLAS builds for the x86_64 architecture are made for the hammer6
 
 %package corei2
 Summary:        ATLAS libraries for Corei2 (Ivy/Sandy bridge) CPUs
-Group:          System Environment/Libraries
 
 %description corei2
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -155,7 +150,6 @@ CPUs. The base ATLAS builds for the x86_64 architecture are made for the hammer6
 
 %package corei2-devel
 Summary:        Development libraries for ATLAS for Corei2 (Ivy/Sandy bridge) CPUs
-Group:          Development/Libraries
 Requires:       %{name}-corei2 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	/usr/sbin/alternatives
@@ -212,7 +206,6 @@ optimizations for the corei2 (Ivy/Sandy bridge) CPUs.
 
 %package z196
 Summary:        ATLAS libraries for z196
-Group:          System Environment/Libraries
 
 %description z196
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -220,7 +213,6 @@ Software) libraries compiled with optimizations for the z196.
 
 %package z196-devel
 Summary:        Development libraries for ATLAS for z196
-Group:          Development/Libraries
 Requires:       %{name}-z196 = %{version}-%{release}
 Obsoletes:	%name-z196-header <= %version-%release
 Requires(posttrans):	/usr/sbin/alternatives
@@ -233,7 +225,6 @@ optimizations for the z196 architecture.
 
 %package z196-static
 Summary:        Static libraries for ATLAS
-Group:          Development/Libraries
 Requires:       %{name}-z196-devel = %{version}-%{release}
 Requires(posttrans):	/usr/sbin/alternatives
 Requires(postun):	/usr/sbin/alternatives
@@ -245,7 +236,6 @@ Linear Algebra Software) for the z196 architecture.
 
 %package z10
 Summary:        ATLAS libraries for z10
-Group:          System Environment/Libraries
 
 %description z10
 This package contains the ATLAS (Automatically Tuned Linear Algebra
@@ -253,7 +243,6 @@ Software) libraries compiled with optimizations for the z10.
 
 %package z10-devel
 Summary:        Development libraries for ATLAS for z10
-Group:          Development/Libraries
 Requires:       %{name}-z10 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	/usr/sbin/alternatives
@@ -266,7 +255,6 @@ optimizations for the z10 architecture.
 
 %package z10-static
 Summary:        Static libraries for ATLAS
-Group:          Development/Libraries
 Requires:       %{name}-devel = %{version}-%{release}
 Requires(posttrans):	/usr/sbin/alternatives
 Requires(postun):	/usr/sbin/alternatives
@@ -284,7 +272,6 @@ Linear Algebra Software) for the z10 architecture.
 
 %package power8
 Summary:        ATLAS libraries for Power 8
-Group:          System Environment/Libraries
 
 %description power8
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -293,7 +280,6 @@ The base ATLAS builds for the ppc64 architecture are made for Power 5 CPUs.
 
 %package power8-devel
 Summary:        Development libraries for ATLAS for Power 8
-Group:          Development/Libraries
 Requires:       %{name}-power8 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	/usr/sbin/alternatives
@@ -306,7 +292,6 @@ optimizations for the Power 8 CPUs.
 
 %package power8-static
 Summary:        Static libraries for ATLAS for Power 8
-Group:          Development/Libraries
 Requires:       %{name}-power8-devel = %{version}-%{release}
 Requires(posttrans):	/usr/sbin/alternatives
 Requires(postun):	/usr/sbin/alternatives
@@ -318,7 +303,6 @@ CPUs. The base ATLAS builds for the ppc64 architecture are made for the Power 5 
 
 %package power7
 Summary:        ATLAS libraries for Power 7
-Group:          System Environment/Libraries
 
 %description power7
 This package contains ATLAS (Automatically Tuned Linear Algebra Software)
@@ -327,7 +311,6 @@ The base ATLAS builds for the ppc64 architecture are made for Power 5 CPUs.
 
 %package power7-devel
 Summary:        Development libraries for ATLAS for Power 7
-Group:          Development/Libraries
 Requires:       %{name}-power7 = %{version}-%{release}
 Obsoletes:	%name-header <= %version-%release
 Requires(posttrans):	/usr/sbin/alternatives
@@ -340,7 +323,6 @@ optimizations for the Power 7 CPUs.
 
 %package power7-static
 Summary:        Static libraries for ATLAS for Power 7
-Group:          Development/Libraries
 Requires:       %{name}-power7-devel = %{version}-%{release}
 Requires(posttrans):	/usr/sbin/alternatives
 Requires(postun):	/usr/sbin/alternatives
