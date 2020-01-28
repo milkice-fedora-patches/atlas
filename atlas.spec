@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 License:        BSD
@@ -44,6 +44,7 @@ Patch8:		atlas-genparse.patch
 
 # Unbundle LAPACK (BZ #1181369)
 Patch9:		atlas.3.10.1-unbundle.patch
+Patch10:	atlas-gcc10.patch
 
 BuildRequires:  gcc-gfortran, lapack-static, gcc
 
@@ -352,6 +353,7 @@ CPUs. The base ATLAS builds for the ppc64 architecture are made for the Power 5 
 %endif
 %patch8 -p1 -b .genparse
 %patch9 -p1 -b .unbundle
+%patch10 -p1
 
 cp %{SOURCE1} CONFIG/ARCHS/
 #cp %{SOURCE2} CONFIG/ARCHS/
@@ -479,7 +481,7 @@ for type in %{types}; do
 	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure  %{mode} $thread_options $arg_options -D c -DWALL -Fa alg '%{flags} -g -Wa,--noexecstack -fPIC ${RPM_LD_FLAGS}'\
+	../configure  %{mode} $thread_options $arg_options -D c -DWALL -Fa alg '%{flags} -D_FORTIFY_SOURCE=2 -g -Wa,--noexecstack,--generate-missing-build-notes=yes -fstack-protector-strong -fstack-clash-protection -fPIC -fplugin=annobin -Wl,-z,now'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}	
@@ -802,6 +804,10 @@ fi
 %endif
 
 %changelog
+* Mon Jan 27 2020 Jakub Martisko <jamartis@redhat.com> - 3.10.3-10
+- Fix compatibility with gcc 10
+- Sync compiler/linker flags with RHEL
+
 * Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.3-9
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
