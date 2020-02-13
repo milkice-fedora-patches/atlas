@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 License:        BSD
@@ -14,8 +14,8 @@ Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.ta
 Source1:        PPRO32.tgz
 #Source2:        K7323DNow.tgz
 Source3:        README.dist
-#Source4:        USII64.tgz                                              
-#Source5:        USII32.tgz                                              
+#Source4:        USII64.tgz
+#Source5:        USII32.tgz
 #Source6:        IBMz1032.tgz
 #Source7:        IBMz1064.tgz
 #Source8:        IBMz19632.tgz
@@ -60,8 +60,8 @@ Obsoletes:      atlas-sse3 < 3.10.3-1
 %endif
 
 %ifarch s390 s390x
-#Obsoletes:      atlas-z10 < 3.10
-#Obsoletes:      atlas-z196 < 3.10
+Obsoletes:      atlas-z10 < 3.10.3-11
+Obsoletes:      atlas-z196 < 3.10.3-11
 %endif
 
 
@@ -98,6 +98,12 @@ Obsoletes:      atlas-sse-devel < 3.10.3-1
 Obsoletes:      atlas-sse2-devel < 3.10.3-1
 Obsoletes:      atlas-sse3-devel < 3.10.3-1
 %endif
+
+%ifarch s390 s390x
+Obsoletes:      atlas-z10-devel < 3.10.3-11
+Obsoletes:      atlas-z196-devel < 3.10.3-11
+%endif
+
 %description devel
 This package contains headers for development with ATLAS
 (Automatically Tuned Linear Algebra Software).
@@ -118,6 +124,12 @@ Obsoletes:      atlas-sse-static < 3.10.3-1
 Obsoletes:      atlas-sse2-static < 3.10.3-1
 Obsoletes:      atlas-sse3-static < 3.10.3-1
 %endif
+
+%ifarch s390 s390x
+Obsoletes:      atlas-z10-static < 3.10.3-11
+Obsoletes:      atlas-z196-static  < 3.10.3-11
+%endif
+
 %description static
 This package contains static version of ATLAS (Automatically Tuned
 Linear Algebra Software).
@@ -129,7 +141,7 @@ Linear Algebra Software).
 ############## Subpackages for architecture extensions #################
 #
 %ifarch x86_64
-%define types base corei2 
+%define types base corei2
 #corei4
 # sse3
 
@@ -203,67 +215,7 @@ optimizations for the corei2 (Ivy/Sandy bridge) CPUs.
 %endif
 
 %ifarch s390 s390x
-%define types base z196 z10
-
-%package z196
-Summary:        ATLAS libraries for z196
-
-%description z196
-This package contains the ATLAS (Automatically Tuned Linear Algebra
-Software) libraries compiled with optimizations for the z196.
-
-%package z196-devel
-Summary:        Development libraries for ATLAS for z196
-Requires:       %{name}-z196 = %{version}-%{release}
-Obsoletes:	%name-z196-header <= %version-%release
-Requires(posttrans):	/usr/sbin/alternatives
-Requires(postun):	/usr/sbin/alternatives
-
-%description z196-devel
-This package contains headers and shared versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the z196 architecture.
-
-%package z196-static
-Summary:        Static libraries for ATLAS
-Requires:       %{name}-z196-devel = %{version}-%{release}
-Requires(posttrans):	/usr/sbin/alternatives
-Requires(postun):	/usr/sbin/alternatives
-
-%description z196-static
-This package contains static version of ATLAS (Automatically Tuned
-Linear Algebra Software) for the z196 architecture.
-
-
-%package z10
-Summary:        ATLAS libraries for z10
-
-%description z10
-This package contains the ATLAS (Automatically Tuned Linear Algebra
-Software) libraries compiled with optimizations for the z10.
-
-%package z10-devel
-Summary:        Development libraries for ATLAS for z10
-Requires:       %{name}-z10 = %{version}-%{release}
-Obsoletes:	%name-header <= %version-%release
-Requires(posttrans):	/usr/sbin/alternatives
-Requires(postun):	/usr/sbin/alternatives
-
-%description z10-devel
-This package contains headers and shared versions of the ATLAS
-(Automatically Tuned Linear Algebra Software) libraries compiled with
-optimizations for the z10 architecture.
-
-%package z10-static
-Summary:        Static libraries for ATLAS
-Requires:       %{name}-devel = %{version}-%{release}
-Requires(posttrans):	/usr/sbin/alternatives
-Requires(postun):	/usr/sbin/alternatives
-
-%description z10-static
-This package contains static version of ATLAS (Automatically Tuned
-Linear Algebra Software) for the z10 architecture.
-
+%define types base
 
 %endif
 
@@ -404,7 +356,7 @@ p=$(pwd)
 #Target architectures for the 'base' versions
 %ifarch s390x 
 %define flags %{nil}
-%define base_options "-A IBMz9 -V 1"
+%define base_options "-A IBMz12 -V 1"
 %endif
 
 %ifarch x86_64
@@ -549,14 +501,6 @@ mkdir -p %{buildroot}%{_includedir}/atlas
 
 
 %check
-# Run make check but don't fail the build on these arches
-#%ifarch s390 aarch64 ppc64
-#for type in %{types}; do
-#	pushd %{_arch}_${type}
-#	make check ptcheck  
-#	popd
-#done
-#%else
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make check ptcheck 
@@ -614,31 +558,31 @@ fi
 
 %ifarch s390 s390x
 
-	%post -n atlas-z10 -p /sbin/ldconfig
+	#%post -n atlas-z10 -p /sbin/ldconfig
 
-	%postun -n atlas-z10 -p /sbin/ldconfig
+	#%postun -n atlas-z10 -p /sbin/ldconfig
 
-	%posttrans z10-devel
-		/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-			%{_includedir}/atlas-%{_arch}-z10  %{pr_z10}
+	#%posttrans z10-devel
+	#	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+	#		%{_includedir}/atlas-%{_arch}-z10  %{pr_z10}
 
-	%postun z10-devel
-	if [ $1 -ge 0 ] ; then
-		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z10
-	fi
-	
-	%post -n atlas-z196 -p /sbin/ldconfig
+	#%postun z10-devel
+	#if [ $1 -ge 0 ] ; then
+	#	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z10
+	#fi
 
-	%postun -n atlas-z196 -p /sbin/ldconfig
+	#%post -n atlas-z196 -p /sbin/ldconfig
 
-	%posttrans z196-devel
-		/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-			%{_includedir}/atlas-%{_arch}-z196  %{pr_z196}
+	#%postun -n atlas-z196 -p /sbin/ldconfig
 
-	%postun z196-devel
-	if [ $1 -ge 0 ] ; then
-		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z196
-	fi
+	#%posttrans z196-devel
+	#	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+	#		%{_includedir}/atlas-%{_arch}-z196  %{pr_z196}
+
+	#%postun z196-devel
+	#if [ $1 -ge 0 ] ; then
+	#	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z196
+	#fi
 
 %endif
 
@@ -656,7 +600,7 @@ fi
 	if [ $1 -ge 0 ] ; then
 		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-power7
 	fi
-	
+
 	%post -n atlas-ppc8 -p /sbin/ldconfig
 
 	%postun -n atlas-ppc8 -p /sbin/ldconfig
@@ -747,63 +691,16 @@ fi
 %{_libdir}/atlas-power7/*.a
 %endif
 
-%ifarch %{ix86}
 
-#%files corei1
-#%doc doc/README.dist
-#%dir %{_libdir}/atlas-corei1
-#%{_libdir}/atlas-corei1/*.so.*
-#%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-corei1.conf
-
-#%files corei1-devel
-#%doc doc
-#%{_libdir}/atlas-corei1/*.so
-#%{_includedir}/atlas-%{_arch}-corei1/
-#%{_includedir}/*.h
-#%ghost %{_includedir}/atlas
-
-#%files corei1-static
-#%{_libdir}/atlas-corei1/*.a
-%endif
-
-%ifarch s390 s390x
-%files z10
-%doc doc/README.dist
-%dir %{_libdir}/atlas-z10
-%{_libdir}/atlas-z10/*.so.*
-%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z10.conf
-
-%files z10-devel
-%doc doc
-%{_libdir}/atlas-z10/*.so
-%{_includedir}/atlas-%{_arch}-z10/
-%{_includedir}/*.h
-%ghost %{_includedir}/atlas
-
-%files z10-static
-%{_libdir}/atlas-z10/*.a
-
-%files z196
-%doc doc/README.dist
-%dir %{_libdir}/atlas-z196
-%{_libdir}/atlas-z196/*.so.*
-%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z196.conf
-
-%files z196-devel
-%doc doc
-%{_libdir}/atlas-z196/*.so
-%{_includedir}/atlas-%{_arch}-z196/
-%{_includedir}/*.h
-%ghost %{_includedir}/atlas
-
-%files z196-static
-%{_libdir}/atlas-z196/*.a
-
-%endif
 #enable_native_atlas if
 %endif
 
 %changelog
+* Thu Feb 13 2020 Jakub Martisko <jamartis@redhat.com> - 3.10.3-11
+- Drop IBM z10 and z196 subpackages
+- s390 is now optimized for z12
+Related: #1780286
+
 * Mon Jan 27 2020 Jakub Martisko <jamartis@redhat.com> - 3.10.3-10
 - Fix compatibility with gcc 10
 - Sync compiler/linker flags with RHEL
