@@ -12,39 +12,49 @@ License:        BSD
 URL:            http://math-atlas.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/math-atlas/%{name}%{version}.tar.bz2
 Source1:        PPRO32.tgz
-#Source2:        K7323DNow.tgz
-Source3:        README.dist
-#Source4:        USII64.tgz
-#Source5:        USII32.tgz
-#Source6:        IBMz1032.tgz
-#Source7:        IBMz1064.tgz
-#Source8:        IBMz19632.tgz
-#Source9:        IBMz19664.tgz
+Source2:        README.dist
 #archdefs taken from debian:
-Source11: 	POWER332.tar.bz2
-Source12: 	IBMz932.tar.bz2
-Source13: 	IBMz964.tar.bz2
+Source3: 	POWER332.tar.bz2
+Source4: 	IBMz932.tar.bz2
+Source5: 	IBMz964.tar.bz2
 #upstream arm uses softfp abi, fedora arm uses hard
-Source14: 	ARMv732NEON.tar.bz2
+Source6: 	ARMv732NEON.tar.bz2
 #again, taken from debian
-Source15: 	IBMz1264.tar.bz2
-Source16:	ARMa732.tar.bz2
+Source7: 	IBMz1264.tar.bz2
+Source8:	ARMa732.tar.bz2
 
-Patch2:		atlas-fedora-arm.patch
+#Provided By IBM
+Source9: IBMz1364VXZ.tar.bz2
+Source10: IBMz1464VXZ2.tar.bz2
+Source11: IBMz1564VXZ2.tar.bz2
+
 # Properly pass -melf_* to the linker with -Wl, fixes FTBFS bug 817552
 # https://sourceforge.net/tracker/?func=detail&atid=379484&aid=3555789&group_id=23725
-Patch3:		atlas-melf.patch
-Patch4:		atlas-throttling.patch
+Patch1:		atlas-melf.patch
+Patch2:		atlas-throttling.patch
 
 #credits Lukas Slebodnik
-Patch5:		atlas-shared_libraries.patch
+Patch3:		atlas-shared_libraries.patch
 
-Patch7:		atlas-aarch64port.patch
-Patch8:		atlas-genparse.patch
+Patch4:		atlas-genparse.patch
 
 # Unbundle LAPACK (BZ #1181369)
-Patch9:		atlas.3.10.1-unbundle.patch
-Patch10:	atlas-gcc10.patch
+Patch5:		atlas.3.10.1-unbundle.patch
+Patch6:	atlas-gcc10.patch
+
+
+#patches dealing with z{13,14,15}, provided by IBM
+Patch7: 0001-Avoid-c99-standard-compiler.patch
+Patch8: 0002-Fix-rpath-link-command-line-options.patch
+Patch9: 0003-Fix-SIMD-support-on-IBM-z13.patch
+Patch10: 0004-Read-L1-data-cache-size-from-sysconf-if-possible.patch
+Patch11: 0005-Optimizations-for-IBM-z13.patch
+Patch12: 0006-Add-IBM-z14-support.patch
+Patch13: 0007-Enable-cross-compile.patch
+Patch14: 0008-Add-IBM-z15-support.patch
+
+#Covscan
+Patch101:		atlas-getri.patch
 
 BuildRequires:  gcc-gfortran, lapack-static, gcc
 
@@ -142,8 +152,6 @@ Linear Algebra Software).
 #
 %ifarch x86_64
 %define types base corei2
-#corei4
-# sse3
 
 %package corei2-static
 Summary:        ATLAS libraries for Corei2 (Ivy/Sandy bridge) CPUs
@@ -175,48 +183,79 @@ optimizations for the corei2 (Ivy/Sandy bridge) CPUs.
 %endif
 
 %ifarch %{ix86}
-%define types base 
-#corei1
-
-#%package corei1
-#Summary:        ATLAS libraries for Corei1 (Nehalem/Westmere) CPUs
-#Group:          System Environment/Libraries
-
-#%description corei1
-#This package contains ATLAS (Automatically Tuned Linear Algebra Software)
-#shared libraries compiled with optimizations for the Corei1 (Nehalem/Westmere) CPUs. 
-#The base ATLAS builds for the ix86 architecture are made for PIII CPUs.
-
-#%package corei1-devel
-#Summary:        Development libraries for ATLAS for Corei1 (Nehalem/Westmere) CPUs
-#Group:          Development/Libraries
-#Requires:       %{name}-corei1 = %{version}-%{release}
-#Obsoletes:	%name-header <= %version-%release
-#Requires(posttrans):	/usr/sbin/alternatives
-#Requires(postun):	/usr/sbin/alternatives
-
-#%description corei1-devel
-#This package contains shared and static versions of the ATLAS
-#(Automatically Tuned Linear Algebra Software) libraries compiled with
-#optimizations for the corei1 (Nehalem/Westmere) CPUs.
-
-#%package corei1-static
-#Summary:        Static libraries for ATLAS for Corei1 (/Nehalem/Westmere) CPUs
-#Group:          Development/Libraries
-#Requires:       %{name}-corei1-devel = %{version}-%{release}
-#Requires(posttrans):	/usr/sbin/alternatives
-#Requires(postun):	/usr/sbin/alternatives
-
-#%description corei1-static
-#This package contains the ATLAS (Automatically Tuned Linear Algebra
-#Software) static libraries compiled with optimizations for the Corei1 (Nehalem/Westemere)
-#CPUs. The base ATLAS builds for the ix86 architecture are made for the PIII CPUs.
+%define types base
 
 %endif
 
 %ifarch s390 s390x
-%define types base
+%define types base z14 z15
 
+%package z14
+Summary:        ATLAS libraries for z14
+Group:          System Environment/Libraries
+
+%description z14
+This package contains ATLAS (Automatically Tuned Linear Algebra Software)
+shared libraries compiled with optimizations for the z14 CPUs.
+
+%package z14-devel
+Summary:        Development libraries for ATLAS for z14
+Group:          Development/Libraries
+Requires:       %{name}-z14 = %{version}-%{release}
+Obsoletes:	%name-header <= %version-%release
+Requires(posttrans):	chkconfig
+Requires(postun):	chkconfig
+
+%description z14-devel
+This package contains shared and static versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the z14 CPUs.
+
+%package z14-static
+Summary:        Static libraries for ATLAS for z14
+Group:          Development/Libraries
+Requires:       %{name}-z14-devel = %{version}-%{release}
+Requires(posttrans):	chkconfig
+Requires(postun):	chkconfig
+
+%description z14-static
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) static libraries compiled with optimizations for the z14
+CPUs.
+
+
+%package z15
+Summary:        ATLAS libraries for z15
+Group:          System Environment/Libraries
+
+%description z15
+This package contains ATLAS (Automatically Tuned Linear Algebra Software)
+shared libraries compiled with optimizations for the z15 CPUs.
+
+%package z15-devel
+Summary:        Development libraries for ATLAS for z15
+Group:          Development/Libraries
+Requires:       %{name}-z15 = %{version}-%{release}
+Obsoletes:	%name-header <= %version-%release
+Requires(posttrans):	chkconfig
+Requires(postun):	chkconfig
+
+%description z15-devel
+This package contains shared and static versions of the ATLAS
+(Automatically Tuned Linear Algebra Software) libraries compiled with
+optimizations for the z15 CPUs.
+
+%package z15-static
+Summary:        Static libraries for ATLAS for z15
+Group:          Development/Libraries
+Requires:       %{name}-z15-devel = %{version}-%{release}
+Requires(posttrans):	chkconfig
+Requires(postun):	chkconfig
+
+%description z15-static
+This package contains the ATLAS (Automatically Tuned Linear Algebra
+Software) static libraries compiled with optimizations for the z15
+CPUs.
 %endif
 
 
@@ -292,42 +331,44 @@ CPUs. The base ATLAS builds for the ppc64 architecture are made for the Power 5 
 %prep
 #cat /proc/cpuinfo
 %setup -q -n ATLAS
-#patch0 -p0 -b .shared
-#arm patch not applicable, probably not needed
-#%ifarch %{arm}
-#%patch2 -p0 -b .arm
-#%endif
-%patch3 -p1 -b .melf
-%patch4 -p1 -b .thrott
-%patch5 -p2 -b .sharedlib
-%ifarch aarch64
-#%patch7 -p1 -b .aarch64
-%endif
-%patch8 -p1 -b .genparse
-%patch9 -p1 -b .unbundle
+
+
+%patch1 -p1
+%patch2 -p1
+%patch3 -p2
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+
+%patch7 -p1
+%patch8 -p1
 %patch10 -p1
 
+%ifarch s390x s390
+%patch9 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%endif
+
+%patch101 -p1
+
 cp %{SOURCE1} CONFIG/ARCHS/
-#cp %{SOURCE2} CONFIG/ARCHS/
-cp %{SOURCE3} doc
+cp %{SOURCE2} doc
+cp %{SOURCE3} CONFIG/ARCHS/
+cp %{SOURCE4} CONFIG/ARCHS/
+cp %{SOURCE5} CONFIG/ARCHS/
+cp %{SOURCE6} CONFIG/ARCHS/
+cp %{SOURCE7} CONFIG/ARCHS/
+cp %{SOURCE8} CONFIG/ARCHS/
+cp %{SOURCE9} CONFIG/ARCHS/
+cp %{SOURCE10} CONFIG/ARCHS/
 cp %{SOURCE11} CONFIG/ARCHS/
-cp %{SOURCE12} CONFIG/ARCHS/
-cp %{SOURCE13} CONFIG/ARCHS/
-cp %{SOURCE14} CONFIG/ARCHS/
-cp %{SOURCE15} CONFIG/ARCHS/
-cp %{SOURCE16} CONFIG/ARCHS/
-#cp %{SOURCE8} CONFIG/ARCHS/
-#cp %{SOURCE9} CONFIG/ARCHS/
 
 %ifarch %{arm}
-# Set arm flags in atlcomp.txt
-#sed -i -e 's,-mfpu=vfpv3,-mfpu=neon,' CONFIG/src/atlcomp.txt
 sed -i -e 's,-mfloat-abi=softfp,-mfloat-abi=hard,' CONFIG/src/atlcomp.txt
-# Some extra arm flags not needed
-#sed -i -e 's,-mfpu=vfpv3,,' tune/blas/gemm/CASES/*.flg
 %endif
-# Debug
-#sed -i -e 's,> \(.*\)/ptsanity.out,> \1/ptsanity.out || cat \1/ptsanity.out \&\& exit 1,' makes/Make.*
 
 # Generate lapack library
 mkdir lapacklib
@@ -354,9 +395,10 @@ p=$(pwd)
 %define threads_option "-t 2"
 
 #Target architectures for the 'base' versions
-%ifarch s390x 
+%ifarch s390x
 %define flags %{nil}
 %define base_options "-A IBMz12 -V 1"
+#%define base_options "-A IBMz13 -V 8 -Si archdef 2"
 %endif
 
 %ifarch x86_64
@@ -397,14 +439,14 @@ p=$(pwd)
 %if "%{?enable_native_atlas}" != "0"
 %define	threads_option %{nil}
 %define base_options %{nil}
-%define flags %{nil} 
+%define flags %{nil}
 %endif
 
 for type in %{types}; do
 	if [ "$type" = "base" ]; then
 		libname=atlas
 		arg_options=%{base_options}
-		thread_options=%{threads_option} 
+		thread_options=%{threads_option}
 		%define pr_base %(echo $((%{__isa_bits}+0)))
 	else
 		libname=atlas-${type}
@@ -415,12 +457,14 @@ for type in %{types}; do
 		elif [ "$type" = "corei1" ]; then
 			arg_options="-A Corei1 -V 896"
 			%define pr_corei1 %(echo $((%{__isa_bits}+2)))
-		elif [ "$type" = "z10" ]; then
-			arg_options="-A IBMz10 -V 1"
-			%define pr_z10 %(echo $((%{__isa_bits}+2)))
-		elif [ "$type" = "z196" ]; then
-			arg_options="-A IBMz196 -V 1"
-			%define pr_z196 %(echo $((%{__isa_bits}+4)))
+		elif [ "$type" = "z14" ]; then
+			  thread_options="-t 4"
+			  arg_options="-A IBMz14 -V 4 -Si archdef 2"
+			  %define pr_z14 %(echo $((%{__isa_bits}+2)))
+		elif [ "$type" = "z15" ]; then
+			  thread_options="-t 4"
+			  arg_options="-A IBMz15 -V 4 -Si archdef 2"
+			  %define pr_z15 %(echo $((%{__isa_bits}+4)))
 		elif [ "$type" = "power7" ]; then
 			thread_options="-t 4"
 			arg_options="-A POWER7 -V 1"
@@ -433,10 +477,10 @@ for type in %{types}; do
 	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure  %{mode} $thread_options $arg_options -D c -DWALL -Fa alg '%{flags} -D_FORTIFY_SOURCE=2 -g -Wa,--noexecstack,--generate-missing-build-notes=yes -fstack-protector-strong -fstack-clash-protection -fPIC -fplugin=annobin -Wl,-z,now'\
+	../configure  %{mode} $thread_options $arg_options -D c -DWALL -F xc ' '  -Fa alg '%{flags} -D_FORTIFY_SOURCE=2 -g -Wa,--noexecstack,--generate-missing-build-notes=yes -fstack-protector-strong -fstack-clash-protection -fPIC -fplugin=annobin -Wl,-z,now'\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
-	--libdir=%{buildroot}%{_libdir}/${libname}	
+	--libdir=%{buildroot}%{_libdir}/${libname}
 	#--with-netlib-lapack-tarfile=%{SOURCE10}
 
 	#matches both SLAPACK and SSLAPACK
@@ -460,7 +504,7 @@ for type in %{types}; do
 	popd
 done
 
-%install 	
+%install
 for type in %{types}; do
 	pushd %{_arch}_${type}
 	make DESTDIR=%{buildroot} install
@@ -502,9 +546,14 @@ mkdir -p %{buildroot}%{_includedir}/atlas
 
 %check
 for type in %{types}; do
-	pushd %{_arch}_${type}
-	make check ptcheck 
-	popd
+	if [ "$type" = "z14" ] || [ "$type" = "z15" ]; then
+	    # skip the tests (may fail due to illegal instructions).
+		  echo "Skipping tests for the $type subpackage"
+	else
+	    pushd %{_arch}_${type}
+	    make check ptcheck
+	    popd
+  fi
 done
 #%endif
 
@@ -558,31 +607,31 @@ fi
 
 %ifarch s390 s390x
 
-	#%post -n atlas-z10 -p /sbin/ldconfig
+	%post -n atlas-z14 -p /sbin/ldconfig
 
-	#%postun -n atlas-z10 -p /sbin/ldconfig
+	%postun -n atlas-z14 -p /sbin/ldconfig
 
-	#%posttrans z10-devel
-	#	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-	#		%{_includedir}/atlas-%{_arch}-z10  %{pr_z10}
+	%posttrans z14-devel
+	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+						            %{_includedir}/atlas-%{_arch}-z14  %{pr_z14}
 
-	#%postun z10-devel
-	#if [ $1 -ge 0 ] ; then
-	#	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z10
-	#fi
+	%postun z14-devel
+	if [ $1 -ge 0 ] ; then
+			/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z14
+	fi
 
-	#%post -n atlas-z196 -p /sbin/ldconfig
+	%post -n atlas-z15 -p /sbin/ldconfig
 
-	#%postun -n atlas-z196 -p /sbin/ldconfig
+	%postun -n atlas-z15 -p /sbin/ldconfig
 
-	#%posttrans z196-devel
-	#	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-	#		%{_includedir}/atlas-%{_arch}-z196  %{pr_z196}
+	%posttrans z15-devel
+	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+				                  %{_includedir}/atlas-%{_arch}-z15  %{pr_z15}
 
-	#%postun z196-devel
-	#if [ $1 -ge 0 ] ; then
-	#	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z196
-	#fi
+	%postun z15-devel
+	if [ $1 -ge 0 ] ; then
+			/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z15
+	fi
 
 %endif
 
@@ -691,11 +740,55 @@ fi
 %{_libdir}/atlas-power7/*.a
 %endif
 
+%ifarch s390 s390x
+
+%files z14
+%doc doc/README.dist
+%dir %{_libdir}/atlas-z14
+%{_libdir}/atlas-z14/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z14.conf
+
+%files z14-devel
+%doc doc
+%{_libdir}/atlas-z14/*.so
+%{_includedir}/atlas-%{_arch}-z14/
+%{_includedir}/*.h
+%ghost %{_includedir}/atlas
+
+%files z14-static
+%{_libdir}/atlas-z14/*.a
+
+
+%files z15
+%doc doc/README.dist
+%dir %{_libdir}/atlas-z15
+%{_libdir}/atlas-z15/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}-z15.conf
+
+%files z15-devel
+%doc doc
+%{_libdir}/atlas-z15/*.so
+%{_includedir}/atlas-%{_arch}-z15/
+%{_includedir}/*.h
+%ghost %{_includedir}/atlas
+
+%files z15-static
+%{_libdir}/atlas-z15/*.a
+
+%endif
+
 
 #enable_native_atlas if
 %endif
 
 %changelog
+* Thu Aug 27 2020 Jakub Martisko <jamartis@redhat.com> - 3.10.3.13
+- Sync with rhel 8.3 + cleanup
+- Add new subpackages - z{14,15}
+- Unlike in rhel8, the base subpackage still needs to be build for z12.
+- Covscan related bugfixes
+- Spec and git cleanup (remove unused patches/sources)
+
 * Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.3-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
