@@ -56,6 +56,7 @@ Patch14: 0008-Add-IBM-z15-support.patch
 #Covscan
 Patch101:		atlas-getri.patch
 
+BuildRequires: make
 BuildRequires:  gcc-gfortran, lapack-static, gcc
 
 %ifarch x86_64
