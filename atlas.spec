@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 License:        BSD
@@ -574,115 +574,115 @@ fi
 %if "%{?enable_native_atlas}" == "0"
 %ifarch x86_64
 
-	%post -n atlas-corei2 -p /sbin/ldconfig
+%post -n atlas-corei2 -p /sbin/ldconfig
 
-	%postun -n atlas-corei2 -p /sbin/ldconfig
+%postun -n atlas-corei2 -p /sbin/ldconfig
 
-	%posttrans corei2-devel
-		/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-			%{_includedir}/atlas-%{_arch}-corei2  %{pr_corei2}
+%posttrans corei2-devel
+	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-corei2  %{pr_corei2}
 
-	%postun corei2-devel
-	if [ $1 -ge 0 ] ; then
-		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-corei2
-	fi
+%postun corei2-devel
+if [ $1 -ge 0 ] ; then
+	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-corei2
+fi
 
 %endif
 
 %ifarch %{ix86}
 
-	%post -n atlas-corei1 -p /sbin/ldconfig
+%post -n atlas-corei1 -p /sbin/ldconfig
 
-	%postun -n atlas-corei1 -p /sbin/ldconfig
+%postun -n atlas-corei1 -p /sbin/ldconfig
 
-	%posttrans corei1-devel
-		/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-			%{_includedir}/atlas-%{_arch}-corei1  %{pr_corei1}
+%posttrans corei1-devel
+	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-corei1  %{pr_corei1}
 
-	%postun corei1-devel
-	if [ $1 -ge 0 ] ; then
-		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-corei1
-	fi
+%postun corei1-devel
+if [ $1 -ge 0 ] ; then
+	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-corei1
+fi
 
 %endif
 
 %ifarch s390 s390x
 
-	%post -n atlas-z14 -p /sbin/ldconfig
+%post -n atlas-z14 -p /sbin/ldconfig
 
-	%postun -n atlas-z14 -p /sbin/ldconfig
+%postun -n atlas-z14 -p /sbin/ldconfig
 
-	%posttrans z14-devel
-	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-						            %{_includedir}/atlas-%{_arch}-z14  %{pr_z14}
+%posttrans z14-devel
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+						    %{_includedir}/atlas-%{_arch}-z14  %{pr_z14}
 
-	%postun z14-devel
-	if [ $1 -ge 0 ] ; then
-			/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z14
-	fi
+%postun z14-devel
+if [ $1 -ge 0 ] ; then
+		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z14
+fi
 
-	%post -n atlas-z15 -p /sbin/ldconfig
+%post -n atlas-z15 -p /sbin/ldconfig
 
-	%postun -n atlas-z15 -p /sbin/ldconfig
+%postun -n atlas-z15 -p /sbin/ldconfig
 
-	%posttrans z15-devel
-	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-				                  %{_includedir}/atlas-%{_arch}-z15  %{pr_z15}
+%posttrans z15-devel
+/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+					  %{_includedir}/atlas-%{_arch}-z15  %{pr_z15}
 
-	%postun z15-devel
-	if [ $1 -ge 0 ] ; then
-			/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z15
-	fi
+%postun z15-devel
+if [ $1 -ge 0 ] ; then
+		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-z15
+fi
 
 %endif
 
 %ifarch ppc64
 
-	%post -n atlas-power7 -p /sbin/ldconfig
+%post -n atlas-power7 -p /sbin/ldconfig
 
-	%postun -n atlas-power7 -p /sbin/ldconfig
+%postun -n atlas-power7 -p /sbin/ldconfig
 
-	%posttrans power7-devel
-		/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-			%{_includedir}/atlas-%{_arch}-power7  %{pr_power7}
+%posttrans power7-devel
+	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-power7  %{pr_power7}
 
-	%postun power7-devel
-	if [ $1 -ge 0 ] ; then
-		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-power7
-	fi
+%postun power7-devel
+if [ $1 -ge 0 ] ; then
+	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-power7
+fi
 
-	%post -n atlas-ppc8 -p /sbin/ldconfig
+%post -n atlas-ppc8 -p /sbin/ldconfig
 
-	%postun -n atlas-ppc8 -p /sbin/ldconfig
+%postun -n atlas-ppc8 -p /sbin/ldconfig
 
-	%posttrans ppc8-devel
-		/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-			%{_includedir}/atlas-%{_arch}-ppc8  %{pr_ppc8}
+%posttrans ppc8-devel
+	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
+		%{_includedir}/atlas-%{_arch}-ppc8  %{pr_ppc8}
 
-	%postun ppc8-devel
-	if [ $1 -ge 0 ] ; then
-		/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-ppc8
-	fi
+%postun ppc8-devel
+if [ $1 -ge 0 ] ; then
+	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-ppc8
+fi
 
 %endif
 #enable_native_atlas
 %endif
 %files
-	%doc doc/README.dist
-	%dir %{_libdir}/atlas
-	%{_libdir}/atlas/*.so.*
-	%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}.conf
+%doc doc/README.dist
+%dir %{_libdir}/atlas
+%{_libdir}/atlas/*.so.*
+%config(noreplace) /etc/ld.so.conf.d/atlas-%{_arch}.conf
 
 %files devel
-	%doc doc
-	%{_libdir}/atlas/*.so
-	%{_includedir}/atlas-%{_arch}-base/
-	%{_includedir}/*.h
-	%ghost %{_includedir}/atlas
-	%{_libdir}/pkgconfig/atlas.pc
+%doc doc
+%{_libdir}/atlas/*.so
+%{_includedir}/atlas-%{_arch}-base/
+%{_includedir}/*.h
+%ghost %{_includedir}/atlas
+%{_libdir}/pkgconfig/atlas.pc
 
 %files static
-	%{_libdir}/atlas/*.a
+%{_libdir}/atlas/*.a
 
 %if "%{?enable_native_atlas}" == "0"
 
@@ -783,6 +783,10 @@ fi
 %endif
 
 %changelog
+* Mon Feb 22 2021 Jakub Martisko <jamartis@redhat.com> - 3.10.3-14
+- Fix the messed scriptlets
+Resolves: #1929845
+
 * Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.3-13
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
