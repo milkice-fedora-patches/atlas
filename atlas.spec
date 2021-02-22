@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 License:        BSD
@@ -590,20 +590,7 @@ fi
 %endif
 
 %ifarch %{ix86}
-
-%post -n atlas-corei1 -p /sbin/ldconfig
-
-%postun -n atlas-corei1 -p /sbin/ldconfig
-
-%posttrans corei1-devel
-	/usr/sbin/alternatives	--install %{_includedir}/atlas atlas-inc 	\
-		%{_includedir}/atlas-%{_arch}-corei1  %{pr_corei1}
-
-%postun corei1-devel
-if [ $1 -ge 0 ] ; then
-	/usr/sbin/alternatives --remove atlas-inc %{_includedir}/atlas-%{_arch}-corei1
-fi
-
+# No arch specific packages
 %endif
 
 %ifarch s390 s390x
@@ -783,6 +770,9 @@ fi
 %endif
 
 %changelog
+* Mon Feb 22 2021 Jakub Martisko <jamartis@redhat.com> - 3.10.3-15
+- Remove unused scriptlets
+
 * Mon Feb 22 2021 Jakub Martisko <jamartis@redhat.com> - 3.10.3-14
 - Fix the messed scriptlets
 Resolves: #1929845
