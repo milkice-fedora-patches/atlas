@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 License:        BSD
@@ -376,7 +376,7 @@ mkdir lapacklib
 cd lapacklib
 ar x %{_libdir}/liblapack_pic.a
 # Remove functions that have ATLAS implementations
-rm -f cgelqf.o cgels.o cgeqlf.o cgeqrf.o cgerqf.o cgesv.o cgetrf.o cgetri.o cgetrs.o clarfb.o clarft.o clauum.o cposv.o cpotrf.o cpotri.o cpotrs.o ctrtri.o dgelqf.o dgels.o dgeqlf.o dgeqrf.o dgerqf.o dgesv.o dgetrf.o dgetri.o dgetrs.o dlamch.o dlarfb.o dlarft.o dlauum.o dposv.o dpotrf.o dpotri.o dpotrs.o dtrtri.o ieeeck.o ilaenv.o lsame.o sgelqf.o sgels.o sgeqlf.o sgeqrf.o sgerqf.o sgesv.o sgetrf.o sgetri.o sgetrs.o slamch.o slarfb.o slarft.o slauum.o sposv.o spotrf.o spotri.o spotrs.o strtri.o xerbla.o zgelqf.o zgels.o zgeqlf.o zgeqrf.o zgerqf.o zgesv.o zgetrf.o zgetri.o zgetrs.o zlarfb.o zlarft.o zlauum.o zposv.o zpotrf.o zpotri.o zpotrs.o ztrtri.o 
+rm -f cgelqf.f.o cgels.f.o cgeqlf.f.o cgeqrf.f.o cgerqf.f.o cgesv.f.o cgetrf.f.o cgetri.f.o cgetrs.f.o clarfb.f.o clarft.f.o clauum.f.o cposv.f.o cpotrf.f.o cpotri.f.o cpotrs.f.o ctrtri.f.o dgelqf.f.o dgels.f.o dgeqlf.f.o dgeqrf.f.o dgerqf.f.o dgesv.f.o dgetrf.f.o dgetri.f.o dgetrs.f.o dlamch.f.o dlarfb.f.o dlarft.f.o dlauum.f.o dposv.f.o dpotrf.f.o dpotri.f.o dpotrs.f.o dtrtri.f.o ieeeck.f.o ilaenv.f.o lsame.f.o sgelqf.f.o sgels.f.o sgeqlf.f.o sgeqrf.f.o sgerqf.f.o sgesv.f.o sgetrf.f.o sgetri.f.o sgetrs.f.o slamch.f.o slarfb.f.o slarft.f.o slauum.f.o sposv.f.o spotrf.f.o spotri.f.o spotrs.f.o strtri.f.o xerbla.f.o zgelqf.f.o zgels.f.o zgeqlf.f.o zgeqrf.f.o zgerqf.f.o zgesv.f.o zgetrf.f.o zgetri.f.o zgetrs.f.o zlarfb.f.o zlarft.f.o zlauum.f.o zposv.f.o zpotrf.f.o zpotri.f.o zpotrs.f.o ztrtri.f.o 
 # Create new library
 ar rcs ../liblapack_pic_pruned.a *.o
 cd ..
@@ -510,6 +510,8 @@ for type in %{types}; do
 	pushd %{_arch}_${type}
 	make DESTDIR=%{buildroot} install
         mv %{buildroot}%{_includedir}/atlas %{buildroot}%{_includedir}/atlas-%{_arch}-${type}
+        mv %{buildroot}%{_includedir}/clapack.h %{buildroot}%{_includedir}/atlas-%{_arch}-${type}/clapack.h
+        mv %{buildroot}%{_includedir}/cblas.h %{buildroot}%{_includedir}/atlas-%{_arch}-${type}/cblas.h
 	if [ "$type" = "base" ]; then
 		cp -pr lib/*.so* %{buildroot}%{_libdir}/atlas/
 		rm -f %{buildroot}%{_libdir}/atlas/*.a
@@ -664,7 +666,6 @@ fi
 %doc doc
 %{_libdir}/atlas/*.so
 %{_includedir}/atlas-%{_arch}-base/
-%{_includedir}/*.h
 %ghost %{_includedir}/atlas
 %{_libdir}/pkgconfig/atlas.pc
 
@@ -685,7 +686,6 @@ fi
 %doc doc
 %{_libdir}/atlas-corei2/*.so
 %{_includedir}/atlas-%{_arch}-corei2/
-%{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
 %files corei2-static
@@ -705,7 +705,6 @@ fi
 %doc doc
 %{_libdir}/atlas-power8/*.so
 %{_includedir}/atlas-%{_arch}-power8/
-%{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
 %files power8-static
@@ -721,7 +720,6 @@ fi
 %doc doc
 %{_libdir}/atlas-power7/*.so
 %{_includedir}/atlas-%{_arch}-power7/
-%{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
 %files power7-static
@@ -740,7 +738,6 @@ fi
 %doc doc
 %{_libdir}/atlas-z14/*.so
 %{_includedir}/atlas-%{_arch}-z14/
-%{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
 %files z14-static
@@ -757,7 +754,6 @@ fi
 %doc doc
 %{_libdir}/atlas-z15/*.so
 %{_includedir}/atlas-%{_arch}-z15/
-%{_includedir}/*.h
 %ghost %{_includedir}/atlas
 
 %files z15-static
@@ -770,6 +766,10 @@ fi
 %endif
 
 %changelog
+* Tue Apr 20 2021 Jakub Martisko <jamartis@redhat.com> - 3.10.3-16
+- Move the cblas.h and clapack.h to include/atlas to resolve conflict with lapack
+- Resolves: #1948187
+
 * Mon Feb 22 2021 Jakub Martisko <jamartis@redhat.com> - 3.10.3-15
 - Remove unused scriptlets
 
