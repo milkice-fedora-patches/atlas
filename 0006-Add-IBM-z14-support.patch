@@ -237,12 +237,12 @@ index f171933..eb75577 100644
 +      #if ATL_VLEN != 4
 +         #error "VSXZ2 supports only VLEN = 4 for floats!"
 +      #endif
-+      #define ATL_vvrsum4(s0_, s1_, s2_, s3_) \
-+      {	 ATL_VTYPE t0_, t1_; \
-+         t0_ = vec_mergeh(s0_, s1_) + vec_mergel(s0_, s1_); \
-+         t1_ = vec_mergeh(s2_, s3_) + vec_mergel(s2_, s3_); \
-+         s0_ = ATL_VPERMI(t0_, t1_, 0) + ATL_VPERMI(t0_, t1_, 3); \
-+      }
++      //#define ATL_vvrsum4(s0_, s1_, s2_, s3_) \
++      //{	 ATL_VTYPE t0_, t1_; \
++      //   t0_ = vec_mergeh(s0_, s1_) + vec_mergel(s0_, s1_); \
++      //   t1_ = vec_mergeh(s2_, s3_) + vec_mergel(s2_, s3_); \
++      //   s0_ = ATL_VPERMI(t0_, t1_, 0) + ATL_VPERMI(t0_, t1_, 3); \
++      //}
 +      #define ATL_vsplat2(d_, s_) d_ = vec_splat(s_, 2)
 +      #define ATL_vsplat3(d_, s_) d_ = vec_splat(s_, 3)
 +   #else        /* double precision */
