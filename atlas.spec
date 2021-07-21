@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        17%{?dist}
+Release:        18%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 License:        BSD
@@ -766,6 +766,9 @@ fi
 %endif
 
 %changelog
+* Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.3-18
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Tue Apr 20 2021 Jakub Martisko <jamartis@redhat.com> - 3.10.3-17
 - Disable the custom vvrsum function introduced in the ibm patch
 Related: 1951565
