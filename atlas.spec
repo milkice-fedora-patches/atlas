@@ -5,7 +5,7 @@ Version:        3.10.3
 %if "%{?enable_native_atlas}" != "0"
 %define dist .native
 %endif
-Release:        19%{?dist}
+Release:        20%{?dist}
 Summary:        Automatically Tuned Linear Algebra Software
 
 License:        BSD
@@ -52,6 +52,9 @@ Patch11: 0005-Optimizations-for-IBM-z13.patch
 Patch12: 0006-Add-IBM-z14-support.patch
 Patch13: 0007-Enable-cross-compile.patch
 Patch14: 0008-Add-IBM-z15-support.patch
+
+#riscv
+Patch15: atlas-riscv64-port.patch
 
 #Covscan
 Patch101:		atlas-getri.patch
@@ -353,6 +356,10 @@ CPUs. The base ATLAS builds for the ppc64 architecture are made for the Power 5 
 %patch14 -p1
 %endif
 
+%ifarch riscv64
+%patch15 -p1 -b .riscv64
+%endif
+
 %patch101 -p1
 
 cp %{SOURCE1} CONFIG/ARCHS/
@@ -437,6 +444,11 @@ p=$(pwd)
 %define base_options "-A ARM64a53 -V 1"
 %endif
 
+%ifarch riscv64
+%define flags %{nil}
+%define base_options "-A RISCV64 -V 1"
+%endif
+
 %if "%{?enable_native_atlas}" != "0"
 %define	threads_option %{nil}
 %define base_options %{nil}
@@ -478,7 +490,7 @@ for type in %{types}; do
 	fi
 	mkdir -p %{_arch}_${type}
 	pushd %{_arch}_${type}
-	../configure  %{mode} $thread_options $arg_options -D c -DWALL -F xc ' '  -Fa alg '%{flags} -D_FORTIFY_SOURCE=2 -g -Wa,--noexecstack,--generate-missing-build-notes=yes -fstack-protector-strong -fstack-clash-protection -fPIC -fplugin=annobin -Wl,-z,now'\
+	../configure  %{mode} $thread_options $arg_options -D c -DWALL -F xc ' '  -Fa alg "%{flags} -D_FORTIFY_SOURCE=2 -g -Wa,--noexecstack,--generate-missing-build-notes=yes -fstack-protector-strong -fstack-clash-protection -fPIC -fplugin=annobin -Wl,-z,now"\
 	--prefix=%{buildroot}%{_prefix}			\
 	--incdir=%{buildroot}%{_includedir}		\
 	--libdir=%{buildroot}%{_libdir}/${libname}
@@ -766,6 +778,11 @@ fi
 %endif
 
 %changelog
+* Fri Apr 15 2022 Milkice Qiu <milkice@milkice.me> - 3.10.3-20
+- Fix passing RPM_LD_FLAGS to linker
+- Add support for RISC-V (riscv64)
+- Patch from David Abdurachmanov <david.abdurachmanov@gmail.com>
+
 * Wed Jan 19 2022 Fedora Release Engineering <releng@fedoraproject.org> - 3.10.3-19
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
